@@ -1,0 +1,60 @@
+.brisa-input,
+.brisa-textarea {
+  background: var(--brisa-surface-soft);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md);
+  padding: 9px 14px;
+  color: var(--brisa-text);
+  font-size: 14px;
+  width: 100%;
+  height: 40px;
+  transition:
+    border-color var(--transition-base),
+    background var(--transition-base),
+    box-shadow var(--transition-base);
+  outline: none;
+}
+
+.brisa-textarea {
+  height: auto;
+  min-height: 110px;
+  padding: 12px 14px;
+  resize: vertical;
+  line-height: 1.5;
+  font-family: inherit;
+}
+
+.brisa-input::placeholder,
+.brisa-textarea::placeholder {
+  color: var(--brisa-text-soft);
+}
+
+.brisa-input:hover:not(:disabled),
+.brisa-textarea:hover:not(:disabled) {
+  border-color: var(--brisa-border-strong);
+  background: var(--brisa-surface);
+}
+
+.brisa-input:focus,
+.brisa-textarea:focus {
+  border-color: var(--brisa-primary);
+  background: var(--brisa-surface);
+  box-shadow: var(--brisa-focus-ring);
+}
+
+.brisa-input--invalid,
+.brisa-textarea--invalid {
+  border-color: var(--brisa-danger);
+}
+
+.brisa-input--invalid:focus,
+.brisa-textarea--invalid:focus {
+  box-shadow: 0 0 0 3px rgba(193, 59, 59, 0.16);
+}
+
+.brisa-input:disabled,
+.brisa-textarea:disabled {
+  background: var(--brisa-surface-soft);
+  color: var(--brisa-text-soft);
+  cursor: not-allowed;
+}

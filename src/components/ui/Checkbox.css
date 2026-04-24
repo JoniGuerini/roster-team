@@ -1,0 +1,61 @@
+.brisa-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  user-select: none;
+  font-size: 13.5px;
+  color: var(--brisa-text);
+}
+
+.brisa-checkbox input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.brisa-checkbox__box {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--brisa-border-strong);
+  background: var(--brisa-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base),
+    color var(--transition-base);
+  flex-shrink: 0;
+}
+
+.brisa-checkbox:hover .brisa-checkbox__box {
+  border-color: var(--brisa-primary);
+}
+
+.brisa-checkbox input:checked + .brisa-checkbox__box {
+  background: var(--brisa-primary);
+  border-color: var(--brisa-primary);
+  color: var(--neutral-0);
+}
+
+.brisa-checkbox input:focus-visible + .brisa-checkbox__box {
+  box-shadow: var(--brisa-focus-ring);
+}
+
+.brisa-checkbox input:disabled + .brisa-checkbox__box {
+  background: var(--brisa-surface-soft);
+  border-color: var(--brisa-border);
+}
+
+.brisa-checkbox input:disabled ~ .brisa-checkbox__label {
+  color: var(--brisa-text-soft);
+}
+
+.brisa-checkbox__label {
+  line-height: 1.2;
+}

@@ -1,0 +1,10 @@
+.brisa-page__filter {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .brisa-page__filter {
+    width: 100%;
+  }
+}

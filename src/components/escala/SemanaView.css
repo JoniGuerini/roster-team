@@ -1,0 +1,112 @@
+.brisa-semana {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.brisa-semana__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md);
+  min-height: 380px;
+  overflow: hidden;
+}
+
+.brisa-semana__col--hoje {
+  border-color: var(--brisa-primary);
+  box-shadow: 0 0 0 1px var(--brisa-primary);
+}
+
+.brisa-semana__col-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  padding: 10px 12px;
+  background: var(--brisa-surface-soft);
+  border-bottom: 1px solid var(--brisa-border);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.brisa-semana__col-header:hover {
+  background: var(--brisa-surface-hover);
+}
+
+.brisa-semana__col--hoje .brisa-semana__col-header {
+  background: var(--brisa-primary-soft);
+}
+
+.brisa-semana__col-dia-nome {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brisa-text-soft);
+  font-weight: 600;
+}
+
+.brisa-semana__col--hoje .brisa-semana__col-dia-nome {
+  color: var(--brisa-primary);
+}
+
+.brisa-semana__col-dia-num {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  line-height: 1.1;
+}
+
+.brisa-semana__col--hoje .brisa-semana__col-dia-num {
+  color: var(--brisa-primary);
+}
+
+.brisa-semana__col-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  flex: 1;
+}
+
+.brisa-semana__add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px dashed var(--brisa-border-strong);
+  color: var(--brisa-text-soft);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.brisa-semana__add:hover {
+  background: var(--brisa-primary-soft);
+  border-color: var(--brisa-primary);
+  color: var(--brisa-primary);
+}
+
+@media (max-width: 1024px) {
+  .brisa-semana {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .brisa-semana__col {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 540px) {
+  .brisa-semana {
+    grid-template-columns: 1fr;
+  }
+}

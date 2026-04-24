@@ -1,0 +1,96 @@
+.brisa-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-10) var(--space-10);
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.brisa-page__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.brisa-page__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brisa-page__eyebrow {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brisa-accent);
+}
+
+.brisa-page__title {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--brisa-text);
+}
+
+.brisa-page__subtitle {
+  color: var(--brisa-text-muted);
+  font-size: 14px;
+  max-width: 520px;
+}
+
+.brisa-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.brisa-search {
+  position: relative;
+  flex: 1;
+  max-width: 360px;
+  min-width: 240px;
+}
+
+.brisa-search svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--brisa-text-soft);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.brisa-search .brisa-input {
+  padding-left: 40px;
+  background: var(--brisa-surface);
+}
+
+.brisa-page__count {
+  font-size: 12.5px;
+  color: var(--brisa-text-soft);
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+
+@media (max-width: 720px) {
+  .brisa-page {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .brisa-page__header {
+    align-items: flex-start;
+  }
+
+  .brisa-page__title {
+    font-size: 26px;
+  }
+}

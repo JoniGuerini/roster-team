@@ -1,0 +1,131 @@
+.brisa-aloc-tabela-card {
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+
+.brisa-aloc-tabela__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--brisa-border);
+}
+
+.brisa-aloc-tabela__title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.brisa-aloc-tabela__hint {
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-aloc-tabela__alert-count {
+  color: var(--brisa-danger);
+  font-weight: 600;
+}
+
+.brisa-aloc-tabela__wrapper {
+  overflow-x: auto;
+}
+
+.brisa-aloc-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 720px;
+}
+
+.brisa-aloc-tabela thead {
+  background: var(--brisa-surface-soft);
+}
+
+.brisa-aloc-tabela th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brisa-text-soft);
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--brisa-border);
+}
+
+.brisa-aloc-tabela td {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--brisa-border);
+  font-size: 13.5px;
+  color: var(--brisa-text);
+  vertical-align: middle;
+}
+
+.brisa-aloc-tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.brisa-aloc-tabela__row--indisp {
+  background: var(--brisa-warning-soft);
+}
+
+.brisa-aloc-tabela__row--indisp .brisa-aloc-tabela__pessoa-nome {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  color: var(--brisa-warning);
+}
+
+.brisa-aloc-tabela__row--conflito {
+  background: var(--brisa-danger-soft);
+}
+
+.brisa-aloc-tabela__row--conflito .brisa-aloc-tabela__pessoa-nome {
+  color: var(--brisa-danger);
+  font-weight: 600;
+}
+
+.brisa-aloc-tabela__pessoa {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brisa-aloc-tabela__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--brisa-primary-soft);
+  color: var(--brisa-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.brisa-aloc-tabela__row--indisp .brisa-aloc-tabela__avatar {
+  background: var(--brisa-warning);
+  color: white;
+}
+
+.brisa-aloc-tabela__row--conflito .brisa-aloc-tabela__avatar {
+  background: var(--brisa-danger);
+  color: white;
+}
+
+.brisa-aloc-tabela__pessoa-nome {
+  font-weight: 500;
+}
+
+.brisa-aloc-tabela__hora {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--brisa-text-muted);
+}

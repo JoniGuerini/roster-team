@@ -1,0 +1,42 @@
+.brisa-dia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.brisa-dia__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.brisa-dia__eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brisa-accent);
+}
+
+.brisa-dia__title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  letter-spacing: -0.01em;
+  margin-top: 4px;
+}
+
+.brisa-dia__subtitle {
+  font-size: 13.5px;
+  color: var(--brisa-text-muted);
+  margin-top: 4px;
+}
+
+.brisa-dia__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-3);
+}

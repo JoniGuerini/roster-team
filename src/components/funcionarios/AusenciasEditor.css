@@ -1,0 +1,107 @@
+.brisa-ausencias {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.brisa-ausencias__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.brisa-ausencia {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 12px 14px;
+  background: var(--brisa-warning-soft);
+  border: 1px solid rgba(181, 131, 42, 0.25);
+  border-radius: var(--radius-md);
+}
+
+.brisa-ausencia__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.brisa-ausencia__motivo {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brisa-warning);
+}
+
+.brisa-ausencia__periodo {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--brisa-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.brisa-ausencia__obs {
+  font-size: 12.5px;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-ausencia__remove {
+  background: transparent;
+  border: none;
+  color: var(--brisa-text-soft);
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.brisa-ausencia__remove:hover {
+  background: var(--brisa-danger-soft);
+  color: var(--brisa-danger);
+}
+
+.brisa-ausencias__novo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--brisa-surface-soft);
+  border: 1px dashed var(--brisa-border-strong);
+  border-radius: var(--radius-md);
+}
+
+.brisa-ausencias__novo-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-ausencias__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.brisa-ausencias__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .brisa-ausencias__grid {
+    grid-template-columns: 1fr;
+  }
+}

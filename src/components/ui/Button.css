@@ -1,0 +1,103 @@
+.brisa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base),
+    color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-fast);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.brisa-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--brisa-focus-ring);
+}
+
+.brisa-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.brisa-btn--full {
+  width: 100%;
+}
+
+.brisa-btn--sm {
+  padding: 6px 12px;
+  font-size: 12.5px;
+  height: 32px;
+}
+
+.brisa-btn--md {
+  padding: 8px 16px;
+  font-size: 13.5px;
+  height: 38px;
+}
+
+.brisa-btn--lg {
+  padding: 10px 20px;
+  font-size: 14.5px;
+  height: 44px;
+}
+
+.brisa-btn--primary {
+  background: var(--brisa-primary);
+  color: var(--brisa-text-on-brand);
+  box-shadow: var(--shadow-xs);
+}
+
+.brisa-btn--primary:hover:not(:disabled) {
+  background: var(--brisa-primary-hover);
+}
+
+.brisa-btn--primary:active:not(:disabled) {
+  background: var(--brisa-primary-active);
+  transform: translateY(1px);
+}
+
+.brisa-btn--secondary {
+  background: var(--brisa-surface);
+  color: var(--brisa-text);
+  border-color: var(--brisa-border-strong);
+  box-shadow: var(--shadow-xs);
+}
+
+.brisa-btn--secondary:hover:not(:disabled) {
+  background: var(--brisa-surface-soft);
+  border-color: var(--neutral-400);
+}
+
+.brisa-btn--ghost {
+  background: transparent;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-btn--ghost:hover:not(:disabled) {
+  background: var(--brisa-surface-hover);
+  color: var(--brisa-text);
+}
+
+.brisa-btn--danger {
+  background: var(--brisa-danger);
+  color: var(--brisa-text-on-brand);
+  box-shadow: var(--shadow-xs);
+}
+
+.brisa-btn--danger:hover:not(:disabled) {
+  background: var(--brisa-danger-hover);
+}
+
+.brisa-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

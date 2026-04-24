@@ -1,0 +1,119 @@
+.brisa-add-turno {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.brisa-add-turno__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-3);
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.brisa-add-turno__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.brisa-add-turno__item:hover {
+  border-color: var(--brisa-primary);
+}
+
+.brisa-add-turno__item--active {
+  border-color: var(--brisa-primary);
+  background: var(--brisa-primary-soft);
+}
+
+.brisa-add-turno__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.brisa-add-turno__nome {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+  margin: 0;
+  min-width: 0;
+  flex: 1;
+}
+
+.brisa-add-turno__tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--brisa-surface-soft);
+  color: var(--brisa-text-soft);
+  border: 1px solid var(--brisa-border);
+  flex-shrink: 0;
+}
+
+.brisa-add-turno__item--active .brisa-add-turno__tag {
+  background: var(--brisa-surface);
+  border-color: var(--brisa-border-strong);
+}
+
+.brisa-add-turno__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brisa-add-turno__line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--brisa-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.brisa-add-turno__line svg {
+  color: var(--brisa-text-soft);
+  flex-shrink: 0;
+}
+
+.brisa-add-turno__check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--brisa-primary);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brisa-add-turno__item--active .brisa-add-turno__head {
+  padding-right: 28px;
+}

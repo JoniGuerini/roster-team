@@ -1,0 +1,194 @@
+.brisa-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.brisa-form__inline-error {
+  background: var(--brisa-danger-soft);
+  color: var(--brisa-danger);
+  border: 1px solid rgba(193, 59, 59, 0.2);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.brisa-form__card {
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.brisa-form__card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--brisa-border);
+}
+
+.brisa-form__card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--neutral-100);
+  color: var(--brisa-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brisa-form__card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.brisa-form__card-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  letter-spacing: -0.005em;
+}
+
+.brisa-form__card-hint {
+  font-size: 12.5px;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4) var(--space-5);
+}
+
+.brisa-form__checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2) var(--space-5);
+  background: var(--brisa-surface-soft);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.brisa-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+  border: 1.5px dashed var(--brisa-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--brisa-surface-soft);
+  color: var(--brisa-text-muted);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-base),
+    background var(--transition-base),
+    color var(--transition-base);
+  text-align: center;
+}
+
+.brisa-upload:hover {
+  border-color: var(--brisa-accent);
+  background: var(--brisa-accent-soft);
+  color: var(--brisa-accent);
+}
+
+.brisa-upload__title {
+  font-weight: 600;
+  color: var(--brisa-text);
+  font-size: 13.5px;
+}
+
+.brisa-upload:hover .brisa-upload__title {
+  color: var(--brisa-accent);
+}
+
+.brisa-upload__hint {
+  font-size: 12.5px;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-form__doc-list {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.brisa-form__doc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 10px 14px;
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md);
+}
+
+.brisa-form__doc-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brisa-form__doc-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--brisa-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-form__doc-size {
+  font-size: 12px;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-form__doc-remove {
+  background: transparent;
+  border: none;
+  color: var(--brisa-text-soft);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-base), color var(--transition-base);
+  flex-shrink: 0;
+}
+
+.brisa-form__doc-remove:hover {
+  background: var(--brisa-danger-soft);
+  color: var(--brisa-danger);
+}
+
+.brisa-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+@media (max-width: 640px) {
+  .brisa-form__grid,
+  .brisa-form__checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+}
