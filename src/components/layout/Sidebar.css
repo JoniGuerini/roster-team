@@ -23,20 +23,21 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: var(--brisa-primary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--neutral-0);
   flex-shrink: 0;
+  overflow: hidden;
+  background: var(--brisa-brand-navy);
+  /* Dupla moldura como no layout original: halo branco + anel azul claro */
   box-shadow:
     0 0 0 3px var(--brisa-surface),
     0 0 0 4px var(--brisa-blue-200);
 }
 
-.brisa-logo svg {
-  width: 22px;
-  height: 22px;
+.brisa-logo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
 }
 
 .brisa-sidebar__brand-text {

@@ -1,4 +1,7 @@
 :root {
+  /** Azul da marca (logo SVG) */
+  --brisa-brand-navy: #374c7f;
+
   --brisa-blue-900: #0E2A47;
   --brisa-blue-800: #16385C;
   --brisa-blue-700: #1E4A78;

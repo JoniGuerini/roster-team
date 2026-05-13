@@ -81,18 +81,13 @@ export function Sidebar({ rotaAtiva, onNavegar }: SidebarProps) {
     <aside className="brisa-sidebar">
       <div className="brisa-sidebar__brand">
         <div className="brisa-logo" aria-hidden="true">
-          <svg
-            viewBox="0 0 64 64"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M14 28h28v8a14 14 0 0 1-14 14h0a14 14 0 0 1-14-14v-8z" />
-            <path d="M42 30h6a6 6 0 0 1 0 12h-6" />
-            <path d="M22 18c0-3 4-3 4-6M30 18c0-3 4-3 4-6" />
-          </svg>
+          <img
+            src="/brisa-cafe-logo.svg"
+            width={42}
+            height={42}
+            alt=""
+            decoding="async"
+          />
         </div>
         <div className="brisa-sidebar__brand-text">
           <span className="brisa-sidebar__title">Brisa</span>
