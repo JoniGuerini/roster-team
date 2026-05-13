@@ -24,6 +24,7 @@ import { Checkbox } from '../ui/Checkbox';
 import { TimeRange } from '../ui/TimeRange';
 import { calcularDuracao } from '../../utils/turnoLabels';
 import { labelFuncao, labelLocal } from '../../utils/funcionarioLabels';
+import { podeAparecerComoSugeridoNoTurno } from '../../utils/disponibilidade';
 import './TurnoForm.css';
 
 interface TurnoFormProps {
@@ -108,7 +109,14 @@ export function TurnoForm({
         horaInicio: turno.horaInicio,
         horaFim: turno.horaFim,
         necessidades: necessidadesParaRegistro(turno.necessidades),
-        funcionariosSugeridos: turno.funcionariosSugeridos,
+        funcionariosSugeridos: turno.funcionariosSugeridos.filter((id) =>
+          funcionarios.some(
+            (f) =>
+              f.id === id &&
+              podeAparecerComoSugeridoNoTurno(f) &&
+              f.localTrabalho === turno.localTrabalho,
+          ),
+        ),
         observacoes: turno.observacoes ?? '',
         ativo: turno.ativo,
       });
@@ -117,6 +125,21 @@ export function TurnoForm({
     }
     setErros({});
   }, [turno]);
+
+  useEffect(() => {
+    if (!turno) return;
+    setForm((prev) => ({
+      ...prev,
+      funcionariosSugeridos: prev.funcionariosSugeridos.filter((id) =>
+        funcionarios.some(
+          (f) =>
+            f.id === id &&
+            podeAparecerComoSugeridoNoTurno(f) &&
+            f.localTrabalho === prev.localTrabalho,
+        ),
+      ),
+    }));
+  }, [funcionarios, turno]);
 
   const duracao = useMemo(
     () => calcularDuracao(form.horaInicio, form.horaFim),
@@ -136,8 +159,8 @@ export function TurnoForm({
     setForm((prev) => ({
       ...prev,
       categoria,
-      horaInicio: prev.horaInicio || preset?.horaInicio || '',
-      horaFim: prev.horaFim || preset?.horaFim || '',
+      horaInicio: preset?.horaInicio ?? '',
+      horaFim: preset?.horaFim ?? '',
     }));
     setErros((prev) => ({
       ...prev,
@@ -170,8 +193,9 @@ export function TurnoForm({
   }
 
   const funcionariosCompativeis = useMemo(() => {
-    if (!form.localTrabalho) return funcionarios;
-    return funcionarios.filter((f) => f.localTrabalho === form.localTrabalho);
+    const ativos = funcionarios.filter(podeAparecerComoSugeridoNoTurno);
+    if (!form.localTrabalho) return ativos;
+    return ativos.filter((f) => f.localTrabalho === form.localTrabalho);
   }, [funcionarios, form.localTrabalho]);
 
   function validar(): boolean {
@@ -283,7 +307,7 @@ export function TurnoForm({
             htmlFor="categoria"
             required
             error={erros.categoria}
-            hint="Define um horário sugerido (você pode ajustar)."
+            hint="Ao escolher a categoria, o horário é preenchido automaticamente; você pode ajustar depois."
           >
             <Select
               id="categoria"
@@ -312,9 +336,24 @@ export function TurnoForm({
               options={LOCAIS_TRABALHO}
               value={form.localTrabalho}
               invalid={Boolean(erros.localTrabalho)}
-              onChange={(e) =>
-                atualizarCampo('localTrabalho', e.target.value as LocalTrabalho)
-              }
+              onChange={(e) => {
+                const v = e.target.value as LocalTrabalho;
+                setForm((prev) => {
+                  const pool = funcionarios.filter(
+                    (f) =>
+                      podeAparecerComoSugeridoNoTurno(f) &&
+                      f.localTrabalho === v,
+                  );
+                  const ok = new Set(pool.map((f) => f.id));
+                  return {
+                    ...prev,
+                    localTrabalho: v,
+                    funcionariosSugeridos:
+                      prev.funcionariosSugeridos.filter((id) => ok.has(id)),
+                  };
+                });
+                setErros((prev) => ({ ...prev, localTrabalho: undefined }));
+              }}
             />
           </Field>
 
@@ -419,8 +458,8 @@ export function TurnoForm({
             <h3 className="brisa-form__card-title">Funcionários sugeridos</h3>
             <p className="brisa-form__card-hint">
               {form.localTrabalho
-                ? `Pré-aloque pessoas que normalmente cobrem esse turno em ${labelLocal(form.localTrabalho as LocalTrabalho)}.`
-                : 'Selecione um local de trabalho acima para ver os funcionários compatíveis.'}
+                ? `Só aparecem funcionários ativos de ${labelLocal(form.localTrabalho as LocalTrabalho)}. Marque quem costuma cobrir este turno.`
+                : 'Selecione o local acima para listar sugestões (apenas ativos).'}
             </p>
           </div>
         </header>
@@ -429,7 +468,9 @@ export function TurnoForm({
           <div className="brisa-form__empty">
             {funcionarios.length === 0
               ? 'Nenhum funcionário cadastrado ainda.'
-              : 'Nenhum funcionário desse local. Cadastre alguém antes ou troque o local.'}
+              : !form.localTrabalho
+                ? 'Selecione o local de trabalho acima para ver a lista.'
+                : 'Nenhum funcionário ativo neste local. Ajuste cadastros ou troque o local.'}
           </div>
         ) : (
           <ul className="brisa-suggested-list">

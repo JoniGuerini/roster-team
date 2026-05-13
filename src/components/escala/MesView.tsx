@@ -11,6 +11,7 @@ import {
 import {
   indisponibilidadeNoDia,
   pessoasAlocadas,
+  vagasEmFaltaNoTurno,
 } from '../../utils/disponibilidade';
 import './MesView.css';
 
@@ -38,15 +39,12 @@ function calcularResumo(
     const turno = turnos.find((t) => t.id === te.turnoId);
     if (!turno) continue;
     const idsAlocados = pessoasAlocadas(te);
-    const totalNecessario = turno.necessidades.reduce(
-      (acc, n) => acc + n.quantidade,
-      0,
-    );
+    const faltamVagas = vagasEmFaltaNoTurno(turno, te);
     const algumIndisp = idsAlocados.some((id) => {
       const f = funcionarios.find((x) => x.id === id);
       return f ? indisponibilidadeNoDia(f, data) !== null : false;
     });
-    if (algumIndisp || idsAlocados.length < totalNecessario) {
+    if (algumIndisp || faltamVagas > 0) {
       alertas += 1;
     }
   }

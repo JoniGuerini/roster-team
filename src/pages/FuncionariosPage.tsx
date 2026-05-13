@@ -66,6 +66,27 @@ export function FuncionariosPage() {
     setParaExcluir(undefined);
   }
 
+  async function handleSeed(quantidade: number, modo: 'append' | 'replace') {
+    const { seedFuncionarios } = await import('../dev/seedFuncionarios');
+    seedFuncionarios({ quantidade, modo });
+    setFuncionarios(funcionariosStorage.listar());
+    disparoNotificacoes();
+  }
+
+  async function handleLimparDemo() {
+    if (
+      !window.confirm(
+        'Remover todos os funcionários deste dispositivo? Esta ação não pode ser desfeita.',
+      )
+    ) {
+      return;
+    }
+    const { limparTodosFuncionarios } = await import('../dev/seedFuncionarios');
+    limparTodosFuncionarios();
+    setFuncionarios(funcionariosStorage.listar());
+    disparoNotificacoes();
+  }
+
   return (
     <div className="brisa-page">
       <header className="brisa-page__header">
@@ -125,6 +146,56 @@ export function FuncionariosPage() {
           {funcionariosFiltrados.length === 1 ? 'funcionário' : 'funcionários'}
         </div>
       </section>
+
+      {import.meta.env.DEV ? (
+        <section
+          className="brisa-dev-seed"
+          aria-label="Dados fictícios para teste de layout (somente em desenvolvimento)"
+        >
+          <span className="brisa-dev-seed__badge">dev</span>
+          <span className="brisa-dev-seed__hint">
+            Preencher lista para testar tabela e busca (localStorage).
+          </span>
+          <div className="brisa-dev-seed__actions">
+            <button
+              type="button"
+              className="brisa-dev-seed__btn"
+              onClick={() => void handleSeed(25, 'append')}
+            >
+              +25 fictícios
+            </button>
+            <button
+              type="button"
+              className="brisa-dev-seed__btn"
+              onClick={() => void handleSeed(60, 'append')}
+            >
+              +60 fictícios
+            </button>
+            <button
+              type="button"
+              className="brisa-dev-seed__btn brisa-dev-seed__btn--warn"
+              onClick={() => {
+                if (
+                  window.confirm(
+                    'Substituir todos os funcionários atuais por 40 registros de teste?',
+                  )
+                ) {
+                  void handleSeed(40, 'replace');
+                }
+              }}
+            >
+              Trocar tudo por 40 de teste
+            </button>
+            <button
+              type="button"
+              className="brisa-dev-seed__btn brisa-dev-seed__btn--danger"
+              onClick={() => void handleLimparDemo()}
+            >
+              Limpar lista
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       <FuncionariosList
         funcionarios={funcionariosFiltrados}

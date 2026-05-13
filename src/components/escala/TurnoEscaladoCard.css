@@ -170,6 +170,16 @@
   text-decoration-thickness: 1px;
 }
 
+.brisa-turno-esc__pessoa--folga {
+  background: var(--brisa-primary-soft);
+  color: var(--brisa-primary);
+}
+
+.brisa-turno-esc__pessoa--folga .brisa-turno-esc__pessoa-nome {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
 .brisa-turno-esc__pessoa-tag {
   font-size: 10px;
   font-weight: 700;
@@ -179,6 +189,11 @@
   background: var(--brisa-warning);
   color: white;
   border-radius: var(--radius-pill);
+}
+
+.brisa-turno-esc__pessoa-tag--folga {
+  background: var(--brisa-primary);
+  color: white;
 }
 
 .brisa-turno-esc__pessoa--mais {

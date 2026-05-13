@@ -122,12 +122,15 @@ export function AlocacoesTabela({
           <tbody>
             {linhas.map((linha) => {
               const temConflito = linha.conflitoCom.length > 0;
+              const folga = linha.indisp?.motivo === 'folga';
               const temIndisp = Boolean(linha.indisp);
               const rowClass = temConflito
                 ? 'brisa-aloc-tabela__row--conflito'
-                : temIndisp
-                  ? 'brisa-aloc-tabela__row--indisp'
-                  : '';
+                : folga
+                  ? 'brisa-aloc-tabela__row--folga'
+                  : temIndisp
+                    ? 'brisa-aloc-tabela__row--indisp'
+                    : '';
               return (
                 <tr key={linha.chave} className={rowClass}>
                   <td>
@@ -152,7 +155,12 @@ export function AlocacoesTabela({
                         Conflito · {linha.conflitoCom.join(', ')}
                       </Badge>
                     ) : temIndisp ? (
-                      <Badge tone="warning">{linha.indisp!.rotulo}</Badge>
+                      <Badge tone={folga ? 'info' : 'warning'}>
+                        {linha.indisp!.rotulo}
+                        {linha.indisp!.detalhe
+                          ? ` · ${linha.indisp!.detalhe}`
+                          : ''}
+                      </Badge>
                     ) : (
                       <Badge tone="success">Disponível</Badge>
                     )}

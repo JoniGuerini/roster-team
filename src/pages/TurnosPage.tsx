@@ -175,6 +175,7 @@ export function TurnosPage() {
         size="lg"
       >
         <TurnoForm
+          key={editando?.id ?? 'novo'}
           turno={editando}
           funcionarios={funcionarios}
           onCancel={fecharModal}

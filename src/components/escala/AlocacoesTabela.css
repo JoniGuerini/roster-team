@@ -80,6 +80,16 @@
   color: var(--brisa-warning);
 }
 
+.brisa-aloc-tabela__row--folga {
+  background: var(--brisa-primary-soft);
+}
+
+.brisa-aloc-tabela__row--folga .brisa-aloc-tabela__pessoa-nome {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  color: var(--brisa-primary);
+}
+
 .brisa-aloc-tabela__row--conflito {
   background: var(--brisa-danger-soft);
 }
@@ -112,6 +122,11 @@
 
 .brisa-aloc-tabela__row--indisp .brisa-aloc-tabela__avatar {
   background: var(--brisa-warning);
+  color: white;
+}
+
+.brisa-aloc-tabela__row--folga .brisa-aloc-tabela__avatar {
+  background: var(--brisa-primary);
   color: white;
 }
 

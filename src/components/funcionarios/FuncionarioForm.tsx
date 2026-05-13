@@ -2,8 +2,10 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import {
   FUNCOES,
   LOCAIS_TRABALHO,
+  OPCOES_DIA_FOLGA_SEMANAL,
   STATUS_FUNCIONARIO,
   TIPOS_CONTRATO,
+  type DiaFolgaSemanal,
   type DocumentoPdf,
   type Funcao,
   type Funcionario,
@@ -35,6 +37,8 @@ interface FormState {
   funcaoPrincipal: Funcao | '';
   dataAdmissao: string;
   status: StatusFuncionario | '';
+  /** '' = sem folga fixa; '0'–'6' = domingo–sábado */
+  diaFolgaSemanal: string;
   funcoesSecundarias: Funcao[];
   descricao: string;
   documentos: DocumentoPdf[];
@@ -50,6 +54,7 @@ const ESTADO_INICIAL: FormState = {
   funcaoPrincipal: '',
   dataAdmissao: '',
   status: '',
+  diaFolgaSemanal: '',
   funcoesSecundarias: [],
   descricao: '',
   documentos: [],
@@ -86,6 +91,10 @@ export function FuncionarioForm({
         funcaoPrincipal: funcionario.funcaoPrincipal,
         dataAdmissao: funcionario.dataAdmissao,
         status: funcionario.status,
+        diaFolgaSemanal:
+          funcionario.diaFolgaSemanal != null
+            ? String(funcionario.diaFolgaSemanal)
+            : '',
         funcoesSecundarias: funcionario.funcoesSecundarias,
         descricao: funcionario.descricao ?? '',
         documentos: funcionario.documentos,
@@ -172,6 +181,10 @@ export function FuncionarioForm({
       ),
       dataAdmissao: form.dataAdmissao,
       status: form.status as StatusFuncionario,
+      diaFolgaSemanal:
+        form.diaFolgaSemanal === ''
+          ? null
+          : (Number(form.diaFolgaSemanal) as DiaFolgaSemanal),
       descricao: form.descricao.trim() || undefined,
       documentos: form.documentos,
       ausencias: form.ausencias,
@@ -291,6 +304,20 @@ export function FuncionarioForm({
             />
           </Field>
         </div>
+
+        <Field
+          label="Dia de folga fixo na semana"
+          htmlFor="diaFolgaSemanal"
+          hint="Nesse dia a pessoa não aparece para ser alocada na escala. Se já estiver num turno, a escala mostra alerta até substituir ou remover."
+        >
+          <Select
+            id="diaFolgaSemanal"
+            placeholder="Opcional"
+            options={OPCOES_DIA_FOLGA_SEMANAL}
+            value={form.diaFolgaSemanal}
+            onChange={(e) => atualizarCampo('diaFolgaSemanal', e.target.value)}
+          />
+        </Field>
       </section>
 
       <section className="brisa-form__card brisa-form__card--neutral">

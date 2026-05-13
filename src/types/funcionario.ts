@@ -11,6 +11,20 @@ export type Funcao =
 
 export type StatusFuncionario = 'ativo' | 'inativo' | 'ferias' | 'afastado';
 
+/** Dia da semana fixo de folga (0 = domingo … 6 = sábado), igual a `Date.getDay()`. */
+export type DiaFolgaSemanal = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+export const OPCOES_DIA_FOLGA_SEMANAL: { value: string; label: string }[] = [
+  { value: '', label: 'Sem dia de folga fixo' },
+  { value: '0', label: 'Domingo' },
+  { value: '1', label: 'Segunda-feira' },
+  { value: '2', label: 'Terça-feira' },
+  { value: '3', label: 'Quarta-feira' },
+  { value: '4', label: 'Quinta-feira' },
+  { value: '5', label: 'Sexta-feira' },
+  { value: '6', label: 'Sábado' },
+];
+
 export interface DocumentoPdf {
   id: string;
   nome: string;
@@ -37,6 +51,8 @@ export interface Funcionario {
   funcoesSecundarias: Funcao[];
   dataAdmissao: string;
   status: StatusFuncionario;
+  /** Dia da semana em que a pessoa não deve ser escalada (só para status ativo). */
+  diaFolgaSemanal: DiaFolgaSemanal | null;
   descricao?: string;
   documentos: DocumentoPdf[];
   ausencias: PeriodoAusencia[];

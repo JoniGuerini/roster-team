@@ -10,6 +10,9 @@ import {
   detectarConflitos,
   indisponibilidadeNoDia,
   pessoasAlocadas,
+  totalSlotsAlocados,
+  totalVagasNecessariasTurno,
+  vagasEmFaltaNoTurno,
 } from '../utils/disponibilidade';
 import { rotuloDataLonga } from '../utils/datas';
 import { labelLocal } from '../utils/funcionarioLabels';
@@ -51,13 +54,12 @@ export function detectarProblemas(
       const turno = turnos.find((t) => t.id === te.turnoId);
       if (!turno) continue;
 
-      const totalNec = turno.necessidades.reduce(
-        (acc, n) => acc + n.quantidade,
-        0,
-      );
+      const totalNec = totalVagasNecessariasTurno(turno);
+      const slotsAlocados = totalSlotsAlocados(te);
       const idsAlocados = pessoasAlocadas(te);
+      const faltamVagas = vagasEmFaltaNoTurno(turno, te);
 
-      if (totalNec > 0 && idsAlocados.length === 0) {
+      if (totalNec > 0 && slotsAlocados === 0) {
         problemas.push({
           chave: `vazio:${escala.data}:${te.id}`,
           tipo: 'turno-vazio',
@@ -68,13 +70,12 @@ export function detectarProblemas(
           turnoEscaladoId: te.id,
           turnoId: turno.id,
         });
-      } else if (idsAlocados.length < totalNec) {
-        const faltam = totalNec - idsAlocados.length;
+      } else if (faltamVagas > 0) {
         problemas.push({
           chave: `cobertura:${escala.data}:${te.id}`,
           tipo: 'cobertura-incompleta',
           severidade: 'media',
-          titulo: `${faltam === 1 ? 'Falta 1 pessoa' : `Faltam ${faltam} pessoas`} em "${turno.nome}"`,
+          titulo: `${faltamVagas === 1 ? 'Falta 1 vaga' : `Faltam ${faltamVagas} vagas`} em "${turno.nome}"`,
           mensagem: `${dataLonga} · ${turno.horaInicio}–${turno.horaFim} · ${labelLocal(turno.localTrabalho)}.`,
           data: escala.data,
           turnoEscaladoId: te.id,
@@ -90,7 +91,7 @@ export function detectarProblemas(
           problemas.push({
             chave: `indisp:${escala.data}:${te.id}:${id}`,
             tipo: 'indisponivel',
-            severidade: 'alta',
+            severidade: indisp.motivo === 'folga' ? 'media' : 'alta',
             titulo: `${f.nome} indisponível em "${turno.nome}"`,
             mensagem: `${dataLonga} · ${indisp.rotulo}${indisp.detalhe ? ` (${indisp.detalhe})` : ''}. Substitua ou remova da escala.`,
             data: escala.data,

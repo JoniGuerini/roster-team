@@ -1,4 +1,8 @@
-import type { Funcionario, FuncionarioInput } from '../types/funcionario';
+import type {
+  DiaFolgaSemanal,
+  Funcionario,
+  FuncionarioInput,
+} from '../types/funcionario';
 
 const STORAGE_KEY = 'brisa-cafe:funcionarios';
 
@@ -22,6 +26,12 @@ function ler(): Funcionario[] {
       funcoesSecundarias: Array.isArray(f.funcoesSecundarias)
         ? f.funcoesSecundarias
         : [],
+      diaFolgaSemanal:
+        typeof f.diaFolgaSemanal === 'number' &&
+        f.diaFolgaSemanal >= 0 &&
+        f.diaFolgaSemanal <= 6
+          ? (f.diaFolgaSemanal as DiaFolgaSemanal)
+          : null,
     }));
   } catch (error) {
     console.error('Erro ao ler funcionários do localStorage', error);

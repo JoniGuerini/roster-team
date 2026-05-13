@@ -10,6 +10,31 @@
   gap: var(--space-2);
 }
 
+.brisa-gerenciar__alerta-resumo {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--brisa-text);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(181, 131, 42, 0.35);
+  background: var(--brisa-warning-soft);
+}
+
+.brisa-gerenciar__alerta-resumo strong {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.brisa-gerenciar__alerta-resumo-list {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.brisa-gerenciar__alerta-resumo-nome {
+  font-weight: 600;
+}
+
 .brisa-gerenciar__funcoes {
   display: flex;
   flex-direction: column;
@@ -128,6 +153,25 @@
 .brisa-slot--alerta .brisa-slot__nome {
   text-decoration: line-through;
   text-decoration-thickness: 1px;
+}
+
+.brisa-slot--folga {
+  background: var(--brisa-primary-soft);
+  border-color: rgba(30, 74, 120, 0.35);
+}
+
+.brisa-slot--folga .brisa-slot__avatar {
+  background: var(--brisa-primary);
+  color: white;
+}
+
+.brisa-slot--folga .brisa-slot__nome {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.brisa-slot--folga .brisa-slot__indisp {
+  color: var(--brisa-primary);
 }
 
 .brisa-slot__indisp {

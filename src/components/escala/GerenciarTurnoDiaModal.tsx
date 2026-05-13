@@ -8,6 +8,7 @@ import type { Turno } from '../../types/turno';
 import {
   detectarConflitos,
   indisponibilidadeNoDia,
+  sanearAlocacoesUmaPessoaPorTurno,
   type Conflito,
 } from '../../utils/disponibilidade';
 import { labelFuncao, labelLocal } from '../../utils/funcionarioLabels';
@@ -46,6 +47,12 @@ function necessidadeDe(turno: Turno, funcao: Funcao): number {
 
 function alocadosDe(alocacoes: AlocacaoFuncao[], funcao: Funcao): string[] {
   return alocacoes.find((a) => a.funcao === funcao)?.funcionarioIds ?? [];
+}
+
+/** Pode ocupar uma vaga desta função no turno (principal ou secundária no cadastro). */
+function funcionarioPodeExercerFuncao(f: Funcionario, funcao: Funcao): boolean {
+  if (f.funcaoPrincipal === funcao) return true;
+  return (f.funcoesSecundarias ?? []).includes(funcao);
 }
 
 function trocarPessoa(
@@ -103,6 +110,11 @@ export function GerenciarTurnoDiaModal({
     null,
   );
   const [confirmRemover, setConfirmRemover] = useState(false);
+  const [erroPicker, setErroPicker] = useState<string | null>(null);
+
+  useEffect(() => {
+    setErroPicker(null);
+  }, [picker]);
 
   useEffect(() => {
     setAlocacoes(turnoEscalado.alocacoes);
@@ -120,6 +132,48 @@ export function GerenciarTurnoDiaModal({
     [funcionarios, turno.localTrabalho],
   );
 
+  /** Só quem trabalha neste local, pode exercer a função da vaga e está disponível na data. */
+  const funcionariosPicker = useMemo(() => {
+    if (!picker) return [];
+    const funcaoVaga = picker.funcao;
+    const livres = funcionariosNoLocal.filter(
+      (f) =>
+        indisponibilidadeNoDia(f, data) === null &&
+        funcionarioPodeExercerFuncao(f, funcaoVaga),
+    );
+    return [...livres].sort((a, b) => {
+      const jaA = alocacoes.some((x) => x.funcionarioIds.includes(a.id));
+      const jaB = alocacoes.some((x) => x.funcionarioIds.includes(b.id));
+      if (jaA !== jaB) return jaA ? 1 : -1;
+      return a.nome.localeCompare(b.nome, 'pt');
+    });
+  }, [funcionariosNoLocal, data, alocacoes, picker]);
+
+  /** Pessoas já alocadas neste turno mas indisponíveis nesta data (folga semanal, férias, etc.). */
+  const alertasIndispNaEscala = useMemo(() => {
+    const visto = new Set<string>();
+    const linhas: { id: string; nome: string; rotulo: string; detalhe?: string }[] =
+      [];
+    for (const a of alocacoes) {
+      for (const id of a.funcionarioIds) {
+        if (visto.has(id)) continue;
+        visto.add(id);
+        const f = funcionarios.find((x) => x.id === id);
+        if (!f) continue;
+        const ind = indisponibilidadeNoDia(f, data);
+        if (ind) {
+          linhas.push({
+            id,
+            nome: f.nome,
+            rotulo: ind.rotulo,
+            detalhe: ind.detalhe,
+          });
+        }
+      }
+    }
+    return linhas;
+  }, [alocacoes, funcionarios, data]);
+
   function aplicarTroca(
     funcionarioId: string,
     funcao: Funcao,
@@ -133,6 +187,18 @@ export function GerenciarTurnoDiaModal({
 
   function tentarSelecionar(funcionarioId: string) {
     if (!picker) return;
+
+    const jaEmOutraFuncao = alocacoes.some(
+      (a) =>
+        a.funcao !== picker.funcao &&
+        a.funcionarioIds.includes(funcionarioId),
+    );
+    if (jaEmOutraFuncao) {
+      setErroPicker(
+        'Esta pessoa já está em outra função neste turno. Remova-a dali ou escolha outra pessoa.',
+      );
+      return;
+    }
 
     const conflitos = detectarConflitos(
       funcionarioId,
@@ -157,6 +223,18 @@ export function GerenciarTurnoDiaModal({
 
   function confirmarConflito() {
     if (!confirmacao) return;
+    const jaEmOutraFuncao = alocacoes.some(
+      (a) =>
+        a.funcao !== confirmacao.funcao &&
+        a.funcionarioIds.includes(confirmacao.funcionarioId),
+    );
+    if (jaEmOutraFuncao) {
+      setErroPicker(
+        'Esta pessoa já está em outra função neste turno. Remova-a dali ou escolha outra pessoa.',
+      );
+      setConfirmacao(null);
+      return;
+    }
     aplicarTroca(
       confirmacao.funcionarioId,
       confirmacao.funcao,
@@ -165,7 +243,7 @@ export function GerenciarTurnoDiaModal({
   }
 
   function salvar() {
-    onSalvar(alocacoes);
+    onSalvar(sanearAlocacoesUmaPessoaPorTurno(alocacoes));
   }
 
   return (
@@ -200,6 +278,26 @@ export function GerenciarTurnoDiaModal({
             <Badge tone={toneTipo(turno.tipo)}>{labelTipo(turno.tipo)}</Badge>
           </div>
 
+          {alertasIndispNaEscala.length > 0 && (
+            <div className="brisa-gerenciar__alerta-resumo" role="alert">
+              <strong>Atenção nesta data:</strong> há pessoas neste turno que não
+              deveriam estar escaladas (folga semanal, férias, etc.). Substitua ou
+              remova.
+              <ul className="brisa-gerenciar__alerta-resumo-list">
+                {alertasIndispNaEscala.map((x) => (
+                  <li key={x.id}>
+                    <span className="brisa-gerenciar__alerta-resumo-nome">
+                      {x.nome}
+                    </span>
+                    {' — '}
+                    {x.rotulo}
+                    {x.detalhe ? ` (${x.detalhe})` : ''}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="brisa-gerenciar__funcoes">
             {funcoesDoTurno.map((funcao) => {
               const necessidade = necessidadeDe(turno, funcao);
@@ -226,6 +324,12 @@ export function GerenciarTurnoDiaModal({
                       const indisp = f
                         ? indisponibilidadeNoDia(f, data)
                         : null;
+                      const slotMod =
+                        indisp?.motivo === 'folga'
+                          ? 'brisa-slot--folga'
+                          : indisp
+                            ? 'brisa-slot--alerta'
+                            : '';
 
                       if (!funcionarioId) {
                         return (
@@ -260,7 +364,7 @@ export function GerenciarTurnoDiaModal({
                       return (
                         <div
                           key={funcionarioId}
-                          className={`brisa-slot ${indisp ? 'brisa-slot--alerta' : ''}`}
+                          className={`brisa-slot ${slotMod}`.trim()}
                         >
                           <span className="brisa-slot__avatar">
                             {f?.nome
@@ -368,7 +472,7 @@ export function GerenciarTurnoDiaModal({
               ? `Substituir em ${labelFuncao(picker.funcao)}`
               : `Adicionar em ${labelFuncao(picker.funcao)}`
           }
-          description={`Funcionários de ${labelLocal(turno.localTrabalho)}.`}
+          description={`Funcionários de ${labelLocal(turno.localTrabalho)} que podem exercer ${labelFuncao(picker.funcao)} (principal ou secundária no cadastro). Quem já está neste turno não pode ser escolhido noutra função.`}
           size="md"
           footer={
             <Button variant="secondary" onClick={() => setPicker(null)}>
@@ -376,18 +480,42 @@ export function GerenciarTurnoDiaModal({
             </Button>
           }
         >
+          {erroPicker && (
+            <p className="brisa-form__inline-error" role="alert">
+              {erroPicker}
+            </p>
+          )}
           <ul className="brisa-picker">
-            {funcionariosNoLocal.length === 0 && (
+            {funcionariosNoLocal.length === 0 ? (
               <li className="brisa-form__empty">
                 Nenhum funcionário cadastrado para {labelLocal(turno.localTrabalho)}.
               </li>
-            )}
-            {funcionariosNoLocal.map((f) => {
-              const indisp = indisponibilidadeNoDia(f, data);
+            ) : funcionariosPicker.length === 0 ? (
+              <li className="brisa-form__empty">
+                {funcionariosNoLocal.some((f) =>
+                  funcionarioPodeExercerFuncao(f, picker.funcao),
+                ) ? (
+                  <>
+                    Ninguém qualificado para {labelFuncao(picker.funcao)} neste local
+                    está disponível nesta data (férias, afastamento ou inativo).
+                  </>
+                ) : (
+                  <>
+                    Ninguém em {labelLocal(turno.localTrabalho)} tem{' '}
+                    {labelFuncao(picker.funcao)} como função principal ou secundária.
+                    Ajuste o cadastro do funcionário ou a vaga.
+                  </>
+                )}
+              </li>
+            ) : null}
+            {funcionariosPicker.map((f) => {
               const ehSugerido = turno.funcionariosSugeridos.includes(f.id);
               const jaAlocado = alocacoes.some((a) =>
                 a.funcionarioIds.includes(f.id),
               );
+              const cobrePorSecundaria =
+                f.funcaoPrincipal !== picker.funcao &&
+                (f.funcoesSecundarias ?? []).includes(picker.funcao);
 
               return (
                 <li key={f.id}>
@@ -409,11 +537,12 @@ export function GerenciarTurnoDiaModal({
                       <span className="brisa-picker__nome">{f.nome}</span>
                       <span className="brisa-picker__sub">
                         {labelFuncao(f.funcaoPrincipal)}
+                        {cobrePorSecundaria &&
+                          ` · também ${labelFuncao(picker.funcao)} (secundária)`}
                         {ehSugerido && ' · Sugerido neste turno'}
                       </span>
                     </div>
                     {jaAlocado && <Badge tone="info">Já no turno</Badge>}
-                    {indisp && <Badge tone="warning">{indisp.rotulo}</Badge>}
                   </button>
                 </li>
               );

@@ -4,6 +4,9 @@ import type { Turno } from '../../types/turno';
 import {
   indisponibilidadeNoDia,
   pessoasAlocadas,
+  totalSlotsAlocados,
+  totalVagasNecessariasTurno,
+  vagasEmFaltaNoTurno,
 } from '../../utils/disponibilidade';
 import { labelLocal } from '../../utils/funcionarioLabels';
 import { labelTipo } from '../../utils/turnoLabels';
@@ -26,7 +29,8 @@ interface Status {
 }
 
 function calcularStatus(
-  totalAlocado: number,
+  faltamVagas: number,
+  semAlocacao: boolean,
   totalNecessario: number,
   indisponiveis: number,
 ): Status {
@@ -39,17 +43,19 @@ function calcularStatus(
           : `${indisponiveis} indisponíveis`,
     };
   }
-  if (totalAlocado === 0) {
+  if (totalNecessario > 0 && semAlocacao) {
     return { key: 'vazio', texto: 'Sem alocações' };
   }
-  if (totalAlocado >= totalNecessario) {
+  if (totalNecessario > 0 && faltamVagas === 0) {
     return { key: 'completo', texto: 'Equipe completa' };
   }
-  const faltam = totalNecessario - totalAlocado;
-  return {
-    key: 'parcial',
-    texto: faltam === 1 ? 'Falta 1 pessoa' : `Faltam ${faltam}`,
-  };
+  if (faltamVagas > 0) {
+    return {
+      key: 'parcial',
+      texto: faltamVagas === 1 ? 'Falta 1 vaga' : `Faltam ${faltamVagas}`,
+    };
+  }
+  return { key: 'completo', texto: 'Equipe completa' };
 }
 
 export function TurnoEscaladoCard({
@@ -60,12 +66,10 @@ export function TurnoEscaladoCard({
   variant = 'compacto',
   onClick,
 }: TurnoEscaladoCardProps) {
-  const totalNecessario = turno.necessidades.reduce(
-    (acc, n) => acc + n.quantidade,
-    0,
-  );
+  const totalNecessario = totalVagasNecessariasTurno(turno);
+  const faltamVagas = vagasEmFaltaNoTurno(turno, turnoEscalado);
+  const semAlocacao = totalSlotsAlocados(turnoEscalado) === 0;
   const idsAlocados = pessoasAlocadas(turnoEscalado);
-  const totalAlocado = idsAlocados.length;
 
   const indisponiveis = idsAlocados
     .map((id) => funcionarios.find((f) => f.id === id))
@@ -77,7 +81,8 @@ export function TurnoEscaladoCard({
     .filter((item) => item.indisp !== null);
 
   const status = calcularStatus(
-    totalAlocado,
+    faltamVagas,
+    semAlocacao,
     totalNecessario,
     indisponiveis.length,
   );
@@ -128,16 +133,24 @@ export function TurnoEscaladoCard({
             const f = funcionarios.find((x) => x.id === id);
             if (!f) return null;
             const indisp = indisponibilidadeNoDia(f, data);
+            const pessoaMod = indisp
+              ? indisp.motivo === 'folga'
+                ? 'brisa-turno-esc__pessoa--folga'
+                : 'brisa-turno-esc__pessoa--indisp'
+              : '';
             return (
               <li
                 key={id}
-                className={`brisa-turno-esc__pessoa ${indisp ? 'brisa-turno-esc__pessoa--indisp' : ''}`}
+                className={`brisa-turno-esc__pessoa ${pessoaMod}`}
                 title={indisp?.rotulo}
               >
                 <span className="brisa-turno-esc__pessoa-nome">{f.nome}</span>
                 {indisp && (
-                  <span className="brisa-turno-esc__pessoa-tag">
+                  <span
+                    className={`brisa-turno-esc__pessoa-tag ${indisp.motivo === 'folga' ? 'brisa-turno-esc__pessoa-tag--folga' : ''}`}
+                  >
                     {indisp.rotulo}
+                    {indisp.detalhe ? ` · ${indisp.detalhe}` : ''}
                   </span>
                 )}
               </li>

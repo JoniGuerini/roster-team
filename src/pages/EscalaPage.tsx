@@ -23,6 +23,10 @@ import {
   diasDoMesGrade,
   hojeISO,
 } from '../utils/datas';
+import {
+  indisponibilidadeNoDia,
+  podeAparecerComoSugeridoNoTurno,
+} from '../utils/disponibilidade';
 import './EscalaPage.css';
 
 interface AbrirTurnoState {
@@ -30,18 +34,31 @@ interface AbrirTurnoState {
   turnoEscaladoId: string;
 }
 
-function alocacoesIniciais(turno: Turno, funcionarios: Funcionario[]): AlocacaoFuncao[] {
+function alocacoesIniciais(
+  turno: Turno,
+  funcionarios: Funcionario[],
+  data: string,
+): AlocacaoFuncao[] {
   const alocacoes: AlocacaoFuncao[] = [];
+  const jaAlocados = new Set<string>();
   for (const necessidade of turno.necessidades) {
     const sugeridosCompativeis = turno.funcionariosSugeridos.filter((id) => {
       const f = funcionarios.find((x) => x.id === id);
       if (!f) return false;
+      if (!podeAparecerComoSugeridoNoTurno(f)) return false;
+      if (jaAlocados.has(id)) return false;
+      if (indisponibilidadeNoDia(f, data) !== null) return false;
       return (
         f.funcaoPrincipal === necessidade.funcao ||
         (f.funcoesSecundarias ?? []).includes(necessidade.funcao)
       );
     });
-    const ids = sugeridosCompativeis.slice(0, necessidade.quantidade);
+    const ids: string[] = [];
+    for (const id of sugeridosCompativeis) {
+      if (ids.length >= necessidade.quantidade) break;
+      ids.push(id);
+      jaAlocados.add(id);
+    }
     if (ids.length > 0) {
       alocacoes.push({ funcao: necessidade.funcao, funcionarioIds: ids });
     }
@@ -128,7 +145,7 @@ export function EscalaPage() {
     if (!adicionarPara) return;
     const turno = turnos.find((t) => t.id === turnoId);
     if (!turno) return;
-    const alocacoes = alocacoesIniciais(turno, funcionarios);
+    const alocacoes = alocacoesIniciais(turno, funcionarios, adicionarPara);
     const novo = escalaStorage.adicionarTurno(adicionarPara, turnoId, alocacoes);
     recarregar(true);
     setAbrirTurno({ data: adicionarPara, turnoEscaladoId: novo.id });
