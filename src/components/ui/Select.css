@@ -85,13 +85,69 @@
   border: 1px solid var(--brisa-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  animation: brisa-select-in 140ms ease;
+}
+
+.brisa-select__popover--top {
+  top: auto;
+  bottom: calc(100% + 6px);
+  animation: brisa-select-in-top 140ms ease;
+}
+
+.brisa-select__popover--searchable {
+  max-height: min(320px, 70vh);
+  overflow: hidden;
+}
+
+.brisa-select__search {
+  flex-shrink: 0;
+  padding: 8px;
+  border-bottom: 1px solid var(--brisa-border);
+  background: var(--brisa-surface-soft);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.brisa-select__search-input {
+  width: 100%;
+  height: 36px;
+  padding: 8px 10px;
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-sm);
+  background: var(--brisa-surface);
+  color: var(--brisa-text);
+  font-size: 13.5px;
+  font-family: inherit;
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.brisa-select__search-input::placeholder {
+  color: var(--brisa-text-soft);
+}
+
+.brisa-select__search-input:focus {
+  border-color: var(--brisa-primary);
+  box-shadow: var(--brisa-focus-ring);
+}
+
+.brisa-select__options-scroll {
+  flex: 1;
+  min-height: 0;
   padding: 6px;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  max-height: 260px;
   overflow-y: auto;
-  animation: brisa-select-in 140ms ease;
+  max-height: 260px;
+}
+
+.brisa-select__popover--searchable .brisa-select__options-scroll {
+  max-height: none;
 }
 
 .brisa-select__option {
@@ -132,11 +188,44 @@
   flex-shrink: 0;
 }
 
-.brisa-select__empty {
-  padding: 12px 10px;
-  color: var(--brisa-text-soft);
-  font-size: 13px;
-  text-align: center;
+.brisa-select--rich-value .brisa-select__value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brisa-select__option-label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  text-align: left;
+}
+
+.brisa-select__option--disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.brisa-select__option--disabled.brisa-select__option--highlighted {
+  background: var(--brisa-surface-soft);
+}
+
+@keyframes brisa-select-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes brisa-select-in {

@@ -93,6 +93,13 @@
     background var(--transition-base),
     color var(--transition-base);
   position: relative;
+  width: 100%;
+  border: none;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
 }
 
 .brisa-sidebar__item:hover {

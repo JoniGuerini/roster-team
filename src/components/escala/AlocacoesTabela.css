@@ -1,4 +1,4 @@
-.brisa-aloc-tabela-card {
+.brisa-aloc-dia {
   background: var(--brisa-surface);
   border: 1px solid var(--brisa-border);
   border-radius: var(--radius-lg);
@@ -6,7 +6,7 @@
   box-shadow: var(--shadow-xs);
 }
 
-.brisa-aloc-tabela__header {
+.brisa-aloc-dia__header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -15,99 +15,147 @@
   border-bottom: 1px solid var(--brisa-border);
 }
 
-.brisa-aloc-tabela__title {
+.brisa-aloc-dia__title {
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.005em;
+  margin: 0;
 }
 
-.brisa-aloc-tabela__hint {
+.brisa-aloc-dia__hint {
   margin-top: 2px;
   font-size: 12.5px;
   color: var(--brisa-text-muted);
 }
 
-.brisa-aloc-tabela__alert-count {
+.brisa-aloc-dia__alert-count {
   color: var(--brisa-danger);
   font-weight: 600;
 }
 
-.brisa-aloc-tabela__wrapper {
-  overflow-x: auto;
+.brisa-aloc-dia__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.brisa-aloc-tabela {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  min-width: 720px;
-}
-
-.brisa-aloc-tabela thead {
-  background: var(--brisa-surface-soft);
-}
-
-.brisa-aloc-tabela th {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--brisa-text-soft);
-  padding: 10px 18px;
+.brisa-aloc-dia__turno {
   border-bottom: 1px solid var(--brisa-border);
 }
 
-.brisa-aloc-tabela td {
-  padding: 12px 18px;
-  border-bottom: 1px solid var(--brisa-border);
-  font-size: 13.5px;
-  color: var(--brisa-text);
-  vertical-align: middle;
-}
-
-.brisa-aloc-tabela tbody tr:last-child td {
+.brisa-aloc-dia__turno:last-child {
   border-bottom: none;
 }
 
-.brisa-aloc-tabela__row--indisp {
-  background: var(--brisa-warning-soft);
+.brisa-aloc-dia__turno-head {
+  padding: var(--space-4) var(--space-5) var(--space-3);
+  background: linear-gradient(
+    90deg,
+    var(--brisa-primary-soft) 0,
+    var(--brisa-surface-soft) 12px,
+    var(--brisa-surface-soft) 100%
+  );
+  border-left: 3px solid var(--brisa-primary);
 }
 
-.brisa-aloc-tabela__row--indisp .brisa-aloc-tabela__pessoa-nome {
-  text-decoration: line-through;
-  text-decoration-thickness: 1px;
-  color: var(--brisa-warning);
+.brisa-aloc-dia__turno-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
-.brisa-aloc-tabela__row--folga {
-  background: var(--brisa-primary-soft);
-}
-
-.brisa-aloc-tabela__row--folga .brisa-aloc-tabela__pessoa-nome {
-  text-decoration: line-through;
-  text-decoration-thickness: 1px;
-  color: var(--brisa-primary);
-}
-
-.brisa-aloc-tabela__row--conflito {
-  background: var(--brisa-danger-soft);
-}
-
-.brisa-aloc-tabela__row--conflito .brisa-aloc-tabela__pessoa-nome {
-  color: var(--brisa-danger);
+.brisa-aloc-dia__turno-nome {
+  margin: 0;
+  font-size: 15px;
   font-weight: 600;
+  color: var(--brisa-text);
+  letter-spacing: -0.01em;
 }
 
-.brisa-aloc-tabela__pessoa {
-  display: inline-flex;
+.brisa-aloc-dia__turno-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-aloc-dia__turno-hora {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--brisa-text);
+}
+
+.brisa-aloc-dia__turno-sep {
+  color: var(--brisa-border-strong);
+  user-select: none;
+}
+
+.brisa-aloc-dia__turno-local {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.brisa-aloc-dia__turno-corpo {
+  padding: var(--space-3) var(--space-5) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.brisa-aloc-dia__funcao-label {
+  margin: 0 0 var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-aloc-dia__funcao-count {
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--brisa-surface-soft);
+  border: 1px solid var(--brisa-border);
+  color: var(--brisa-text-muted);
+}
+
+.brisa-aloc-dia__pessoas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brisa-aloc-dia__pessoa {
+  display: flex;
   align-items: center;
   gap: var(--space-3);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--brisa-surface-soft);
+  border: 1px solid var(--brisa-border);
+  transition: border-color var(--transition-base);
 }
 
-.brisa-aloc-tabela__avatar {
-  width: 28px;
-  height: 28px;
+.brisa-aloc-dia__pessoa:hover {
+  border-color: var(--brisa-border-strong);
+}
+
+.brisa-aloc-dia__avatar {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--brisa-primary-soft);
   color: var(--brisa-primary);
@@ -120,27 +168,75 @@
   flex-shrink: 0;
 }
 
-.brisa-aloc-tabela__row--indisp .brisa-aloc-tabela__avatar {
+.brisa-aloc-dia__pessoa-nome {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--brisa-text);
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-aloc-dia__pessoa-status {
+  flex-shrink: 0;
+}
+
+.brisa-aloc-dia__pessoa--indisp {
+  background: var(--brisa-warning-soft);
+  border-color: rgba(181, 131, 42, 0.2);
+}
+
+.brisa-aloc-dia__pessoa--indisp .brisa-aloc-dia__pessoa-nome {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  color: var(--brisa-warning);
+}
+
+.brisa-aloc-dia__pessoa--indisp .brisa-aloc-dia__avatar {
   background: var(--brisa-warning);
   color: white;
 }
 
-.brisa-aloc-tabela__row--folga .brisa-aloc-tabela__avatar {
+.brisa-aloc-dia__pessoa--folga {
+  background: var(--brisa-primary-soft);
+  border-color: rgba(47, 107, 168, 0.22);
+}
+
+.brisa-aloc-dia__pessoa--folga .brisa-aloc-dia__pessoa-nome {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  color: var(--brisa-primary);
+}
+
+.brisa-aloc-dia__pessoa--folga .brisa-aloc-dia__avatar {
   background: var(--brisa-primary);
   color: white;
 }
 
-.brisa-aloc-tabela__row--conflito .brisa-aloc-tabela__avatar {
+.brisa-aloc-dia__pessoa--conflito {
+  background: var(--brisa-danger-soft);
+  border-color: rgba(196, 72, 72, 0.25);
+}
+
+.brisa-aloc-dia__pessoa--conflito .brisa-aloc-dia__pessoa-nome {
+  color: var(--brisa-danger);
+  font-weight: 700;
+}
+
+.brisa-aloc-dia__pessoa--conflito .brisa-aloc-dia__avatar {
   background: var(--brisa-danger);
   color: white;
 }
 
-.brisa-aloc-tabela__pessoa-nome {
-  font-weight: 500;
-}
+@media (max-width: 560px) {
+  .brisa-aloc-dia__pessoa {
+    flex-wrap: wrap;
+  }
 
-.brisa-aloc-tabela__hora {
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  color: var(--brisa-text-muted);
+  .brisa-aloc-dia__pessoa-status {
+    width: 100%;
+    padding-left: calc(32px + var(--space-3));
+  }
 }

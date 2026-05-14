@@ -12,9 +12,74 @@
 
 .brisa-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   text-align: left;
-  min-width: 720px;
+  min-width: 1040px;
+}
+
+.brisa-table__col--person {
+  width: 26%;
+}
+
+.brisa-table__col--funcao {
+  width: 12%;
+}
+
+.brisa-table__col--local {
+  width: 12%;
+}
+
+.brisa-table__col--contrato {
+  width: 12%;
+}
+
+.brisa-table__col--admissao {
+  width: 10%;
+}
+
+.brisa-table__col--status {
+  width: 12%;
+}
+
+.brisa-table__col--actions {
+  width: 16%;
+}
+
+.brisa-table__td {
+  max-width: 0;
+}
+
+.brisa-table__td--person {
+  max-width: none;
+}
+
+.brisa-table__td--clip {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-table__td--status {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.brisa-table__td--status .brisa-badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brisa-table__td--actions {
+  max-width: none;
+  width: 1%;
+  text-align: right;
+}
+
+.brisa-table th:last-child {
+  width: 1%;
+  text-align: right;
 }
 
 .brisa-table thead {
@@ -95,6 +160,10 @@
 .brisa-table__secondary {
   font-size: 11.5px;
   color: var(--brisa-text-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .brisa-table__actions {
@@ -166,4 +235,17 @@
   color: var(--brisa-text-muted);
   font-size: 13.5px;
   max-width: 360px;
+}
+
+.brisa-table tbody tr.brisa-table__row--clickable {
+  cursor: pointer;
+}
+
+.brisa-table tbody tr.brisa-table__row--clickable:hover {
+  background: var(--brisa-surface-soft);
+}
+
+.brisa-table tbody tr.brisa-table__row--clickable:focus-visible {
+  outline: 2px solid var(--brisa-accent);
+  outline-offset: -2px;
 }

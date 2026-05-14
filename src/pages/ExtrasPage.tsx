@@ -6,10 +6,10 @@ import { Modal } from '../components/ui/Modal';
 import { Select } from '../components/ui/Select';
 import { FuncionarioForm } from '../components/funcionarios/FuncionarioForm';
 import { ListaEquipePaginacao } from '../components/equipe/ListaEquipePaginacao';
-import { FuncionariosList } from '../components/funcionarios/FuncionariosList';
+import { ExtrasList } from '../components/extras/ExtrasList';
 import { ConfirmDeleteModal } from '../components/funcionarios/ConfirmDeleteModal';
-import { funcionariosStorage } from '../services/funcionariosStorage';
-import type { Funcionario, FuncionarioInput } from '../types/funcionario';
+import { extrasStorage } from '../services/extrasStorage';
+import type { PessoaExtra, PessoaExtraInput } from '../types/pessoaExtra';
 import {
   FUNCOES,
   LOCAIS_TRABALHO,
@@ -19,17 +19,18 @@ import {
 import { disparoNotificacoes } from '../hooks/useNotificacoes';
 import {
   buscaEquipeMatch,
-  funcionarioPassaFiltrosColuna,
-  haystackFuncionario,
-  type FiltroColunasFuncionario,
+  extraPassaFiltrosColuna,
+  FILTRO_SEM_CAMPO,
+  haystackExtra,
+  type FiltroColunasExtra,
 } from '../utils/filtroListaEquipe';
 import './FuncionariosPage.css';
 
-interface FuncionariosPageProps {
+interface ExtrasPageProps {
   onAbrirPerfil: (id: string) => void;
 }
 
-const FILTRO_INICIAL: FiltroColunasFuncionario = {
+const FILTRO_INICIAL: FiltroColunasExtra = {
   funcao: '',
   local: '',
   contrato: '',
@@ -38,33 +39,38 @@ const FILTRO_INICIAL: FiltroColunasFuncionario = {
 
 const OPCAO_TODOS = [{ value: '', label: 'Todos' }];
 
-export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
-  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
+const OPCAO_SEM = (rotulo: string) => ({
+  value: FILTRO_SEM_CAMPO,
+  label: rotulo,
+});
+
+export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
+  const [extras, setExtras] = useState<PessoaExtra[]>([]);
   const [busca, setBusca] = useState('');
   const [filtrosColuna, setFiltrosColuna] =
-    useState<FiltroColunasFuncionario>(FILTRO_INICIAL);
+    useState<FiltroColunasExtra>(FILTRO_INICIAL);
   const [modalAberto, setModalAberto] = useState(false);
-  const [editando, setEditando] = useState<Funcionario | undefined>(undefined);
-  const [paraExcluir, setParaExcluir] = useState<Funcionario | undefined>(
+  const [editando, setEditando] = useState<PessoaExtra | undefined>(undefined);
+  const [paraExcluir, setParaExcluir] = useState<PessoaExtra | undefined>(
     undefined,
   );
   const [pagina, setPagina] = useState(1);
   const [itensPorPagina, setItensPorPagina] = useState(10);
 
   useEffect(() => {
-    setFuncionarios(funcionariosStorage.listar());
+    setExtras(extrasStorage.listar());
   }, []);
 
-  const funcionariosFiltrados = useMemo(() => {
-    return funcionarios.filter((f) => {
-      if (!funcionarioPassaFiltrosColuna(f, filtrosColuna)) return false;
-      return buscaEquipeMatch(haystackFuncionario(f), busca);
+  const extrasFiltrados = useMemo(() => {
+    return extras.filter((e) => {
+      if (!extraPassaFiltrosColuna(e, filtrosColuna)) return false;
+      return buscaEquipeMatch(haystackExtra(e), busca);
     });
-  }, [busca, funcionarios, filtrosColuna]);
+  }, [busca, extras, filtrosColuna]);
 
   const totalPaginas = useMemo(
-    () => Math.max(1, Math.ceil(funcionariosFiltrados.length / itensPorPagina)),
-    [funcionariosFiltrados.length, itensPorPagina],
+    () => Math.max(1, Math.ceil(extrasFiltrados.length / itensPorPagina)),
+    [extrasFiltrados.length, itensPorPagina],
   );
 
   useEffect(() => {
@@ -75,10 +81,10 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
     setPagina((p) => Math.min(p, totalPaginas));
   }, [totalPaginas]);
 
-  const funcionariosPagina = useMemo(() => {
+  const extrasPagina = useMemo(() => {
     const inicio = (pagina - 1) * itensPorPagina;
-    return funcionariosFiltrados.slice(inicio, inicio + itensPorPagina);
-  }, [funcionariosFiltrados, pagina, itensPorPagina]);
+    return extrasFiltrados.slice(inicio, inicio + itensPorPagina);
+  }, [extrasFiltrados, pagina, itensPorPagina]);
 
   function handleItensPorPaginaChange(n: number) {
     setItensPorPagina(n);
@@ -102,8 +108,8 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
     setModalAberto(true);
   }
 
-  function abrirEdicao(funcionario: Funcionario) {
-    setEditando(funcionario);
+  function abrirEdicao(extra: PessoaExtra) {
+    setEditando(extra);
     setModalAberto(true);
   }
 
@@ -112,44 +118,23 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
     setEditando(undefined);
   }
 
-  function salvar(input: FuncionarioInput) {
+  function salvar(input: PessoaExtraInput) {
     if (editando) {
-      funcionariosStorage.atualizar(editando.id, input);
+      extrasStorage.atualizar(editando.id, input);
     } else {
-      funcionariosStorage.criar(input);
+      extrasStorage.criar(input);
     }
-    setFuncionarios(funcionariosStorage.listar());
+    setExtras(extrasStorage.listar());
     disparoNotificacoes();
     fecharModal();
   }
 
   function confirmarExclusao() {
     if (!paraExcluir) return;
-    funcionariosStorage.excluir(paraExcluir.id);
-    setFuncionarios(funcionariosStorage.listar());
+    extrasStorage.excluir(paraExcluir.id);
+    setExtras(extrasStorage.listar());
     disparoNotificacoes();
     setParaExcluir(undefined);
-  }
-
-  async function handleSeed(quantidade: number, modo: 'append' | 'replace') {
-    const { seedFuncionarios } = await import('../dev/seedFuncionarios');
-    seedFuncionarios({ quantidade, modo });
-    setFuncionarios(funcionariosStorage.listar());
-    disparoNotificacoes();
-  }
-
-  async function handleLimparDemo() {
-    if (
-      !window.confirm(
-        'Remover todos os funcionários deste dispositivo? Esta ação não pode ser desfeita.',
-      )
-    ) {
-      return;
-    }
-    const { limparTodosFuncionarios } = await import('../dev/seedFuncionarios');
-    limparTodosFuncionarios();
-    setFuncionarios(funcionariosStorage.listar());
-    disparoNotificacoes();
   }
 
   return (
@@ -157,18 +142,17 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
       <header className="brisa-page__header">
         <div className="brisa-page__heading">
           <span className="brisa-page__eyebrow">Equipe</span>
-          <h1 className="brisa-page__title">Funcionários</h1>
+          <h1 className="brisa-page__title">Extras</h1>
           <p className="brisa-page__subtitle">
-            Cadastre, edite e mantenha as informações da equipe da cafeteria.
+            Cadastro de quem cobre pontualmente, fora do quadro de funcionários.
+            Mesmo fluxo da lista de funcionários: busca, filtros e formulário no
+            modal.
           </p>
           <p className="brisa-page__list-count" aria-live="polite">
-            {funcionariosFiltrados.length}{' '}
-            {funcionariosFiltrados.length === 1 ? 'funcionário' : 'funcionários'}
-            {haFiltrosOuBusca && funcionarios.length > 0 ? (
-              <span className="brisa-page__count-total">
-                {' '}
-                de {funcionarios.length}
-              </span>
+            {extrasFiltrados.length}{' '}
+            {extrasFiltrados.length === 1 ? 'extra' : 'extras'}
+            {haFiltrosOuBusca && extras.length > 0 ? (
+              <span className="brisa-page__count-total"> de {extras.length}</span>
             ) : null}
           </p>
         </div>
@@ -190,7 +174,7 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
             </svg>
           }
         >
-          Novo funcionário
+          Novo extra
         </Button>
       </header>
 
@@ -212,7 +196,7 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <Input
-              id="busca-funcionarios"
+              id="busca-extras"
               placeholder="Buscar"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
@@ -222,26 +206,27 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
           </div>
 
           <div className="brisa-page__filtros brisa-page__filtros--inline">
-            <Field label="Função" htmlFor="filtro-func-funcao">
+            <Field label="Função principal" htmlFor="filtro-extra-funcao">
               <Select
-                id="filtro-func-funcao"
+                id="filtro-extra-funcao"
                 placeholder="Todos"
                 options={[
                   ...OPCAO_TODOS,
                   ...FUNCOES.map((o) => ({ value: o.value, label: o.label })),
+                  OPCAO_SEM('Sem função principal'),
                 ]}
                 value={filtrosColuna.funcao}
                 onChange={(e) =>
                   setFiltrosColuna((p) => ({
                     ...p,
-                    funcao: e.target.value as FiltroColunasFuncionario['funcao'],
+                    funcao: e.target.value as FiltroColunasExtra['funcao'],
                   }))
                 }
               />
             </Field>
-            <Field label="Local" htmlFor="filtro-func-local">
+            <Field label="Local" htmlFor="filtro-extra-local">
               <Select
-                id="filtro-func-local"
+                id="filtro-extra-local"
                 placeholder="Todos"
                 options={[
                   ...OPCAO_TODOS,
@@ -249,19 +234,20 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
                     value: o.value,
                     label: o.label,
                   })),
+                  OPCAO_SEM('Sem local'),
                 ]}
                 value={filtrosColuna.local}
                 onChange={(e) =>
                   setFiltrosColuna((p) => ({
                     ...p,
-                    local: e.target.value as FiltroColunasFuncionario['local'],
+                    local: e.target.value as FiltroColunasExtra['local'],
                   }))
                 }
               />
             </Field>
-            <Field label="Contrato" htmlFor="filtro-func-contrato">
+            <Field label="Contrato" htmlFor="filtro-extra-contrato">
               <Select
-                id="filtro-func-contrato"
+                id="filtro-extra-contrato"
                 placeholder="Todos"
                 options={[
                   ...OPCAO_TODOS,
@@ -269,19 +255,20 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
                     value: o.value,
                     label: o.label,
                   })),
+                  OPCAO_SEM('Sem contrato'),
                 ]}
                 value={filtrosColuna.contrato}
                 onChange={(e) =>
                   setFiltrosColuna((p) => ({
                     ...p,
-                    contrato: e.target.value as FiltroColunasFuncionario['contrato'],
+                    contrato: e.target.value as FiltroColunasExtra['contrato'],
                   }))
                 }
               />
             </Field>
-            <Field label="Status" htmlFor="filtro-func-status">
+            <Field label="Status" htmlFor="filtro-extra-status">
               <Select
-                id="filtro-func-status"
+                id="filtro-extra-status"
                 placeholder="Todos"
                 options={[
                   ...OPCAO_TODOS,
@@ -289,12 +276,13 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
                     value: o.value,
                     label: o.label,
                   })),
+                  OPCAO_SEM('Sem status'),
                 ]}
                 value={filtrosColuna.status}
                 onChange={(e) =>
                   setFiltrosColuna((p) => ({
                     ...p,
-                    status: e.target.value as FiltroColunasFuncionario['status'],
+                    status: e.target.value as FiltroColunasExtra['status'],
                   }))
                 }
               />
@@ -302,9 +290,9 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
           </div>
 
           <div className="brisa-page__toolbar-reset">
-            <Field label=" " htmlFor="reset-filtros-funcionarios">
+            <Field label=" " htmlFor="reset-filtros-extras">
               <Button
-                id="reset-filtros-funcionarios"
+                id="reset-filtros-extras"
                 type="button"
                 variant="secondary"
                 onClick={limparFiltrosEBusca}
@@ -318,71 +306,21 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
         </div>
       </section>
 
-      {import.meta.env.DEV ? (
-        <section
-          className="brisa-dev-seed"
-          aria-label="Dados fictícios para teste de layout (somente em desenvolvimento)"
-        >
-          <span className="brisa-dev-seed__badge">dev</span>
-          <span className="brisa-dev-seed__hint">
-            Preencher lista para testar tabela e busca (localStorage).
-          </span>
-          <div className="brisa-dev-seed__actions">
-            <button
-              type="button"
-              className="brisa-dev-seed__btn"
-              onClick={() => void handleSeed(25, 'append')}
-            >
-              +25 fictícios
-            </button>
-            <button
-              type="button"
-              className="brisa-dev-seed__btn"
-              onClick={() => void handleSeed(60, 'append')}
-            >
-              +60 fictícios
-            </button>
-            <button
-              type="button"
-              className="brisa-dev-seed__btn brisa-dev-seed__btn--warn"
-              onClick={() => {
-                if (
-                  window.confirm(
-                    'Substituir todos os funcionários atuais por 40 registros de teste?',
-                  )
-                ) {
-                  void handleSeed(40, 'replace');
-                }
-              }}
-            >
-              Trocar tudo por 40 de teste
-            </button>
-            <button
-              type="button"
-              className="brisa-dev-seed__btn brisa-dev-seed__btn--danger"
-              onClick={() => void handleLimparDemo()}
-            >
-              Limpar lista
-            </button>
-          </div>
-        </section>
-      ) : null}
-
-      {funcionarios.length === 0 ? (
-        <FuncionariosList
-          funcionarios={[]}
-          onOpenPerfil={(f) => onAbrirPerfil(f.id)}
+      {extras.length === 0 ? (
+        <ExtrasList
+          extras={[]}
+          onOpenPerfil={(e) => onAbrirPerfil(e.id)}
           onEdit={abrirEdicao}
-          onDelete={(f) => setParaExcluir(f)}
+          onDelete={(e) => setParaExcluir(e)}
         />
-      ) : funcionariosFiltrados.length === 0 ? (
+      ) : extrasFiltrados.length === 0 ? (
         <div className="brisa-page__empty-filtro">
           <h3 className="brisa-page__empty-filtro-title">
             Nenhum resultado encontrado
           </h3>
           <p className="brisa-page__empty-filtro-hint">
-            Ajuste a busca ou os filtros por coluna — a pesquisa considera nome,
-            funções, local, contrato, data de admissão e status.
+            Ajuste a busca ou os filtros — a pesquisa inclui nome, funções,
+            local, contrato, admissão e status (e o marcador &quot;extra&quot;).
           </p>
           <Button type="button" variant="secondary" onClick={limparFiltrosEBusca}>
             Limpar busca e filtros
@@ -390,17 +328,17 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
         </div>
       ) : (
         <>
-          <FuncionariosList
-            funcionarios={funcionariosPagina}
-            onOpenPerfil={(f) => onAbrirPerfil(f.id)}
+          <ExtrasList
+            extras={extrasPagina}
+            onOpenPerfil={(e) => onAbrirPerfil(e.id)}
             onEdit={abrirEdicao}
-            onDelete={(f) => setParaExcluir(f)}
+            onDelete={(e) => setParaExcluir(e)}
           />
           <ListaEquipePaginacao
             pagina={pagina}
             totalPaginas={totalPaginas}
             itensPorPagina={itensPorPagina}
-            totalItens={funcionariosFiltrados.length}
+            totalItens={extrasFiltrados.length}
             onPaginaChange={setPagina}
             onItensPorPaginaChange={handleItensPorPaginaChange}
           />
@@ -410,16 +348,18 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
       <Modal
         open={modalAberto}
         onClose={fecharModal}
-        title={editando ? 'Editar Funcionário' : 'Registrar Novo Funcionário'}
+        title={editando ? 'Editar Extra' : 'Registrar Novo Extra'}
         description={
           editando
             ? 'Atualize as informações abaixo conforme necessário.'
-            : 'Preencha os dados abaixo para adicionar um novo membro à equipe.'
+            : 'Nome obrigatório; os demais campos podem ficar em branco e ser preenchidos depois.'
         }
         size="lg"
       >
         <FuncionarioForm
-          funcionario={editando}
+          key={editando?.id ?? 'novo'}
+          variant="extra"
+          extra={editando}
           onCancel={fecharModal}
           onSubmit={salvar}
         />
@@ -428,9 +368,16 @@ export function FuncionariosPage({ onAbrirPerfil }: FuncionariosPageProps) {
       <ConfirmDeleteModal
         open={Boolean(paraExcluir)}
         nome={paraExcluir?.nome ?? ''}
+        titulo="Excluir extra"
         onCancel={() => setParaExcluir(undefined)}
         onConfirm={confirmarExclusao}
-      />
+      >
+        <p className="brisa-confirm__text">
+          Remover <strong>{paraExcluir?.nome}</strong>? Se ainda estiver em
+          algum turno ou escala, o nome pode aparecer como &quot;Pessoa
+          removida&quot; até você ajustar a alocação.
+        </p>
+      </ConfirmDeleteModal>
     </div>
   );
 }

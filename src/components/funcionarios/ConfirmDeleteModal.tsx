@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import './ConfirmDeleteModal.css';
@@ -5,6 +6,10 @@ import './ConfirmDeleteModal.css';
 interface ConfirmDeleteModalProps {
   open: boolean;
   nome: string;
+  /** Padrão: excluir funcionário. */
+  titulo?: string;
+  /** Se omitido, usa o texto padrão de exclusão. */
+  children?: ReactNode;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -12,6 +17,8 @@ interface ConfirmDeleteModalProps {
 export function ConfirmDeleteModal({
   open,
   nome,
+  titulo = 'Excluir funcionário',
+  children,
   onCancel,
   onConfirm,
 }: ConfirmDeleteModalProps) {
@@ -19,7 +26,7 @@ export function ConfirmDeleteModal({
     <Modal
       open={open}
       onClose={onCancel}
-      title="Excluir funcionário"
+      title={titulo}
       size="md"
       footer={
         <>
@@ -32,10 +39,12 @@ export function ConfirmDeleteModal({
         </>
       }
     >
-      <p className="brisa-confirm__text">
-        Tem certeza que deseja excluir <strong>{nome}</strong>? Esta ação não
-        pode ser desfeita.
-      </p>
+      {children ?? (
+        <p className="brisa-confirm__text">
+          Tem certeza que deseja excluir <strong>{nome}</strong>? Esta ação não
+          pode ser desfeita.
+        </p>
+      )}
     </Modal>
   );
 }

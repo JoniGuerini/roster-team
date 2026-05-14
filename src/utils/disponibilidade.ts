@@ -1,5 +1,6 @@
 import type { AlocacaoFuncao, EscalaDia, TurnoEscalado } from '../types/escala';
 import type { Funcao, Funcionario, PeriodoAusencia } from '../types/funcionario';
+import type { PessoaExtra } from '../types/pessoaExtra';
 import type { Turno } from '../types/turno';
 import { fromISO, NOMES_DIAS } from './datas';
 
@@ -82,6 +83,48 @@ export function indisponibilidadeNoDia(
     return { motivo: 'ferias', rotulo: 'Em férias' };
   }
   if (funcionario.status === 'afastado') {
+    return { motivo: 'afastamento', rotulo: 'Afastado(a)' };
+  }
+  return null;
+}
+
+/** Mesmas regras de calendário que `indisponibilidadeNoDia` para funcionários, aplicadas ao extra. */
+export function indisponibilidadeExtraNoDia(
+  extra: PessoaExtra,
+  data: string,
+): Indisponibilidade | null {
+  const status = extra.status ?? 'ativo';
+  if (status === 'inativo') {
+    return { motivo: 'inativo', rotulo: 'Inativo' };
+  }
+  const ausencia = (extra.ausencias ?? []).find((a) =>
+    ausenciaCobreData(a, data),
+  );
+  if (ausencia) {
+    const { motivo, rotulo } = rotuloMotivoAusencia(ausencia.motivo);
+    return {
+      motivo,
+      rotulo,
+      detalhe: `${ausencia.inicio} → ${ausencia.fim}`,
+    };
+  }
+  if (status === 'ativo') {
+    if (
+      extra.diaFolgaSemanal != null &&
+      fromISO(data).getDay() === extra.diaFolgaSemanal
+    ) {
+      const nomeDia = NOMES_DIAS[extra.diaFolgaSemanal];
+      return {
+        motivo: 'folga',
+        rotulo: 'Folga semanal',
+        detalhe: nomeDia,
+      };
+    }
+  }
+  if (status === 'ferias') {
+    return { motivo: 'ferias', rotulo: 'Em férias' };
+  }
+  if (status === 'afastado') {
     return { motivo: 'afastamento', rotulo: 'Afastado(a)' };
   }
   return null;

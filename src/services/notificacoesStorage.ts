@@ -1,5 +1,6 @@
 import type { Notificacao } from '../types/notificacao';
 import { funcionariosStorage } from './funcionariosStorage';
+import { extrasStorage } from './extrasStorage';
 import { turnosStorage } from './turnosStorage';
 import { escalaStorage } from './escalaStorage';
 import {
@@ -142,10 +143,11 @@ export const notificacoesStorage = {
     const escalas = escalaStorage.listar();
     const turnos = turnosStorage.listar();
     const funcionarios = funcionariosStorage.listar();
+    const extras = extrasStorage.listar();
     const hoje = hojeISO();
     const agora = new Date().toISOString();
 
-    const problemas = detectarProblemas(escalas, turnos, funcionarios, hoje);
+    const problemas = detectarProblemas(escalas, turnos, funcionarios, extras, hoje);
     const persistidas = ler();
 
     const { novas, resolvidas } = compararParaSync(problemas, persistidas, agora);

@@ -69,8 +69,8 @@ export function NotificacoesPage() {
           <span className="brisa-page__eyebrow">Operação</span>
           <h1 className="brisa-page__title">Notificações</h1>
           <p className="brisa-page__subtitle">
-            Alertas sobre indisponibilidades, conflitos e cobertura nos turnos
-            escalados.
+            Alertas sobre indisponibilidades, conflitos, cobertura, cadastros
+            apagados ainda na escala e turnos escalados.
           </p>
         </div>
         <div className="brisa-notif-page__actions">

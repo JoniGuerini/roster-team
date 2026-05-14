@@ -15,6 +15,7 @@ import {
   type StatusFuncionario,
   type TipoContrato,
 } from '../../types/funcionario';
+import type { PessoaExtra, PessoaExtraInput } from '../../types/pessoaExtra';
 import { Field } from '../ui/Field';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
@@ -24,11 +25,19 @@ import { Button } from '../ui/Button';
 import { AusenciasEditor } from './AusenciasEditor';
 import './FuncionarioForm.css';
 
-interface FuncionarioFormProps {
-  funcionario?: Funcionario;
-  onCancel: () => void;
-  onSubmit: (input: FuncionarioInput) => void;
-}
+export type FuncionarioFormProps =
+  | {
+      variant?: 'employee';
+      funcionario?: Funcionario;
+      onCancel: () => void;
+      onSubmit: (input: FuncionarioInput) => void;
+    }
+  | {
+      variant: 'extra';
+      extra?: PessoaExtra;
+      onCancel: () => void;
+      onSubmit: (input: PessoaExtraInput) => void;
+    };
 
 interface FormState {
   nome: string;
@@ -74,37 +83,61 @@ function formatarTamanho(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function FuncionarioForm({
-  funcionario,
-  onCancel,
-  onSubmit,
-}: FuncionarioFormProps) {
+export function FuncionarioForm(props: FuncionarioFormProps) {
+  const isExtra = props.variant === 'extra';
+  const registroExtra = props.variant === 'extra' ? props.extra : undefined;
+  const registroFuncionario =
+    props.variant !== 'extra' ? props.funcionario : undefined;
+
   const [form, setForm] = useState<FormState>(ESTADO_INICIAL);
   const [erros, setErros] = useState<FormErrors>({});
 
   useEffect(() => {
-    if (funcionario) {
-      setForm({
-        nome: funcionario.nome,
-        localTrabalho: funcionario.localTrabalho,
-        tipoContrato: funcionario.tipoContrato,
-        funcaoPrincipal: funcionario.funcaoPrincipal,
-        dataAdmissao: funcionario.dataAdmissao,
-        status: funcionario.status,
-        diaFolgaSemanal:
-          funcionario.diaFolgaSemanal != null
-            ? String(funcionario.diaFolgaSemanal)
-            : '',
-        funcoesSecundarias: funcionario.funcoesSecundarias,
-        descricao: funcionario.descricao ?? '',
-        documentos: funcionario.documentos,
-        ausencias: funcionario.ausencias ?? [],
-      });
+    if (isExtra) {
+      const extra = registroExtra;
+      if (extra) {
+        setForm({
+          nome: extra.nome,
+          localTrabalho: extra.localTrabalho ?? '',
+          tipoContrato: extra.tipoContrato ?? '',
+          funcaoPrincipal: extra.funcaoPrincipal ?? '',
+          dataAdmissao: extra.dataAdmissao ?? '',
+          status: extra.status ?? '',
+          diaFolgaSemanal:
+            extra.diaFolgaSemanal != null ? String(extra.diaFolgaSemanal) : '',
+          funcoesSecundarias: extra.funcoesSecundarias ?? [],
+          descricao: extra.descricao ?? '',
+          documentos: extra.documentos ?? [],
+          ausencias: extra.ausencias ?? [],
+        });
+      } else {
+        setForm(ESTADO_INICIAL);
+      }
     } else {
-      setForm(ESTADO_INICIAL);
+      const funcionario = registroFuncionario;
+      if (funcionario) {
+        setForm({
+          nome: funcionario.nome,
+          localTrabalho: funcionario.localTrabalho,
+          tipoContrato: funcionario.tipoContrato,
+          funcaoPrincipal: funcionario.funcaoPrincipal,
+          dataAdmissao: funcionario.dataAdmissao,
+          status: funcionario.status,
+          diaFolgaSemanal:
+            funcionario.diaFolgaSemanal != null
+              ? String(funcionario.diaFolgaSemanal)
+              : '',
+          funcoesSecundarias: funcionario.funcoesSecundarias,
+          descricao: funcionario.descricao ?? '',
+          documentos: funcionario.documentos,
+          ausencias: funcionario.ausencias ?? [],
+        });
+      } else {
+        setForm(ESTADO_INICIAL);
+      }
     }
     setErros({});
-  }, [funcionario]);
+  }, [isExtra, registroExtra, registroFuncionario]);
 
   function atualizarCampo<K extends keyof FormState>(
     campo: K,
@@ -154,7 +187,15 @@ export function FuncionarioForm({
 
   function validar(): boolean {
     const novosErros: FormErrors = {};
-    if (!form.nome.trim()) novosErros.nome = 'Informe o nome do funcionário.';
+    if (!form.nome.trim()) {
+      novosErros.nome = isExtra
+        ? 'Informe o nome.'
+        : 'Informe o nome do funcionário.';
+    }
+    if (isExtra) {
+      setErros(novosErros);
+      return Object.keys(novosErros).length === 0;
+    }
     if (!form.localTrabalho)
       novosErros.localTrabalho = 'Selecione o local de trabalho.';
     if (!form.tipoContrato)
@@ -171,14 +212,42 @@ export function FuncionarioForm({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!validar()) return;
-    onSubmit({
+    const secundarias = form.funcoesSecundarias.filter(
+      (f) => f !== form.funcaoPrincipal,
+    );
+    if (props.variant === 'extra') {
+      props.onSubmit({
+        nome: form.nome.trim(),
+        localTrabalho: form.localTrabalho
+          ? (form.localTrabalho as LocalTrabalho)
+          : undefined,
+        tipoContrato: form.tipoContrato
+          ? (form.tipoContrato as TipoContrato)
+          : undefined,
+        funcaoPrincipal: form.funcaoPrincipal
+          ? (form.funcaoPrincipal as Funcao)
+          : undefined,
+        funcoesSecundarias: secundarias,
+        dataAdmissao: form.dataAdmissao || undefined,
+        status: form.status
+          ? (form.status as StatusFuncionario)
+          : undefined,
+        diaFolgaSemanal:
+          form.diaFolgaSemanal === ''
+            ? null
+            : (Number(form.diaFolgaSemanal) as DiaFolgaSemanal),
+        descricao: form.descricao.trim() || undefined,
+        documentos: form.documentos,
+        ausencias: form.ausencias,
+      });
+      return;
+    }
+    props.onSubmit({
       nome: form.nome.trim(),
       localTrabalho: form.localTrabalho as LocalTrabalho,
       tipoContrato: form.tipoContrato as TipoContrato,
       funcaoPrincipal: form.funcaoPrincipal as Funcao,
-      funcoesSecundarias: form.funcoesSecundarias.filter(
-        (f) => f !== form.funcaoPrincipal,
-      ),
+      funcoesSecundarias: secundarias,
       dataAdmissao: form.dataAdmissao,
       status: form.status as StatusFuncionario,
       diaFolgaSemanal:
@@ -213,13 +282,15 @@ export function FuncionarioForm({
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Dados básicos</h3>
             <p className="brisa-form__card-hint">
-              Informações principais para identificar o funcionário.
+              {isExtra
+                ? 'Identificação da pessoa extra (cobertura pontual, fora do quadro).'
+                : 'Informações principais para identificar o funcionário.'}
             </p>
           </div>
         </header>
 
         <Field
-          label="Nome do funcionário"
+          label={isExtra ? 'Nome completo' : 'Nome do funcionário'}
           htmlFor="nome"
           required
           error={erros.nome}
@@ -238,7 +309,7 @@ export function FuncionarioForm({
           <Field
             label="Local de trabalho"
             htmlFor="localTrabalho"
-            required
+            required={!isExtra}
             error={erros.localTrabalho}
           >
             <Select
@@ -256,7 +327,7 @@ export function FuncionarioForm({
           <Field
             label="Tipo de contrato"
             htmlFor="tipoContrato"
-            required
+            required={!isExtra}
             error={erros.tipoContrato}
           >
             <Select
@@ -274,7 +345,7 @@ export function FuncionarioForm({
           <Field
             label="Data de admissão"
             htmlFor="dataAdmissao"
-            required
+            required={!isExtra}
             error={erros.dataAdmissao}
           >
             <Input
@@ -289,7 +360,7 @@ export function FuncionarioForm({
           <Field
             label="Status"
             htmlFor="status"
-            required
+            required={!isExtra}
             error={erros.status}
           >
             <Select
@@ -340,7 +411,9 @@ export function FuncionarioForm({
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Funções na cafeteria</h3>
             <p className="brisa-form__card-hint">
-              Defina a função principal e marque as outras que ele(a) também exerce.
+              {isExtra
+                ? 'Defina a função principal e as outras que a pessoa também pode exercer.'
+                : 'Defina a função principal e marque as outras que ele(a) também exerce.'}
             </p>
           </div>
         </header>
@@ -348,7 +421,7 @@ export function FuncionarioForm({
         <Field
           label="Função principal"
           htmlFor="funcaoPrincipal"
-          required
+          required={!isExtra}
           error={erros.funcaoPrincipal}
         >
           <Select
@@ -365,7 +438,11 @@ export function FuncionarioForm({
 
         <Field
           label="Funções secundárias"
-          hint="Selecione outras funções que este funcionário pode exercer."
+          hint={
+            isExtra
+              ? 'Selecione outras funções que esta pessoa pode exercer.'
+              : 'Selecione outras funções que este funcionário pode exercer.'
+          }
         >
           <div className="brisa-form__checkbox-grid">
             {FUNCOES.map((opcao) => (
@@ -387,7 +464,11 @@ export function FuncionarioForm({
         >
           <Textarea
             id="descricao"
-            placeholder="Adicione observações ou detalhes sobre o funcionário…"
+            placeholder={
+              isExtra
+                ? 'Adicione observações ou detalhes sobre o extra…'
+                : 'Adicione observações ou detalhes sobre o funcionário…'
+            }
             value={form.descricao}
             rows={4}
             onChange={(e) => atualizarCampo('descricao', e.target.value)}
@@ -417,8 +498,9 @@ export function FuncionarioForm({
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Períodos de ausência</h3>
             <p className="brisa-form__card-hint">
-              Cadastre férias, afastamentos e licenças. Esses períodos vão
-              marcar a pessoa como indisponível na escala.
+              {isExtra
+                ? 'Cadastre férias, afastamentos e licenças (úteis se esta pessoa voltar a ser escalada).'
+                : 'Cadastre férias, afastamentos e licenças. Esses períodos vão marcar a pessoa como indisponível na escala.'}
             </p>
           </div>
         </header>
@@ -525,11 +607,17 @@ export function FuncionarioForm({
       </section>
 
       <div className="brisa-form__actions">
-        <Button type="button" variant="secondary" onClick={onCancel}>
+        <Button type="button" variant="secondary" onClick={props.onCancel}>
           Cancelar
         </Button>
         <Button type="submit" variant="primary">
-          {funcionario ? 'Salvar alterações' : 'Registrar Funcionário'}
+          {isExtra
+            ? registroExtra
+              ? 'Salvar alterações'
+              : 'Registrar extra'
+            : registroFuncionario
+              ? 'Salvar alterações'
+              : 'Registrar Funcionário'}
         </Button>
       </div>
     </form>

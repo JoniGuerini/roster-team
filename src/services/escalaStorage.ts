@@ -1,4 +1,6 @@
 import type { AlocacaoFuncao, EscalaDia, TurnoEscalado } from '../types/escala';
+import type { Turno } from '../types/turno';
+import { diaSemanaDe, diasNoIntervalo } from '../utils/datas';
 
 const STORAGE_KEY = 'brisa-cafe:escalas';
 
@@ -45,6 +47,48 @@ export const escalaStorage = {
 
   obterIntervalo(inicio: string, fim: string): EscalaDia[] {
     return ler().filter((e) => e.data >= inicio && e.data <= fim);
+  },
+
+  /**
+   * Garante que cada turno **regular** ativo com `diaSemanaRecorrente` definido
+   * exista na escala em todas as datas do intervalo cujo dia da semana coincide.
+   * Não duplica se o mesmo `turnoId` já estiver no dia.
+   */
+  sincronizarTurnosRecorrentes(
+    inicio: string,
+    fim: string,
+    turnos: Turno[],
+    obterAlocacoes: (turno: Turno, data: string) => AlocacaoFuncao[],
+  ): number {
+    const escalas = ler();
+    let adicionados = 0;
+    const agora = new Date().toISOString();
+    for (const data of diasNoIntervalo(inicio, fim)) {
+      const dia = obterDia(escalas, data);
+      const idsPresentes = new Set(dia.turnos.map((t) => t.turnoId));
+      for (const turno of turnos) {
+        if (!turno.ativo || turno.tipo !== 'regular') continue;
+        const dsr = turno.diaSemanaRecorrente;
+        if (dsr == null || dsr < 0 || dsr > 6) continue;
+        if (diaSemanaDe(data) !== dsr) continue;
+        if (idsPresentes.has(turno.id)) continue;
+        const alocacoes = obterAlocacoes(turno, data);
+        const novo: TurnoEscalado = {
+          id: gerarId(),
+          turnoId: turno.id,
+          alocacoes,
+          criadoEm: agora,
+          atualizadoEm: agora,
+        };
+        dia.turnos.push(novo);
+        idsPresentes.add(turno.id);
+        adicionados += 1;
+      }
+    }
+    if (adicionados > 0) {
+      escrever(escalas);
+    }
+    return adicionados;
   },
 
   adicionarTurno(data: string, turnoId: string, alocacoes: AlocacaoFuncao[]): TurnoEscalado {

@@ -46,6 +46,7 @@ export const ROTULO_TIPO_CURTO: Record<TipoNotificacao, string> = {
   conflito: 'Conflito',
   'cobertura-incompleta': 'Cobertura',
   'turno-vazio': 'Sem alocações',
+  'cadastro-removido-na-escala': 'Cadastro apagado',
 };
 
 export function tempoRelativo(iso: string, agora = new Date()): string {

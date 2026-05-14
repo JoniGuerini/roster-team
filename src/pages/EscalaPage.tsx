@@ -8,62 +8,36 @@ import { SemanaView } from '../components/escala/SemanaView';
 import { DiaView } from '../components/escala/DiaView';
 import { MesView } from '../components/escala/MesView';
 import { AdicionarTurnoModal } from '../components/escala/AdicionarTurnoModal';
-import { GerenciarTurnoDiaModal } from '../components/escala/GerenciarTurnoDiaModal';
+import { Modal } from '../components/ui/Modal';
+import { Button } from '../components/ui/Button';
+import { TurnoForm } from '../components/turnos/TurnoForm';
 import { escalaStorage } from '../services/escalaStorage';
 import { turnosStorage } from '../services/turnosStorage';
 import { funcionariosStorage } from '../services/funcionariosStorage';
+import { extrasStorage } from '../services/extrasStorage';
 import { disparoNotificacoes } from '../hooks/useNotificacoes';
-import type { EscalaDia, AlocacaoFuncao } from '../types/escala';
+import type { EscalaDia } from '../types/escala';
 import type { Funcionario } from '../types/funcionario';
-import type { Turno } from '../types/turno';
+import type { PessoaExtra } from '../types/pessoaExtra';
+import type { Turno, TurnoInput } from '../types/turno';
 import {
   adicionarDias,
   adicionarMeses,
   diasDaSemana,
   diasDoMesGrade,
   hojeISO,
+  rotuloDataLonga,
 } from '../utils/datas';
 import {
-  indisponibilidadeNoDia,
-  podeAparecerComoSugeridoNoTurno,
-} from '../utils/disponibilidade';
+  montarAlocacoesAPartirDoInputTurno,
+  montarAlocacoesIniciaisDoTurno,
+} from '../utils/alocacoesIniciaisTurno';
 import './EscalaPage.css';
 
-interface AbrirTurnoState {
+interface ModalEdicaoTurnoEscala {
+  turno: Turno;
   data: string;
   turnoEscaladoId: string;
-}
-
-function alocacoesIniciais(
-  turno: Turno,
-  funcionarios: Funcionario[],
-  data: string,
-): AlocacaoFuncao[] {
-  const alocacoes: AlocacaoFuncao[] = [];
-  const jaAlocados = new Set<string>();
-  for (const necessidade of turno.necessidades) {
-    const sugeridosCompativeis = turno.funcionariosSugeridos.filter((id) => {
-      const f = funcionarios.find((x) => x.id === id);
-      if (!f) return false;
-      if (!podeAparecerComoSugeridoNoTurno(f)) return false;
-      if (jaAlocados.has(id)) return false;
-      if (indisponibilidadeNoDia(f, data) !== null) return false;
-      return (
-        f.funcaoPrincipal === necessidade.funcao ||
-        (f.funcoesSecundarias ?? []).includes(necessidade.funcao)
-      );
-    });
-    const ids: string[] = [];
-    for (const id of sugeridosCompativeis) {
-      if (ids.length >= necessidade.quantidade) break;
-      ids.push(id);
-      jaAlocados.add(id);
-    }
-    if (ids.length > 0) {
-      alocacoes.push({ funcao: necessidade.funcao, funcionarioIds: ids });
-    }
-  }
-  return alocacoes;
 }
 
 function filtrarEscalasPorLocal(
@@ -89,14 +63,17 @@ export function EscalaPage() {
   const [escalas, setEscalas] = useState<EscalaDia[]>([]);
   const [turnos, setTurnos] = useState<Turno[]>([]);
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
+  const [extras, setExtras] = useState<PessoaExtra[]>([]);
 
   const [adicionarPara, setAdicionarPara] = useState<string | null>(null);
-  const [abrirTurno, setAbrirTurno] = useState<AbrirTurnoState | null>(null);
+  const [modalEdicaoTurno, setModalEdicaoTurno] =
+    useState<ModalEdicaoTurnoEscala | null>(null);
 
   function recarregar(disparar = false) {
     setEscalas(escalaStorage.listar());
     setTurnos(turnosStorage.listar());
     setFuncionarios(funcionariosStorage.listar());
+    setExtras(extrasStorage.listar());
     if (disparar) disparoNotificacoes();
   }
 
@@ -113,6 +90,21 @@ export function EscalaPage() {
     const grade = diasDoMesGrade(data);
     return [grade[0], grade[grade.length - 1]] as const;
   }, [data, modo]);
+
+  useEffect(() => {
+    if (turnos.length === 0) return;
+    const [ini, fim] = intervaloVisivel;
+    const n = escalaStorage.sincronizarTurnosRecorrentes(
+      ini,
+      fim,
+      turnos,
+      (t, d) => montarAlocacoesIniciaisDoTurno(t, funcionarios, extras, d),
+    );
+    if (n > 0) {
+      setEscalas(escalaStorage.listar());
+      disparoNotificacoes();
+    }
+  }, [intervaloVisivel, turnos, funcionarios, extras]);
 
   const escalasNoIntervalo = useMemo(
     () =>
@@ -145,48 +137,59 @@ export function EscalaPage() {
     if (!adicionarPara) return;
     const turno = turnos.find((t) => t.id === turnoId);
     if (!turno) return;
-    const alocacoes = alocacoesIniciais(turno, funcionarios, adicionarPara);
-    const novo = escalaStorage.adicionarTurno(adicionarPara, turnoId, alocacoes);
+    const alocacoes = montarAlocacoesIniciaisDoTurno(
+      turno,
+      funcionarios,
+      extras,
+      adicionarPara,
+    );
+    escalaStorage.adicionarTurno(adicionarPara, turnoId, alocacoes);
     recarregar(true);
-    setAbrirTurno({ data: adicionarPara, turnoEscaladoId: novo.id });
     setAdicionarPara(null);
   }
 
-  function salvarAlocacoes(alocacoes: AlocacaoFuncao[]) {
-    if (!abrirTurno) return;
-    escalaStorage.atualizarTurno(abrirTurno.data, abrirTurno.turnoEscaladoId, {
-      alocacoes,
-    });
-    recarregar(true);
-    setAbrirTurno(null);
-  }
-
-  function removerTurnoDoDia() {
-    if (!abrirTurno) return;
-    escalaStorage.removerTurno(abrirTurno.data, abrirTurno.turnoEscaladoId);
-    recarregar(true);
-    setAbrirTurno(null);
-  }
-
-  const turnoAbertoCtx = useMemo(() => {
-    if (!abrirTurno) return null;
-    const escalaDoDia =
-      escalasFiltradas.find((e) => e.data === abrirTurno.data) ??
-      escalas.find((e) => e.data === abrirTurno.data) ??
-      ({ data: abrirTurno.data, turnos: [] } as EscalaDia);
-
-    const escalaCompleta =
-      escalas.find((e) => e.data === abrirTurno.data) ??
-      ({ data: abrirTurno.data, turnos: [] } as EscalaDia);
-
-    const te = escalaCompleta.turnos.find(
-      (t) => t.id === abrirTurno.turnoEscaladoId,
-    );
-    if (!te) return null;
+  function abrirEdicaoTurnoNaEscala(dataCtx: string, turnoEscaladoId: string) {
+    const escalaDia = escalas.find((e) => e.data === dataCtx);
+    const te = escalaDia?.turnos.find((t) => t.id === turnoEscaladoId);
+    if (!te) return;
     const turno = turnos.find((t) => t.id === te.turnoId);
-    if (!turno) return null;
-    return { te, turno, escalaDoDia: escalaCompleta, escalaVisivel: escalaDoDia };
-  }, [abrirTurno, escalasFiltradas, escalas, turnos]);
+    if (!turno) return;
+    setModalEdicaoTurno({ turno, data: dataCtx, turnoEscaladoId });
+  }
+
+  function fecharModalEdicaoTurno() {
+    setModalEdicaoTurno(null);
+  }
+
+  function salvarModeloTurno(input: TurnoInput) {
+    if (!modalEdicaoTurno) return;
+    turnosStorage.atualizar(modalEdicaoTurno.turno.id, input);
+    const alocacoes = montarAlocacoesAPartirDoInputTurno(input);
+    escalaStorage.atualizarTurno(
+      modalEdicaoTurno.data,
+      modalEdicaoTurno.turnoEscaladoId,
+      { alocacoes },
+    );
+    fecharModalEdicaoTurno();
+    recarregar(true);
+  }
+
+  function removerTurnoDesteDia() {
+    if (!modalEdicaoTurno) return;
+    if (
+      !window.confirm(
+        `Remover o turno deste dia (${rotuloDataLonga(modalEdicaoTurno.data)})? A alocação desta data será apagada; o modelo do turno continua em Turnos.`,
+      )
+    ) {
+      return;
+    }
+    escalaStorage.removerTurno(
+      modalEdicaoTurno.data,
+      modalEdicaoTurno.turnoEscaladoId,
+    );
+    recarregar(true);
+    fecharModalEdicaoTurno();
+  }
 
   const escalaDoDiaSelecionado =
     escalasFiltradas.find((e) => e.data === data) ??
@@ -221,8 +224,9 @@ export function EscalaPage() {
           escala={escalaDoDiaSelecionado}
           turnos={turnos}
           funcionarios={funcionarios}
+          extras={extras}
           onAdicionar={() => abrirAdicionarPara(data)}
-          onAbrirTurno={(id) => setAbrirTurno({ data, turnoEscaladoId: id })}
+          onAbrirTurno={(id) => abrirEdicaoTurnoNaEscala(data, id)}
         />
       )}
 
@@ -232,8 +236,9 @@ export function EscalaPage() {
           escalas={escalasFiltradas}
           turnos={turnos}
           funcionarios={funcionarios}
+          extras={extras}
           onAdicionar={abrirAdicionarPara}
-          onAbrirTurno={(d, id) => setAbrirTurno({ data: d, turnoEscaladoId: id })}
+          onAbrirTurno={(d, id) => abrirEdicaoTurnoNaEscala(d, id)}
           onAbrirDia={(d) => {
             setData(d);
             setModo('dia');
@@ -268,19 +273,37 @@ export function EscalaPage() {
         onConfirmar={confirmarAdicionar}
       />
 
-      {turnoAbertoCtx && abrirTurno && (
-        <GerenciarTurnoDiaModal
+      {modalEdicaoTurno && (
+        <Modal
           open
-          data={abrirTurno.data}
-          turno={turnoAbertoCtx.turno}
-          turnoEscalado={turnoAbertoCtx.te}
-          escalaDoDia={turnoAbertoCtx.escalaDoDia}
-          todosTurnos={turnos}
-          funcionarios={funcionarios}
-          onCancel={() => setAbrirTurno(null)}
-          onSalvar={salvarAlocacoes}
-          onRemoverTurno={removerTurnoDoDia}
-        />
+          onClose={fecharModalEdicaoTurno}
+          title="Editar turno"
+          description={`${rotuloDataLonga(modalEdicaoTurno.data)} · O mesmo formulário da página Turnos: altera o modelo do turno (horário, vagas, sugestões).`}
+          size="lg"
+          footer={
+            <Button
+              type="button"
+              variant="ghost"
+              className="brisa-escala-modal__remove-dia"
+              onClick={removerTurnoDesteDia}
+            >
+              Remover turno deste dia
+            </Button>
+          }
+        >
+          <TurnoForm
+            key={modalEdicaoTurno.turno.id}
+            turno={modalEdicaoTurno.turno}
+            funcionarios={funcionarios}
+            extras={extras}
+            onCancel={fecharModalEdicaoTurno}
+            onSubmit={salvarModeloTurno}
+            onExtrasChange={() => {
+              setExtras(extrasStorage.listar());
+              disparoNotificacoes();
+            }}
+          />
+        </Modal>
       )}
     </div>
   );

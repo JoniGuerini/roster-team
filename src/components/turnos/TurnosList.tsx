@@ -1,13 +1,26 @@
 import { useMemo } from 'react';
 import { TIPOS_TURNO, type TipoTurno, type Turno } from '../../types/turno';
 import type { Funcionario } from '../../types/funcionario';
-import { labelCategoria } from '../../utils/turnoLabels';
-import { labelLocal } from '../../utils/funcionarioLabels';
+import type { PessoaExtra } from '../../types/pessoaExtra';
+import {
+  fromISO,
+  hojeISO,
+  NOMES_DIAS_CURTOS,
+  rotuloDataCurta,
+} from '../../utils/datas';
+import {
+  contarCelulasSugestaoPreenchidas,
+  dataReferenciaParaSugestoesDoTurno,
+  montarAlocacoesIniciaisDoTurno,
+  totalSlotsEmAlocacoes,
+} from '../../utils/alocacoesIniciaisTurno';
+import { TurnoCard } from './TurnoCard';
 import './TurnosList.css';
 
 interface TurnosListProps {
   turnos: Turno[];
   funcionarios: Funcionario[];
+  extras: PessoaExtra[];
   onEdit: (turno: Turno) => void;
   onDelete: (turno: Turno) => void;
 }
@@ -29,31 +42,58 @@ interface StatusSugeridos {
   texto: string;
 }
 
-function calcularStatusSugeridos(turno: Turno): StatusSugeridos {
+function calcularStatusSugeridos(
+  turno: Turno,
+  funcionarios: Funcionario[],
+  extras: PessoaExtra[],
+): StatusSugeridos {
   const totalNec = turno.necessidades.reduce(
     (acc, n) => acc + n.quantidade,
     0,
   );
-  const totalSug = turno.funcionariosSugeridos.length;
-
   if (totalNec === 0) {
     return { key: 'completo', texto: 'Sem necessidade definida' };
   }
-  if (totalSug === 0) {
-    return { key: 'vazio', texto: 'Nenhum sugerido' };
+
+  const modelo = contarCelulasSugestaoPreenchidas(turno);
+  const dataRef = dataReferenciaParaSugestoesDoTurno(turno, hojeISO());
+  const alocs = montarAlocacoesIniciaisDoTurno(
+    turno,
+    funcionarios,
+    extras,
+    dataRef,
+  );
+  const sim = totalSlotsEmAlocacoes(alocs);
+
+  if (modelo < totalNec) {
+    const faltam = totalNec - modelo;
+    return {
+      key: 'parcial',
+      texto: faltam === 1 ? 'Falta 1 sugerido' : `Faltam ${faltam} sugeridos`,
+    };
   }
-  if (totalSug >= totalNec) {
+
+  if (sim >= totalNec) {
     return { key: 'completo', texto: 'Sugeridos completos' };
   }
-  const faltam = totalNec - totalSug;
+
+  const faltaSim = totalNec - sim;
+  const diaSem = fromISO(dataRef).getDay();
+  const dia = NOMES_DIAS_CURTOS[diaSem] ?? '';
+  const quando = `${dia} ${rotuloDataCurta(dataRef)}`;
   return {
     key: 'parcial',
-    texto: faltam === 1 ? 'Falta 1 sugerido' : `Faltam ${faltam} sugeridos`,
+    texto:
+      faltaSim === 1
+        ? `Sugestões cheias — em ${quando} 1 pessoa não entra (folga ou repetida)`
+        : `Sugestões cheias — em ${quando} ${faltaSim} não entram (folgas ou repetidas)`,
   };
 }
 
 export function TurnosList({
   turnos,
+  funcionarios,
+  extras,
   onEdit,
   onDelete,
 }: TurnosListProps) {
@@ -119,15 +159,18 @@ export function TurnosList({
 
             <div className="brisa-turnos-grid">
               {lista.map((turno) => {
-                const status = calcularStatusSugeridos(turno);
+                const status = calcularStatusSugeridos(
+                  turno,
+                  funcionarios,
+                  extras,
+                );
                 return (
-                  <article
+                  <TurnoCard
                     key={turno.id}
-                    className={`brisa-turno-card ${turno.ativo ? '' : 'brisa-turno-card--inactive'}`}
-                  >
-                    <div className="brisa-turno-card__head">
-                      <h3 className="brisa-turno-card__title">{turno.nome}</h3>
-                      <div className="brisa-turno-card__actions">
+                    turno={turno}
+                    status={status}
+                    headActions={
+                      <>
                         <button
                           type="button"
                           className="brisa-icon-btn"
@@ -173,67 +216,9 @@ export function TurnosList({
                             <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
                           </svg>
                         </button>
-                      </div>
-                    </div>
-
-                    <ul className="brisa-turno-card__lines">
-                      <li className="brisa-turno-card__line">
-                        <svg
-                          width="13"
-                          height="13"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <circle cx="12" cy="12" r="9" />
-                          <polyline points="12 7 12 12 15 14" />
-                        </svg>
-                        {turno.horaInicio} – {turno.horaFim}
-                      </li>
-                      <li className="brisa-turno-card__line">
-                        <svg
-                          width="13"
-                          height="13"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                          <circle cx="12" cy="10" r="3" />
-                        </svg>
-                        {labelLocal(turno.localTrabalho)}
-                      </li>
-                      <li className="brisa-turno-card__line">
-                        <svg
-                          width="13"
-                          height="13"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <rect x="3" y="4" width="18" height="18" rx="2" />
-                          <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                        {labelCategoria(turno.categoria)}
-                      </li>
-                    </ul>
-
-                    <footer
-                      className={`brisa-turno-card__status brisa-turno-card__status--${status.key}`}
-                    >
-                      <span className="brisa-turno-card__status-dot" aria-hidden="true" />
-                      {status.texto}
-                    </footer>
-                  </article>
+                      </>
+                    }
+                  />
                 );
               })}
             </div>

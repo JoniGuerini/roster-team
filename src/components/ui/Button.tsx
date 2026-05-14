@@ -20,6 +20,7 @@ export function Button({
   fullWidth,
   className = '',
   children,
+  type = 'button',
   ...rest
 }: ButtonProps) {
   const classes = [
@@ -33,7 +34,7 @@ export function Button({
     .join(' ');
 
   return (
-    <button className={classes} {...rest}>
+    <button type={type} className={classes} {...rest}>
       {leftIcon && <span className="brisa-btn__icon">{leftIcon}</span>}
       <span className="brisa-btn__label">{children}</span>
       {rightIcon && <span className="brisa-btn__icon">{rightIcon}</span>}

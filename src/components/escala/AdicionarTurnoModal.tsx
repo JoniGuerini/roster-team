@@ -2,11 +2,15 @@ import { useMemo, useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import type { Turno } from '../../types/turno';
 import type { EscalaDia } from '../../types/escala';
+import {
+  ROTULO_DIA_SEMANA_RECORRENTE,
+  type DiaSemanaRecorrente,
+  type Turno,
+} from '../../types/turno';
 import { labelLocal } from '../../utils/funcionarioLabels';
 import { labelCategoria } from '../../utils/turnoLabels';
-import { rotuloDataLonga } from '../../utils/datas';
+import { diaSemanaDe, rotuloDataLonga } from '../../utils/datas';
 import './AdicionarTurnoModal.css';
 
 interface AdicionarTurnoModalProps {
@@ -115,6 +119,18 @@ export function AdicionarTurnoModal({
             {turnosAtivos.map((t) => {
               const jaUsado = idsJaUsados.has(t.id);
               const ativo = selecionado === t.id;
+              const diaRecorrente =
+                t.tipo === 'regular' &&
+                t.diaSemanaRecorrente != null &&
+                t.diaSemanaRecorrente >= 0 &&
+                t.diaSemanaRecorrente <= 6
+                  ? ROTULO_DIA_SEMANA_RECORRENTE[
+                      t.diaSemanaRecorrente as DiaSemanaRecorrente
+                    ]
+                  : null;
+              const encaixaNoDia =
+                diaRecorrente != null &&
+                diaSemanaDe(data) === t.diaSemanaRecorrente;
               return (
                 <li key={t.id}>
                   <button
@@ -178,6 +194,34 @@ export function AdicionarTurnoModal({
                         </svg>
                         {labelCategoria(t.categoria)}
                       </li>
+                      {diaRecorrente && (
+                        <li className="brisa-add-turno__line brisa-add-turno__line--muted">
+                          <svg
+                            width="13"
+                            height="13"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                          </svg>
+                          {diaRecorrente}
+                          {encaixaNoDia ? (
+                            <span className="brisa-add-turno__rec-badge">
+                              {' '}
+                              · já entra sozinho neste dia
+                            </span>
+                          ) : (
+                            <span className="brisa-add-turno__rec-badge">
+                              {' '}
+                              · adição extra neste dia
+                            </span>
+                          )}
+                        </li>
+                      )}
                     </ul>
 
                     {ativo && (

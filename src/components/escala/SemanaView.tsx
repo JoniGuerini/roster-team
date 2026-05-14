@@ -1,5 +1,6 @@
 import type { EscalaDia, TurnoEscalado } from '../../types/escala';
 import type { Funcionario } from '../../types/funcionario';
+import type { PessoaExtra } from '../../types/pessoaExtra';
 import type { Turno } from '../../types/turno';
 import {
   NOMES_DIAS_CURTOS,
@@ -15,6 +16,7 @@ interface SemanaViewProps {
   escalas: EscalaDia[];
   turnos: Turno[];
   funcionarios: Funcionario[];
+  extras: PessoaExtra[];
   onAdicionar: (data: string) => void;
   onAbrirTurno: (data: string, turnoEscaladoId: string) => void;
   onAbrirDia: (data: string) => void;
@@ -25,6 +27,7 @@ export function SemanaView({
   escalas,
   turnos,
   funcionarios,
+  extras,
   onAdicionar,
   onAbrirTurno,
   onAbrirDia,
@@ -72,7 +75,7 @@ export function SemanaView({
                     turnoEscalado={te}
                     turno={turno}
                     funcionarios={funcionarios}
-                    variant="compacto"
+                    extras={extras}
                     onClick={() => onAbrirTurno(dia, te.id)}
                   />
                 );

@@ -2,7 +2,8 @@ export type TipoNotificacao =
   | 'indisponivel'
   | 'conflito'
   | 'cobertura-incompleta'
-  | 'turno-vazio';
+  | 'turno-vazio'
+  | 'cadastro-removido-na-escala';
 
 export type SeveridadeNotificacao = 'alta' | 'media' | 'baixa';
 
@@ -31,4 +32,5 @@ export const ROTULOS_TIPO: Record<TipoNotificacao, string> = {
   conflito: 'Conflito de horário',
   'cobertura-incompleta': 'Cobertura incompleta',
   'turno-vazio': 'Turno sem alocações',
+  'cadastro-removido-na-escala': 'Cadastro apagado na escala',
 };

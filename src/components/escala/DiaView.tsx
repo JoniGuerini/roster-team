@@ -1,10 +1,12 @@
 import type { EscalaDia } from '../../types/escala';
 import type { Funcionario } from '../../types/funcionario';
+import type { PessoaExtra } from '../../types/pessoaExtra';
 import type { Turno } from '../../types/turno';
 import { Button } from '../ui/Button';
-import { TurnoEscaladoCard } from './TurnoEscaladoCard';
+import { TurnoCard } from '../turnos/TurnoCard';
 import { AlocacoesTabela } from './AlocacoesTabela';
 import { rotuloDataLonga } from '../../utils/datas';
+import { calcularStatusTurnoEscaladoNoDia } from '../../utils/statusTurnoEscalado';
 import './DiaView.css';
 
 interface DiaViewProps {
@@ -12,6 +14,7 @@ interface DiaViewProps {
   escala: EscalaDia;
   turnos: Turno[];
   funcionarios: Funcionario[];
+  extras: PessoaExtra[];
   onAdicionar: () => void;
   onAbrirTurno: (turnoEscaladoId: string) => void;
 }
@@ -21,6 +24,7 @@ export function DiaView({
   escala,
   turnos,
   funcionarios,
+  extras,
   onAdicionar,
   onAbrirTurno,
 }: DiaViewProps) {
@@ -95,15 +99,18 @@ export function DiaView({
             {turnosOrdenados.map((te) => {
               const turno = turnos.find((t) => t.id === te.turnoId);
               if (!turno) return null;
+              const status = calcularStatusTurnoEscaladoNoDia(
+                data,
+                turno,
+                te,
+                funcionarios,
+              );
               return (
-                <TurnoEscaladoCard
+                <TurnoCard
                   key={te.id}
-                  data={data}
-                  turnoEscalado={te}
                   turno={turno}
-                  funcionarios={funcionarios}
-                  variant="detalhado"
-                  onClick={() => onAbrirTurno(te.id)}
+                  status={status}
+                  onCardClick={() => onAbrirTurno(te.id)}
                 />
               );
             })}
@@ -114,6 +121,7 @@ export function DiaView({
             escala={escala}
             turnos={turnos}
             funcionarios={funcionarios}
+            extras={extras}
           />
         </>
       )}

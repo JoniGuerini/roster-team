@@ -117,3 +117,13 @@
 .brisa-add-turno__item--active .brisa-add-turno__head {
   padding-right: 28px;
 }
+
+.brisa-add-turno__line--muted {
+  font-size: 12.5px;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-add-turno__rec-badge {
+  font-weight: 500;
+  color: var(--brisa-text-muted);
+}

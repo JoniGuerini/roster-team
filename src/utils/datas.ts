@@ -96,6 +96,17 @@ export function diaSemanaDe(iso: string): number {
   return fromISO(iso).getDay();
 }
 
+/** Lista cada data ISO entre `inicio` e `fim` (inclusive), em ordem. */
+export function diasNoIntervalo(inicio: string, fim: string, maxDias = 400): string[] {
+  const out: string[] = [];
+  let d = inicio;
+  while (d <= fim && out.length < maxDias) {
+    out.push(d);
+    d = adicionarDias(d, 1);
+  }
+  return out;
+}
+
 export function rotuloDataLonga(iso: string): string {
   const d = fromISO(iso);
   return `${NOMES_DIAS[d.getDay()]}, ${d.getDate()} de ${NOMES_MESES[d.getMonth()]} de ${d.getFullYear()}`;

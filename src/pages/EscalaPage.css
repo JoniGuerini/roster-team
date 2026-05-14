@@ -1,3 +1,13 @@
 .brisa-page__heading + .brisa-escala-toolbar {
   margin-top: var(--space-2);
 }
+
+.brisa-escala-modal__remove-dia {
+  margin-right: auto;
+  color: var(--brisa-danger);
+}
+
+.brisa-escala-modal__remove-dia:hover {
+  background: var(--brisa-danger-soft);
+  color: var(--brisa-danger);
+}

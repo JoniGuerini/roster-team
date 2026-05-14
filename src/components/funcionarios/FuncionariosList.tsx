@@ -13,12 +13,14 @@ import './FuncionariosList.css';
 
 interface FuncionariosListProps {
   funcionarios: Funcionario[];
+  onOpenPerfil: (funcionario: Funcionario) => void;
   onEdit: (funcionario: Funcionario) => void;
   onDelete: (funcionario: Funcionario) => void;
 }
 
 export function FuncionariosList({
   funcionarios,
+  onOpenPerfil,
   onEdit,
   onDelete,
 }: FuncionariosListProps) {
@@ -54,6 +56,15 @@ export function FuncionariosList({
     <div className="brisa-table-card">
       <div className="brisa-table-wrapper">
         <table className="brisa-table">
+          <colgroup>
+            <col className="brisa-table__col brisa-table__col--person" />
+            <col className="brisa-table__col brisa-table__col--funcao" />
+            <col className="brisa-table__col brisa-table__col--local" />
+            <col className="brisa-table__col brisa-table__col--contrato" />
+            <col className="brisa-table__col brisa-table__col--admissao" />
+            <col className="brisa-table__col brisa-table__col--status" />
+            <col className="brisa-table__col brisa-table__col--actions" />
+          </colgroup>
           <thead>
             <tr>
               <th>Funcionário</th>
@@ -67,8 +78,21 @@ export function FuncionariosList({
           </thead>
           <tbody>
             {funcionarios.map((funcionario, indice) => (
-              <tr key={funcionario.id}>
-                <td>
+              <tr
+                key={funcionario.id}
+                className="brisa-table__row--clickable"
+                tabIndex={0}
+                role="button"
+                aria-label={`Abrir perfil de ${funcionario.nome}`}
+                onClick={() => onOpenPerfil(funcionario)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onOpenPerfil(funcionario);
+                  }
+                }}
+              >
+                <td className="brisa-table__td brisa-table__td--person">
                   <div className="brisa-table__person">
                     <div
                       className={`brisa-avatar ${indice % 2 === 1 ? 'brisa-avatar--accent' : ''}`}
@@ -88,16 +112,27 @@ export function FuncionariosList({
                     </div>
                   </div>
                 </td>
-                <td>{labelFuncao(funcionario.funcaoPrincipal)}</td>
-                <td>{labelLocal(funcionario.localTrabalho)}</td>
-                <td>{labelContrato(funcionario.tipoContrato)}</td>
-                <td>{formatarData(funcionario.dataAdmissao)}</td>
-                <td>
+                <td className="brisa-table__td brisa-table__td--clip">
+                  {labelFuncao(funcionario.funcaoPrincipal)}
+                </td>
+                <td className="brisa-table__td brisa-table__td--clip">
+                  {labelLocal(funcionario.localTrabalho)}
+                </td>
+                <td className="brisa-table__td brisa-table__td--clip">
+                  {labelContrato(funcionario.tipoContrato)}
+                </td>
+                <td className="brisa-table__td brisa-table__td--clip">
+                  {formatarData(funcionario.dataAdmissao)}
+                </td>
+                <td className="brisa-table__td brisa-table__td--status">
                   <Badge tone={toneStatus(funcionario.status)}>
                     {labelStatus(funcionario.status)}
                   </Badge>
                 </td>
-                <td>
+                <td
+                  className="brisa-table__td brisa-table__td--actions"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="brisa-table__actions">
                     <button
                       type="button"

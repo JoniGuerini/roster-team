@@ -15,7 +15,9 @@ import {
   type TurnoInput,
 } from '../types/turno';
 import type { Funcionario } from '../types/funcionario';
+import type { PessoaExtra } from '../types/pessoaExtra';
 import { disparoNotificacoes } from '../hooks/useNotificacoes';
+import { extrasStorage } from '../services/extrasStorage';
 import './TurnosPage.css';
 
 const FILTRO_TIPO_OPTIONS: { value: string; label: string }[] = [
@@ -26,6 +28,7 @@ const FILTRO_TIPO_OPTIONS: { value: string; label: string }[] = [
 export function TurnosPage() {
   const [turnos, setTurnos] = useState<Turno[]>([]);
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
+  const [extras, setExtras] = useState<PessoaExtra[]>([]);
   const [busca, setBusca] = useState('');
   const [filtroTipo, setFiltroTipo] = useState<string>('todos');
   const [modalAberto, setModalAberto] = useState(false);
@@ -35,6 +38,7 @@ export function TurnosPage() {
   useEffect(() => {
     setTurnos(turnosStorage.listar());
     setFuncionarios(funcionariosStorage.listar());
+    setExtras(extrasStorage.listar());
   }, []);
 
   const turnosFiltrados = useMemo(() => {
@@ -159,6 +163,7 @@ export function TurnosPage() {
       <TurnosList
         turnos={turnosFiltrados}
         funcionarios={funcionarios}
+        extras={extras}
         onEdit={abrirEdicao}
         onDelete={(t) => setParaExcluir(t)}
       />
@@ -178,8 +183,13 @@ export function TurnosPage() {
           key={editando?.id ?? 'novo'}
           turno={editando}
           funcionarios={funcionarios}
+          extras={extras}
           onCancel={fecharModal}
           onSubmit={salvar}
+          onExtrasChange={() => {
+            setExtras(extrasStorage.listar());
+            disparoNotificacoes();
+          }}
         />
       </Modal>
 

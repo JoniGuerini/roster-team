@@ -130,3 +130,181 @@
     grid-template-columns: 1fr;
   }
 }
+
+.brisa-alocacao-turno {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.brisa-alocacao-turno__bloco {
+  background: var(--brisa-surface-soft);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.brisa-alocacao-turno__titulo {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brisa-text);
+}
+
+.brisa-alocacao-turno__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.brisa-alocacao-turno__linha {
+  display: grid;
+  grid-template-columns: minmax(72px, 88px) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-3);
+}
+
+.brisa-alocacao-turno__aviso {
+  margin: 0 0 var(--space-3);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-alocacao-turno__campo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.brisa-alocacao-turno__campo .brisa-select-wrapper {
+  flex: 1;
+  min-width: 120px;
+}
+
+/* Contraste: o bloco da função usa surface-soft; o select também — aqui o campo fica claramente “encaixado” no card. */
+.brisa-alocacao-turno__campo .brisa-select {
+  background: var(--brisa-surface);
+  border-color: var(--brisa-border-strong);
+}
+
+.brisa-alocacao-turno__campo .brisa-select:hover:not(.brisa-select--disabled) {
+  background: var(--brisa-surface);
+  border-color: var(--brisa-text-soft);
+}
+
+.brisa-alocacao-turno__campo .brisa-select:focus-visible,
+.brisa-alocacao-turno__campo .brisa-select.brisa-select--open {
+  background: var(--brisa-surface);
+}
+
+.brisa-alocacao-turno__campo .brisa-select--disabled {
+  background: var(--neutral-100);
+  opacity: 0.92;
+}
+
+.brisa-alocacao-turno__extra-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.brisa-alocacao-turno__label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-select-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.brisa-select-option-row__person {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.brisa-select-option-row__roles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.brisa-select-option-row__name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-role-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--brisa-surface-soft);
+  color: var(--brisa-text-muted);
+  border: 1px solid var(--brisa-border);
+  flex-shrink: 0;
+  max-width: min(140px, 100%);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-role-chip--extra {
+  background: var(--brisa-primary-soft);
+  color: var(--brisa-primary);
+  border-color: rgba(37, 99, 235, 0.22);
+}
+
+.brisa-role-chip--secondary {
+  font-weight: 500;
+  font-size: 10.5px;
+  padding: 2px 8px;
+  background: transparent;
+  color: var(--brisa-text-muted);
+  border-style: dashed;
+  border-color: var(--brisa-border-strong);
+}
+
+.brisa-select-option-row__pills {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.brisa-select-option-row__pills .brisa-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+}
+
+@media (max-width: 520px) {
+  .brisa-alocacao-turno__linha {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
