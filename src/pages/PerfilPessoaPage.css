@@ -2,10 +2,34 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  padding: var(--space-10) var(--space-10);
-  max-width: 800px;
+  padding: var(--space-8) var(--space-10) var(--space-10);
+  max-width: 1180px;
   width: 100%;
   margin: 0 auto;
+}
+
+.brisa-perfil__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.brisa-perfil__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+@media (max-width: 920px) {
+  .brisa-perfil {
+    padding: var(--space-6) var(--space-5) var(--space-8);
+  }
+
+  .brisa-perfil__body {
+    grid-template-columns: 1fr;
+  }
 }
 
 .brisa-perfil__toolbar {
@@ -109,7 +133,7 @@
   background: var(--brisa-surface);
   border: 1px solid var(--brisa-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-5) var(--space-6);
+  padding: var(--space-6);
   box-shadow: var(--shadow-xs);
 }
 
@@ -124,14 +148,14 @@
 
 .brisa-perfil__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-4) var(--space-6);
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-5) var(--space-6);
 }
 
 .brisa-perfil__field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .brisa-perfil__label {
@@ -143,9 +167,10 @@
 }
 
 .brisa-perfil__value {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--brisa-text);
   line-height: 1.45;
+  word-break: break-word;
 }
 
 .brisa-perfil__chips {

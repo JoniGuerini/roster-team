@@ -27,6 +27,7 @@ import { Badge } from '../ui/Badge';
 import { Checkbox } from '../ui/Checkbox';
 import { TimeRange } from '../ui/TimeRange';
 import { Modal } from '../ui/Modal';
+import { Icon } from '../ui/Icon';
 import { calcularDuracao } from '../../utils/turnoLabels';
 import { labelFuncao, labelLocal } from '../../utils/funcionarioLabels';
 import { hojeISO } from '../../utils/datas';
@@ -607,19 +608,7 @@ export function TurnoForm({
       <section className="brisa-form__card">
         <header className="brisa-form__card-header">
           <span className="brisa-form__card-icon" aria-hidden="true">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="9" />
-              <polyline points="12 7 12 12 15 14" />
-            </svg>
+            <Icon name="clock" size={18} />
           </span>
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Identificação do turno</h3>
@@ -772,21 +761,7 @@ export function TurnoForm({
       <section className="brisa-form__card">
         <header className="brisa-form__card-header">
           <span className="brisa-form__card-icon" aria-hidden="true">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
+            <Icon name="users" size={18} />
           </span>
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Necessidade da equipe</h3>
@@ -834,20 +809,7 @@ export function TurnoForm({
       <section className="brisa-form__card">
         <header className="brisa-form__card-header">
           <span className="brisa-form__card-icon" aria-hidden="true">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-              <polyline points="17 11 19 13 23 9" />
-            </svg>
+            <Icon name="user-check" size={18} />
           </span>
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Alocação sugerida por função</h3>
@@ -946,18 +908,7 @@ export function TurnoForm({
       <section className="brisa-form__card">
         <header className="brisa-form__card-header">
           <span className="brisa-form__card-icon" aria-hidden="true">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
+            <Icon name="message" size={18} />
           </span>
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Detalhes adicionais</h3>

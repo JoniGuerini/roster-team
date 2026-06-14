@@ -7,6 +7,7 @@ import type {
   TipoContrato,
 } from '../types/funcionario';
 import { funcionariosStorage } from '../services/funcionariosStorage';
+import { gerarCpfValido } from '../utils/cpf';
 
 const NOMES = [
   'Ana',
@@ -118,6 +119,7 @@ export function gerarFuncionarioDemo(indice: number): FuncionarioInput {
 
   return {
     nome,
+    cpf: gerarCpfValido(),
     localTrabalho: LOCAIS[indice % LOCAIS.length],
     tipoContrato: CONTRATOS[indice % CONTRATOS.length],
     funcaoPrincipal,

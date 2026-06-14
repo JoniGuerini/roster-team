@@ -71,6 +71,7 @@ export const extrasStorage = {
     const novo: PessoaExtra = {
       id: gerarId(),
       nome: input.nome.trim(),
+      cpf: input.cpf,
       localTrabalho: input.localTrabalho,
       tipoContrato: input.tipoContrato,
       funcaoPrincipal: input.funcaoPrincipal,

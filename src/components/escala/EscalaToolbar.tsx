@@ -1,5 +1,6 @@
 import { Button } from '../ui/Button';
 import { Select } from '../ui/Select';
+import { Icon } from '../ui/Icon';
 import { LOCAIS_TRABALHO, type LocalTrabalho } from '../../types/funcionario';
 import {
   diasDaSemana,
@@ -64,18 +65,7 @@ export function EscalaToolbar({
             aria-label="Período anterior"
             title="Anterior"
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
+            <Icon name="chevron-left" size={16} />
           </button>
           <button
             type="button"
@@ -84,18 +74,7 @@ export function EscalaToolbar({
             aria-label="Próximo período"
             title="Próximo"
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
+            <Icon name="chevron-right" size={16} />
           </button>
         </div>
         <Button variant="secondary" size="sm" onClick={onHoje}>

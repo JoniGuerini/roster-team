@@ -6,6 +6,7 @@ import { ExtrasPage } from './pages/ExtrasPage';
 import { TurnosPage } from './pages/TurnosPage';
 import { EscalaPage } from './pages/EscalaPage';
 import { NotificacoesPage } from './pages/NotificacoesPage';
+import { UsuariosPage } from './pages/UsuariosPage';
 import { PerfilPessoaPage } from './pages/PerfilPessoaPage';
 import { useHashRoute } from './hooks/useHashRoute';
 import { disparoNotificacoes } from './hooks/useNotificacoes';
@@ -54,6 +55,7 @@ export default function App() {
           )}
           {estado.rota === 'turnos' && <TurnosPage />}
           {estado.rota === 'notificacoes' && <NotificacoesPage />}
+          {estado.rota === 'usuarios' && <UsuariosPage />}
         </div>
       </main>
     </div>

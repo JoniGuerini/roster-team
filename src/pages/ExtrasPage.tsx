@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '../components/ui/Button';
 import { Field } from '../components/ui/Field';
+import { Icon } from '../components/ui/Icon';
 import { Input } from '../components/ui/Input';
 import { Modal } from '../components/ui/Modal';
 import { Select } from '../components/ui/Select';
@@ -156,24 +157,7 @@ export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
             ) : null}
           </p>
         </div>
-        <Button
-          onClick={abrirNovo}
-          leftIcon={
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          }
-        >
+        <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
           Novo extra
         </Button>
       </header>
@@ -181,20 +165,7 @@ export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
       <section className="brisa-page__toolbar">
         <div className="brisa-page__toolbar-equipe">
           <div className="brisa-search brisa-search--inline">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+            <Icon name="search" size={16} />
             <Input
               id="busca-extras"
               placeholder="Buscar"

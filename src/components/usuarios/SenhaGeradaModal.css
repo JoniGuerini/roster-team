@@ -1,0 +1,83 @@
+.brisa-senha {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.brisa-senha__aviso {
+  background: var(--brisa-warning-soft);
+  color: var(--brisa-warning);
+  border: 1px solid rgba(181, 131, 42, 0.25);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.brisa-senha__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.brisa-senha__rotulo {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-senha__valor {
+  font-size: 14px;
+  color: var(--brisa-text);
+}
+
+.brisa-senha__valor--email {
+  font-family: var(--font-mono, monospace);
+}
+
+.brisa-senha__senha-linha {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.brisa-senha__senha {
+  flex: 1;
+  font-family: var(--font-mono, monospace);
+  font-size: 18px;
+  letter-spacing: 0.06em;
+  color: var(--brisa-text);
+  background: var(--brisa-surface-soft);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  word-break: break-all;
+}
+
+.brisa-senha__copiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brisa-border);
+  background: var(--neutral-0);
+  color: var(--brisa-text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base),
+    color var(--transition-base);
+}
+
+.brisa-senha__copiar:hover {
+  background: var(--brisa-surface-hover);
+  border-color: var(--brisa-text-soft);
+}

@@ -1,3 +1,4 @@
+import { Icon } from './Icon';
 import './TimeRange.css';
 
 interface TimeRangeProps {
@@ -27,19 +28,7 @@ export function TimeRange({
         aria-label="Horário de início"
       />
       <span className="brisa-timerange__sep" aria-hidden="true">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <line x1="5" y1="12" x2="19" y2="12" />
-          <polyline points="12 5 19 12 12 19" />
-        </svg>
+        <Icon name="arrow-right" size={16} />
       </span>
       <input
         type="time"

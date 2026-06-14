@@ -17,6 +17,7 @@ import type {
 export interface PessoaExtra {
   id: string;
   nome: string;
+  cpf?: string | null;
   localTrabalho?: LocalTrabalho | null;
   tipoContrato?: TipoContrato | null;
   funcaoPrincipal?: Funcao | null;

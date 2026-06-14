@@ -118,7 +118,8 @@
   letter-spacing: 0.1em;
 }
 
-.brisa-search svg {
+.brisa-search svg,
+.brisa-search > .ti {
   position: absolute;
   left: 14px;
   top: 50%;

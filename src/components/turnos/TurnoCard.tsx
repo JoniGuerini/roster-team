@@ -6,6 +6,7 @@ import {
 } from '../../types/turno';
 import { labelCategoria } from '../../utils/turnoLabels';
 import { labelLocal } from '../../utils/funcionarioLabels';
+import { Icon } from '../ui/Icon';
 import './TurnoCard.css';
 
 export type TurnoCardStatusKey =
@@ -52,54 +53,15 @@ export function TurnoCard({
 
       <ul className="brisa-turno-card__lines">
         <li className="brisa-turno-card__line">
-          <svg
-            width="13"
-            height="13"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="12" r="9" />
-            <polyline points="12 7 12 12 15 14" />
-          </svg>
+          <Icon name="clock" size={13} />
           {turno.horaInicio} – {turno.horaFim}
         </li>
         <li className="brisa-turno-card__line">
-          <svg
-            width="13"
-            height="13"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
+          <Icon name="map-pin" size={13} />
           {labelLocal(turno.localTrabalho)}
         </li>
         <li className="brisa-turno-card__line">
-          <svg
-            width="13"
-            height="13"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
+          <Icon name="calendar" size={13} />
           {labelCategoria(turno.categoria)}
         </li>
         {turno.tipo === 'regular' &&
@@ -107,19 +69,7 @@ export function TurnoCard({
           turno.diaSemanaRecorrente >= 0 &&
           turno.diaSemanaRecorrente <= 6 && (
             <li className="brisa-turno-card__line brisa-turno-card__line--accent">
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-              </svg>
+              <Icon name="repeat" size={13} />
               {
                 ROTULO_DIA_SEMANA_RECORRENTE[
                   turno.diaSemanaRecorrente as DiaSemanaRecorrente

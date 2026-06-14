@@ -13,6 +13,7 @@ import {
   labelLocal,
   labelStatus,
 } from './funcionarioLabels';
+import { cpfDigitos } from './cpf';
 
 /** Valor de select: filtrar registos com o campo em branco (extras). */
 export const FILTRO_SEM_CAMPO = '__none__';
@@ -30,6 +31,8 @@ export function haystackFuncionario(f: Funcionario): string {
   const d = f.dataAdmissao;
   const parts: string[] = [
     f.nome,
+    f.cpf ?? '',
+    cpfDigitos(f.cpf ?? ''),
     labelFuncao(f.funcaoPrincipal),
     ...f.funcoesSecundarias.map(labelFuncao),
     labelLocal(f.localTrabalho),
@@ -51,6 +54,9 @@ export function haystackFuncionario(f: Funcionario): string {
 
 export function haystackExtra(e: PessoaExtra): string {
   const parts: string[] = [e.nome, 'extra'];
+  if (e.cpf) {
+    parts.push(e.cpf, cpfDigitos(e.cpf));
+  }
   if (e.funcaoPrincipal) {
     parts.push(labelFuncao(e.funcaoPrincipal), e.funcaoPrincipal);
   } else {

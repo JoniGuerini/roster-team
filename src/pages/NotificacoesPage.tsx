@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Button } from '../components/ui/Button';
+import { Icon } from '../components/ui/Icon';
 import { useNotificacoes } from '../hooks/useNotificacoes';
 import {
   ROTULO_TIPO_CURTO,
@@ -78,22 +79,7 @@ export function NotificacoesPage() {
             variant="secondary"
             size="sm"
             onClick={sincronizar}
-            leftIcon={
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="23 4 23 10 17 10" />
-                <polyline points="1 20 1 14 7 14" />
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-              </svg>
-            }
+            leftIcon={<Icon name="refresh" size={14} />}
           >
             Recalcular
           </Button>
@@ -131,18 +117,7 @@ export function NotificacoesPage() {
       {itens.length === 0 ? (
         <div className="brisa-empty">
           <div className="brisa-empty__icon">
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <Icon name="check" size={36} />
           </div>
           <h3 className="brisa-empty__title">
             {filtro === 'nao_lidas'

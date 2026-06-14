@@ -22,7 +22,9 @@ import { Select } from '../ui/Select';
 import { Textarea } from '../ui/Textarea';
 import { Checkbox } from '../ui/Checkbox';
 import { Button } from '../ui/Button';
+import { Icon } from '../ui/Icon';
 import { AusenciasEditor } from './AusenciasEditor';
+import { cpfValido, formatarCpf } from '../../utils/cpf';
 import './FuncionarioForm.css';
 
 export type FuncionarioFormProps =
@@ -41,6 +43,7 @@ export type FuncionarioFormProps =
 
 interface FormState {
   nome: string;
+  cpf: string;
   localTrabalho: LocalTrabalho | '';
   tipoContrato: TipoContrato | '';
   funcaoPrincipal: Funcao | '';
@@ -58,6 +61,7 @@ type FormErrors = Partial<Record<keyof FormState, string>>;
 
 const ESTADO_INICIAL: FormState = {
   nome: '',
+  cpf: '',
   localTrabalho: '',
   tipoContrato: '',
   funcaoPrincipal: '',
@@ -98,6 +102,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
       if (extra) {
         setForm({
           nome: extra.nome,
+          cpf: extra.cpf ?? '',
           localTrabalho: extra.localTrabalho ?? '',
           tipoContrato: extra.tipoContrato ?? '',
           funcaoPrincipal: extra.funcaoPrincipal ?? '',
@@ -118,6 +123,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
       if (funcionario) {
         setForm({
           nome: funcionario.nome,
+          cpf: funcionario.cpf ?? '',
           localTrabalho: funcionario.localTrabalho,
           tipoContrato: funcionario.tipoContrato,
           funcaoPrincipal: funcionario.funcaoPrincipal,
@@ -193,9 +199,14 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
         : 'Informe o nome do funcionário.';
     }
     if (isExtra) {
+      if (form.cpf.trim() && !cpfValido(form.cpf)) {
+        novosErros.cpf = 'CPF inválido.';
+      }
       setErros(novosErros);
       return Object.keys(novosErros).length === 0;
     }
+    if (!form.cpf.trim()) novosErros.cpf = 'Informe o CPF.';
+    else if (!cpfValido(form.cpf)) novosErros.cpf = 'CPF inválido.';
     if (!form.localTrabalho)
       novosErros.localTrabalho = 'Selecione o local de trabalho.';
     if (!form.tipoContrato)
@@ -218,6 +229,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
     if (props.variant === 'extra') {
       props.onSubmit({
         nome: form.nome.trim(),
+        cpf: form.cpf.trim() || undefined,
         localTrabalho: form.localTrabalho
           ? (form.localTrabalho as LocalTrabalho)
           : undefined,
@@ -244,6 +256,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
     }
     props.onSubmit({
       nome: form.nome.trim(),
+      cpf: form.cpf.trim(),
       localTrabalho: form.localTrabalho as LocalTrabalho,
       tipoContrato: form.tipoContrato as TipoContrato,
       funcaoPrincipal: form.funcaoPrincipal as Funcao,
@@ -265,19 +278,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
       <section className="brisa-form__card">
         <header className="brisa-form__card-header">
           <span className="brisa-form__card-icon" aria-hidden="true">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
+            <Icon name="user" size={18} />
           </span>
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Dados básicos</h3>
@@ -302,6 +303,24 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
             invalid={Boolean(erros.nome)}
             onChange={(e) => atualizarCampo('nome', e.target.value)}
             autoFocus
+          />
+        </Field>
+
+        <Field
+          label="CPF"
+          htmlFor="cpf"
+          required={!isExtra}
+          error={erros.cpf}
+          hint={isExtra ? 'Opcional' : undefined}
+        >
+          <Input
+            id="cpf"
+            inputMode="numeric"
+            placeholder="000.000.000-00"
+            value={form.cpf}
+            maxLength={14}
+            invalid={Boolean(erros.cpf)}
+            onChange={(e) => atualizarCampo('cpf', formatarCpf(e.target.value))}
           />
         </Field>
 
@@ -394,19 +413,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
       <section className="brisa-form__card brisa-form__card--neutral">
         <header className="brisa-form__card-header">
           <span className="brisa-form__card-icon" aria-hidden="true">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M9 11l3 3L22 4" />
-              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-            </svg>
+            <Icon name="checkbox" size={18} />
           </span>
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Funções na cafeteria</h3>
@@ -479,21 +486,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
       <section className="brisa-form__card">
         <header className="brisa-form__card-header">
           <span className="brisa-form__card-icon" aria-hidden="true">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
+            <Icon name="calendar-event" size={18} />
           </span>
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Períodos de ausência</h3>
@@ -514,21 +507,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
       <section className="brisa-form__card">
         <header className="brisa-form__card-header">
           <span className="brisa-form__card-icon" aria-hidden="true">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="9" y1="13" x2="15" y2="13" />
-              <line x1="9" y1="17" x2="13" y2="17" />
-            </svg>
+            <Icon name="file-text" size={18} />
           </span>
           <div className="brisa-form__card-text">
             <h3 className="brisa-form__card-title">Documentos (PDF)</h3>
@@ -547,21 +526,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
             hidden
             onChange={adicionarArquivos}
           />
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
+          <Icon name="upload" size={22} />
           <span className="brisa-upload__title">
             Clique para subir arquivos PDF
           </span>
@@ -586,19 +551,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
                   onClick={() => removerDocumento(doc.id)}
                   aria-label={`Remover ${doc.nome}`}
                 >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
+                  <Icon name="x" size={16} />
                 </button>
               </li>
             ))}

@@ -45,6 +45,7 @@ export interface PeriodoAusencia {
 export interface Funcionario {
   id: string;
   nome: string;
+  cpf: string;
   localTrabalho: LocalTrabalho;
   tipoContrato: TipoContrato;
   funcaoPrincipal: Funcao;

@@ -5,7 +5,8 @@ export type RotaId =
   | 'extras'
   | 'turnos'
   | 'escala'
-  | 'notificacoes';
+  | 'notificacoes'
+  | 'usuarios';
 
 const ROTAS_VALIDAS: RotaId[] = [
   'funcionarios',
@@ -13,6 +14,7 @@ const ROTAS_VALIDAS: RotaId[] = [
   'turnos',
   'escala',
   'notificacoes',
+  'usuarios',
 ];
 const ROTA_PADRAO: RotaId = 'escala';
 

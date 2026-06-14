@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { Icon } from '../components/ui/Icon';
 import { Modal } from '../components/ui/Modal';
 import { FuncionarioForm } from '../components/funcionarios/FuncionarioForm';
 import { ConfirmDeleteModal } from '../components/funcionarios/ConfirmDeleteModal';
@@ -14,6 +15,7 @@ import {
 } from '../types/funcionario';
 import type { PessoaExtra, PessoaExtraInput } from '../types/pessoaExtra';
 import { disparoNotificacoes } from '../hooks/useNotificacoes';
+import { formatarCpf } from '../utils/cpf';
 import {
   formatarData,
   iniciaisDoNome,
@@ -112,20 +114,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
       <div className="brisa-perfil">
         <div className="brisa-perfil__toolbar">
           <button type="button" className="brisa-perfil__back" onClick={onVoltar}>
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
+            <Icon name="arrow-left" size={18} />
             Voltar
           </button>
         </div>
@@ -153,20 +142,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
     <div className="brisa-perfil">
       <div className="brisa-perfil__toolbar">
         <button type="button" className="brisa-perfil__back" onClick={onVoltar}>
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
+          <Icon name="arrow-left" size={18} />
           Voltar para {tipo === 'funcionario' ? 'funcionários' : 'extras'}
         </button>
       </div>
@@ -202,6 +178,8 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
         </div>
       </header>
 
+      <div className="brisa-perfil__body">
+        <div className="brisa-perfil__col brisa-perfil__col--main">
       <section className="brisa-perfil__card">
         <h2 className="brisa-perfil__card-title">Dados gerais</h2>
         <div className="brisa-perfil__grid">
@@ -228,6 +206,16 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
             ) : (
               <span className="brisa-perfil__value">—</span>
             )}
+          </div>
+          <div className="brisa-perfil__field">
+            <span className="brisa-perfil__label">CPF</span>
+            <span className="brisa-perfil__value">
+              {(() => {
+                const cpf =
+                  tipo === 'funcionario' ? funcionario!.cpf : extra!.cpf;
+                return cpf ? formatarCpf(cpf) : '—';
+              })()}
+            </span>
           </div>
           <div className="brisa-perfil__field">
             <span className="brisa-perfil__label">Local de trabalho</span>
@@ -268,13 +256,6 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
         </div>
       </section>
 
-      {registro.descricao?.trim() ? (
-        <section className="brisa-perfil__card">
-          <h2 className="brisa-perfil__card-title">Observações</h2>
-          <p className="brisa-perfil__prose">{registro.descricao.trim()}</p>
-        </section>
-      ) : null}
-
       <section className="brisa-perfil__card">
         <h2 className="brisa-perfil__card-title">Ausências registradas</h2>
         {ausencias.length === 0 ? (
@@ -305,6 +286,16 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
         )}
       </section>
 
+        </div>
+
+        <div className="brisa-perfil__col brisa-perfil__col--side">
+      {registro.descricao?.trim() ? (
+        <section className="brisa-perfil__card">
+          <h2 className="brisa-perfil__card-title">Observações</h2>
+          <p className="brisa-perfil__prose">{registro.descricao.trim()}</p>
+        </section>
+      ) : null}
+
       <section className="brisa-perfil__card">
         <h2 className="brisa-perfil__card-title">Documentos</h2>
         {documentos.length === 0 ? (
@@ -323,6 +314,8 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
           </ul>
         )}
       </section>
+        </div>
+      </div>
 
       <Modal
         open={modalEdicao}

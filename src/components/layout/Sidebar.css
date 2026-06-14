@@ -79,6 +79,10 @@
   margin-bottom: var(--space-2);
 }
 
+.brisa-sidebar__section--gap {
+  margin-top: var(--space-5);
+}
+
 .brisa-sidebar__item {
   display: flex;
   align-items: center;

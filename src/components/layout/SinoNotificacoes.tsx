@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNotificacoes } from '../../hooks/useNotificacoes';
 import { tempoRelativo } from '../../utils/notificacaoLabels';
 import type { SeveridadeNotificacao } from '../../types/notificacao';
+import { Icon } from '../ui/Icon';
 import './SinoNotificacoes.css';
 
 interface SinoNotificacoesProps {
@@ -10,60 +11,12 @@ interface SinoNotificacoesProps {
 
 function IconeSeveridade({ severidade }: { severidade: SeveridadeNotificacao }) {
   if (severidade === 'alta') {
-    return (
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-label="Crítico"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <line x1="12" y1="8" x2="12" y2="12" />
-        <line x1="12" y1="16" x2="12.01" y2="16" />
-      </svg>
-    );
+    return <Icon name="alert-circle" size={16} label="Crítico" />;
   }
   if (severidade === 'media') {
-    return (
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-label="Atenção"
-      >
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-        <line x1="12" y1="9" x2="12" y2="13" />
-        <line x1="12" y1="17" x2="12.01" y2="17" />
-      </svg>
-    );
+    return <Icon name="alert-triangle" size={16} label="Atenção" />;
   }
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-label="Aviso"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="16" x2="12" y2="12" />
-      <line x1="12" y1="8" x2="12.01" y2="8" />
-    </svg>
-  );
+  return <Icon name="info-circle" size={16} label="Aviso" />;
 }
 
 export function SinoNotificacoes({ onAbrirCentro }: SinoNotificacoesProps) {
@@ -101,20 +54,7 @@ export function SinoNotificacoes({ onAbrirCentro }: SinoNotificacoesProps) {
         aria-haspopup="dialog"
         onClick={() => setAberto((v) => !v)}
       >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-        </svg>
+        <Icon name="bell" size={18} />
         {contagem > 0 && (
           <span
             className={`brisa-sino__badge ${contagem > 9 ? 'brisa-sino__badge--largo' : ''}`}
@@ -148,18 +88,7 @@ export function SinoNotificacoes({ onAbrirCentro }: SinoNotificacoesProps) {
 
           {ativas.length === 0 ? (
             <div className="brisa-sino__empty">
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
+              <Icon name="check" size={28} />
               Sem novidades por aqui.
             </div>
           ) : (

@@ -1,0 +1,29 @@
+.brisa-ucol--user {
+  width: 30%;
+}
+
+.brisa-ucol--papel {
+  width: 14%;
+}
+
+.brisa-ucol--perm {
+  width: 12%;
+}
+
+.brisa-ucol--status {
+  width: 14%;
+}
+
+.brisa-ucol--acesso {
+  width: 16%;
+}
+
+.brisa-ucol--actions {
+  width: 14%;
+}
+
+.brisa-usuarios__perm {
+  font-size: 13px;
+  color: var(--brisa-text-muted);
+  font-weight: 500;
+}

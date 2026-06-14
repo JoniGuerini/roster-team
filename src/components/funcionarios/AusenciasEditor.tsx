@@ -8,6 +8,7 @@ import { Field } from '../ui/Field';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { Button } from '../ui/Button';
+import { Icon } from '../ui/Icon';
 import { formatarData } from '../../utils/funcionarioLabels';
 import './AusenciasEditor.css';
 
@@ -110,19 +111,7 @@ export function AusenciasEditor({
                 aria-label="Remover ausência"
                 title="Remover"
               >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                <Icon name="x" size={14} />
               </button>
             </li>
           ))}
@@ -178,21 +167,7 @@ export function AusenciasEditor({
             type="button"
             variant="secondary"
             onClick={adicionar}
-            leftIcon={
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            }
+            leftIcon={<Icon name="plus" size={14} />}
           >
             Adicionar período
           </Button>
