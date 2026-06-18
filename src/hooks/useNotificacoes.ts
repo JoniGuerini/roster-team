@@ -9,68 +9,100 @@ function notificarListeners() {
 }
 
 export function disparoNotificacoes() {
-  notificacoesStorage.sincronizar();
-  notificarListeners();
+  void notificacoesStorage
+    .sincronizar()
+    .then(() => {
+      notificarListeners();
+    })
+    .catch((error) => {
+      console.error('[notificacoes] sincronizar', error);
+    });
 }
 
 export function useNotificacoes() {
-  const [lista, setLista] = useState<Notificacao[]>(() =>
-    notificacoesStorage.listar(),
-  );
-  const [contagem, setContagem] = useState<number>(() =>
-    notificacoesStorage.contagemNaoLidasAtivas(),
-  );
+  const [lista, setLista] = useState<Notificacao[]>([]);
+  const [contagem, setContagem] = useState(0);
+  const [carregando, setCarregando] = useState(true);
 
-  const recarregar = useCallback(() => {
-    setLista(notificacoesStorage.listar());
-    setContagem(notificacoesStorage.contagemNaoLidasAtivas());
+  const recarregar = useCallback(async () => {
+    try {
+      const [items, total] = await Promise.all([
+        notificacoesStorage.listar(),
+        notificacoesStorage.contagemNaoLidasAtivas(),
+      ]);
+      setLista(items);
+      setContagem(total);
+    } catch (error) {
+      console.error('[notificacoes] carregar', error);
+      setLista([]);
+      setContagem(0);
+    } finally {
+      setCarregando(false);
+    }
   }, []);
 
   useEffect(() => {
     listeners.add(recarregar);
+    void recarregar();
     return () => {
       listeners.delete(recarregar);
     };
   }, [recarregar]);
 
   const sincronizar = useCallback(() => {
-    notificacoesStorage.sincronizar();
-    notificarListeners();
+    disparoNotificacoes();
   }, []);
 
   const marcarLida = useCallback((id: string) => {
-    notificacoesStorage.marcarLida(id);
-    notificarListeners();
+    void notificacoesStorage
+      .marcarLida(id)
+      .then(notificarListeners)
+      .catch((error) => console.error('[notificacoes] marcar lida', error));
   }, []);
 
   const marcarTodasLidas = useCallback(() => {
-    notificacoesStorage.marcarTodasLidas();
-    notificarListeners();
+    void notificacoesStorage
+      .marcarTodasLidas()
+      .then(notificarListeners)
+      .catch((error) =>
+        console.error('[notificacoes] marcar todas lidas', error),
+      );
   }, []);
 
   const marcarResolvida = useCallback((id: string) => {
-    notificacoesStorage.marcarResolvida(id);
-    notificarListeners();
+    void notificacoesStorage
+      .marcarResolvida(id)
+      .then(notificarListeners)
+      .catch((error) => console.error('[notificacoes] resolver', error));
   }, []);
 
   const adiar = useCallback((id: string, ateData: string) => {
-    notificacoesStorage.adiar(id, ateData);
-    notificarListeners();
+    void notificacoesStorage
+      .adiar(id, ateData)
+      .then(notificarListeners)
+      .catch((error) => console.error('[notificacoes] adiar', error));
   }, []);
 
   const reabrir = useCallback((id: string) => {
-    notificacoesStorage.reabrir(id);
-    notificarListeners();
+    void notificacoesStorage
+      .reabrir(id)
+      .then(notificarListeners)
+      .catch((error) => console.error('[notificacoes] reabrir', error));
   }, []);
 
   const limparResolvidas = useCallback(() => {
-    notificacoesStorage.limparResolvidas();
-    notificarListeners();
+    void notificacoesStorage
+      .limparResolvidas()
+      .then(notificarListeners)
+      .catch((error) =>
+        console.error('[notificacoes] limpar resolvidas', error),
+      );
   }, []);
 
   return {
     lista,
     contagem,
+    carregando,
     sincronizar,
     marcarLida,
     marcarTodasLidas,

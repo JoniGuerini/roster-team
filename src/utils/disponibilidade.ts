@@ -52,7 +52,8 @@ export function indisponibilidadeNoDia(
   funcionario: Funcionario,
   data: string,
 ): Indisponibilidade | null {
-  if (funcionario.status === 'inativo') {
+  const status = funcionario.status ?? 'ativo';
+  if (status === 'inativo') {
     return { motivo: 'inativo', rotulo: 'Inativo' };
   }
   const ausencia = (funcionario.ausencias ?? []).find((a) =>
@@ -66,7 +67,7 @@ export function indisponibilidadeNoDia(
       detalhe: `${ausencia.inicio} → ${ausencia.fim}`,
     };
   }
-  if (funcionario.status === 'ativo') {
+  if (status === 'ativo') {
     if (
       funcionario.diaFolgaSemanal != null &&
       fromISO(data).getDay() === funcionario.diaFolgaSemanal
@@ -79,10 +80,10 @@ export function indisponibilidadeNoDia(
       };
     }
   }
-  if (funcionario.status === 'ferias') {
+  if (status === 'ferias') {
     return { motivo: 'ferias', rotulo: 'Em férias' };
   }
-  if (funcionario.status === 'afastado') {
+  if (status === 'afastado') {
     return { motivo: 'afastamento', rotulo: 'Afastado(a)' };
   }
   return null;
@@ -134,7 +135,7 @@ export function indisponibilidadeExtraNoDia(
 export function podeAparecerComoSugeridoNoTurno(
   funcionario: Funcionario,
 ): boolean {
-  return funcionario.status === 'ativo';
+  return (funcionario.status ?? 'ativo') === 'ativo';
 }
 
 function horarioToMin(hora: string): number {

@@ -15,8 +15,8 @@ import '../funcionarios/FuncionariosList.css';
 interface ExtrasListProps {
   extras: PessoaExtra[];
   onOpenPerfil: (extra: PessoaExtra) => void;
-  onEdit: (extra: PessoaExtra) => void;
-  onDelete: (extra: PessoaExtra) => void;
+  onEdit?: (extra: PessoaExtra) => void;
+  onDelete?: (extra: PessoaExtra) => void;
 }
 
 export function ExtrasList({ extras, onOpenPerfil, onEdit, onDelete }: ExtrasListProps) {
@@ -127,24 +127,28 @@ export function ExtrasList({ extras, onOpenPerfil, onEdit, onDelete }: ExtrasLis
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="brisa-table__actions">
-                      <button
-                        type="button"
-                        className="brisa-icon-btn"
-                        onClick={() => onEdit(extra)}
-                        aria-label={`Editar ${extra.nome}`}
-                        title="Editar"
-                      >
-                        <Icon name="pencil" size={16} />
-                      </button>
-                      <button
-                        type="button"
-                        className="brisa-icon-btn brisa-icon-btn--danger"
-                        onClick={() => onDelete(extra)}
-                        aria-label={`Excluir ${extra.nome}`}
-                        title="Excluir"
-                      >
-                        <Icon name="trash" size={16} />
-                      </button>
+                      {onEdit ? (
+                        <button
+                          type="button"
+                          className="brisa-icon-btn"
+                          onClick={() => onEdit(extra)}
+                          aria-label={`Editar ${extra.nome}`}
+                          title="Editar"
+                        >
+                          <Icon name="pencil" size={16} />
+                        </button>
+                      ) : null}
+                      {onDelete ? (
+                        <button
+                          type="button"
+                          className="brisa-icon-btn brisa-icon-btn--danger"
+                          onClick={() => onDelete(extra)}
+                          aria-label={`Excluir ${extra.nome}`}
+                          title="Excluir"
+                        >
+                          <Icon name="trash" size={16} />
+                        </button>
+                      ) : null}
                     </div>
                   </td>
                 </tr>

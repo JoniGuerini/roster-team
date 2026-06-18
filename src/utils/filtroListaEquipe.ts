@@ -28,26 +28,39 @@ export function normalizarParaBusca(s: string): string {
 
 /** Texto agregado para busca livre (qualquer coluna visível + chaves). */
 export function haystackFuncionario(f: Funcionario): string {
-  const d = f.dataAdmissao;
-  const parts: string[] = [
-    f.nome,
-    f.cpf ?? '',
-    cpfDigitos(f.cpf ?? ''),
-    labelFuncao(f.funcaoPrincipal),
-    ...f.funcoesSecundarias.map(labelFuncao),
-    labelLocal(f.localTrabalho),
-    labelContrato(f.tipoContrato),
-    formatarData(d),
-    labelStatus(f.status),
-    f.funcaoPrincipal,
-    f.localTrabalho,
-    f.tipoContrato,
-    f.status,
-    d,
-  ];
-  if (d?.includes('-')) {
-    const [y, m, day] = d.split('-');
-    if (y && m && day) parts.push(`${day}/${m}/${y}`);
+  const d = f.dataAdmissao ?? '';
+  const parts: string[] = [f.nome, f.cpf ?? '', cpfDigitos(f.cpf ?? '')];
+  if (f.funcaoPrincipal) {
+    parts.push(labelFuncao(f.funcaoPrincipal), f.funcaoPrincipal);
+  } else {
+    parts.push('sem função', 'sem funcao');
+  }
+  for (const fn of f.funcoesSecundarias ?? []) {
+    parts.push(labelFuncao(fn), fn);
+  }
+  if (f.localTrabalho) {
+    parts.push(labelLocal(f.localTrabalho), f.localTrabalho);
+  } else {
+    parts.push('sem local');
+  }
+  if (f.tipoContrato) {
+    parts.push(labelContrato(f.tipoContrato), f.tipoContrato);
+  } else {
+    parts.push('sem contrato');
+  }
+  if (d) {
+    parts.push(formatarData(d), d);
+    if (d.includes('-')) {
+      const [y, m, day] = d.split('-');
+      if (y && m && day) parts.push(`${day}/${m}/${y}`);
+    }
+  } else {
+    parts.push('sem admissão', 'sem admissao');
+  }
+  if (f.status) {
+    parts.push(labelStatus(f.status), f.status);
+  } else {
+    parts.push('sem status');
   }
   return normalizarParaBusca(parts.join(' '));
 }

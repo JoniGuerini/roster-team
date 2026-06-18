@@ -1,0 +1,310 @@
+.brisa-empresa-detalhe {
+  gap: var(--space-5);
+}
+
+.brisa-detalhe__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  color: var(--brisa-text-soft);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.brisa-detalhe__back:hover {
+  color: var(--brisa-text);
+}
+
+.brisa-detalhe__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-xs);
+}
+
+.brisa-detalhe__id {
+  min-width: 0;
+  flex: 1;
+}
+
+.brisa-detalhe__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.brisa-detalhe__nome {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--brisa-text);
+}
+
+.brisa-detalhe__segmento {
+  font-size: 13px;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-detalhe__header-acoes {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.brisa-detalhe__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.brisa-detalhe__card {
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-xs);
+}
+
+.brisa-detalhe__card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.brisa-detalhe__card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--brisa-text);
+}
+
+.brisa-detalhe__card-sub {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--brisa-text-soft);
+  line-height: 1.45;
+}
+
+.brisa-detalhe__recursos-contagem {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brisa-text-soft);
+  background: var(--brisa-surface-soft);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.brisa-detalhe__recursos-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: var(--space-3);
+}
+
+.brisa-detalhe__recurso {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md, 10px);
+  background: var(--brisa-surface);
+}
+
+.brisa-detalhe__recurso-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brisa-surface-soft);
+  color: var(--brisa-text-soft);
+  flex-shrink: 0;
+}
+
+.brisa-detalhe__recurso-icon--on {
+  background: var(--brisa-primary-soft, #e8edf9);
+  color: var(--brisa-primary, #3c5aa6);
+}
+
+.brisa-detalhe__recurso-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.brisa-detalhe__recurso-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brisa-text);
+}
+
+.brisa-detalhe__recurso-desc {
+  font-size: 12.5px;
+  color: var(--brisa-text-soft);
+  line-height: 1.4;
+}
+
+.brisa-detalhe__owner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--brisa-surface-soft);
+  border-radius: var(--radius-md, 10px);
+  margin-bottom: var(--space-4);
+}
+
+.brisa-detalhe__owner-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.brisa-detalhe__owner-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brisa-detalhe__owner-nome {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-detalhe__owner-email {
+  font-size: 12.5px;
+  color: var(--brisa-text-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-detalhe__dados-lista {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-3);
+}
+
+.brisa-detalhe__dado {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--brisa-surface-soft);
+  border-radius: var(--radius-md, 10px);
+}
+
+.brisa-detalhe__dado-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-detalhe__dado-valor {
+  font-size: 13.5px;
+  color: var(--brisa-text);
+}
+
+.brisa-detalhe__cor {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.brisa-detalhe__cor-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--brisa-border);
+}
+
+.brisa-detalhe__mono {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  color: var(--brisa-text-soft);
+  word-break: break-all;
+}
+
+.brisa-detalhe__usuarios {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.brisa-detalhe__usuarios-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.brisa-detalhe__usuarios-acoes {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.brisa-detalhe__erro {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--brisa-danger) 12%, transparent);
+  color: var(--brisa-danger);
+  font-size: 14px;
+}
+
+.brisa-detalhe__salvando {
+  margin: var(--space-3) 0 0;
+  font-size: 13px;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-empty--compacto {
+  padding: var(--space-8) var(--space-6);
+}
+
+@media (max-width: 880px) {
+  .brisa-detalhe__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .brisa-detalhe__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

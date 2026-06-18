@@ -7,7 +7,6 @@ import {
   formatarDataHora,
   labelPapel,
   labelStatusUsuario,
-  tonePapel,
   toneStatusUsuario,
 } from '../../utils/usuarioLabels';
 import '../funcionarios/FuncionariosList.css';
@@ -15,16 +14,22 @@ import './UsuariosList.css';
 
 interface UsuariosListProps {
   usuarios: Usuario[];
-  onEdit: (usuario: Usuario) => void;
-  onGerarSenha: (usuario: Usuario) => void;
-  onDelete: (usuario: Usuario) => void;
+  usuarioAtualId?: string;
+  onDelete?: (usuario: Usuario) => void;
+  onEdit?: (usuario: Usuario) => void;
+  onGerarSenha?: (usuario: Usuario) => void;
+  emptyTitle?: string;
+  emptyHint?: string;
 }
 
 export function UsuariosList({
   usuarios,
+  usuarioAtualId,
   onEdit,
   onGerarSenha,
   onDelete,
+  emptyTitle = 'Nenhum usuário encontrado',
+  emptyHint = 'Clique em Novo usuário para criar um acesso e gerar uma senha.',
 }: UsuariosListProps) {
   if (usuarios.length === 0) {
     return (
@@ -32,11 +37,8 @@ export function UsuariosList({
         <div className="brisa-empty__icon">
           <Icon name="users" size={36} />
         </div>
-        <h3 className="brisa-empty__title">Nenhum usuário encontrado</h3>
-        <p className="brisa-empty__hint">
-          Clique em <strong>Novo usuário</strong> para criar um acesso e gerar
-          uma senha.
-        </p>
+        <h3 className="brisa-empty__title">{emptyTitle}</h3>
+        <p className="brisa-empty__hint">{emptyHint}</p>
       </div>
     );
   }
@@ -56,15 +58,17 @@ export function UsuariosList({
           <thead>
             <tr>
               <th>Usuário</th>
-              <th>Papel</th>
               <th>Permissões</th>
+              <th>Detalhe</th>
               <th>Status</th>
               <th>Último acesso</th>
               <th aria-label="Ações" />
             </tr>
           </thead>
           <tbody>
-            {usuarios.map((usuario, indice) => (
+            {usuarios.map((usuario, indice) => {
+              const ehVoce = usuarioAtualId === usuario.id;
+              return (
               <tr key={usuario.id}>
                 <td className="brisa-table__td brisa-table__td--person">
                   <div className="brisa-table__person">
@@ -83,8 +87,8 @@ export function UsuariosList({
                   </div>
                 </td>
                 <td className="brisa-table__td brisa-table__td--clip">
-                  <Badge tone={tonePapel(usuario.papel)}>
-                    {labelPapel(usuario.papel)}
+                  <Badge tone="info">
+                    {usuario.perfilAcessoNome ?? labelPapel(usuario.papel)}
                   </Badge>
                 </td>
                 <td className="brisa-table__td brisa-table__td--clip">
@@ -102,37 +106,49 @@ export function UsuariosList({
                 </td>
                 <td className="brisa-table__td brisa-table__td--actions">
                   <div className="brisa-table__actions">
-                    <button
-                      type="button"
-                      className="brisa-icon-btn"
-                      onClick={() => onGerarSenha(usuario)}
-                      aria-label={`Gerar nova senha para ${usuario.nome}`}
-                      title="Gerar nova senha"
-                    >
-                      <Icon name="key" size={16} />
-                    </button>
-                    <button
-                      type="button"
-                      className="brisa-icon-btn"
-                      onClick={() => onEdit(usuario)}
-                      aria-label={`Editar ${usuario.nome}`}
-                      title="Editar"
-                    >
-                      <Icon name="pencil" size={16} />
-                    </button>
-                    <button
-                      type="button"
-                      className="brisa-icon-btn brisa-icon-btn--danger"
-                      onClick={() => onDelete(usuario)}
-                      aria-label={`Excluir ${usuario.nome}`}
-                      title="Excluir"
-                    >
-                      <Icon name="trash" size={16} />
-                    </button>
+                    {onGerarSenha && !ehVoce ? (
+                      <button
+                        type="button"
+                        className="brisa-icon-btn"
+                        onClick={() => onGerarSenha(usuario)}
+                        aria-label={`Gerar nova senha para ${usuario.nome}`}
+                        title="Gerar nova senha"
+                      >
+                        <Icon name="key" size={16} />
+                      </button>
+                    ) : null}
+                    {onEdit && !ehVoce ? (
+                      <button
+                        type="button"
+                        className="brisa-icon-btn"
+                        onClick={() => onEdit(usuario)}
+                        aria-label={`Editar ${usuario.nome}`}
+                        title="Editar"
+                      >
+                        <Icon name="pencil" size={16} />
+                      </button>
+                    ) : null}
+                    {onDelete && !ehVoce ? (
+                      <button
+                        type="button"
+                        className="brisa-icon-btn brisa-icon-btn--danger"
+                        onClick={() => onDelete(usuario)}
+                        aria-label={`Excluir ${usuario.nome}`}
+                        title="Excluir"
+                      >
+                        <Icon name="trash" size={16} />
+                      </button>
+                    ) : null}
+                    {ehVoce ? (
+                      <span className="brisa-usuarios__voce" title="Você">
+                        Você
+                      </span>
+                    ) : null}
                   </div>
                 </td>
               </tr>
-            ))}
+            );
+            })}
           </tbody>
         </table>
       </div>

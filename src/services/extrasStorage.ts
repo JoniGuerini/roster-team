@@ -1,120 +1,170 @@
-import type { DiaFolgaSemanal } from '../types/funcionario';
+import {
+  inputParaPessoaExtraRow,
+  rowParaPessoaExtra,
+} from '../lib/pessoaExtraMappers';
+import { supabase } from '../lib/supabase';
 import type { PessoaExtra, PessoaExtraInput } from '../types/pessoaExtra';
+import { authSession } from './authSession';
+import { registrarAtividade } from './atividadesStorage';
 
-const STORAGE_KEY = 'brisa-cafe:pessoas-extras';
-
-function gerarId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+function erroMensagem(erro: { message: string }, fallback: string): string {
+  console.error('[extras]', erro.message);
+  return fallback;
 }
 
-function ler(): PessoaExtra[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as PessoaExtra[];
-    if (!Array.isArray(parsed)) return [];
-    return parsed.map((e) => ({
-      ...e,
-      funcoesSecundarias: Array.isArray(e.funcoesSecundarias)
-        ? e.funcoesSecundarias
-        : [],
-      documentos: Array.isArray(e.documentos) ? e.documentos : [],
-      ausencias: Array.isArray(e.ausencias) ? e.ausencias : [],
-      diaFolgaSemanal:
-        typeof e.diaFolgaSemanal === 'number' &&
-        e.diaFolgaSemanal >= 0 &&
-        e.diaFolgaSemanal <= 6
-          ? (e.diaFolgaSemanal as DiaFolgaSemanal)
-          : null,
-    }));
-  } catch (error) {
-    console.error('Erro ao ler extras do localStorage', error);
-    return [];
+function empresaIdAtual(): string {
+  const id = authSession.obter()?.empresaId;
+  if (!id) {
+    throw new Error('Empresa não identificada na sessão.');
   }
+  return id;
 }
 
-function escrever(lista: PessoaExtra[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
+function mensagemErroUnico(message: string): string | null {
+  const msg = message.toLowerCase();
+  if (msg.includes('unique') || msg.includes('duplicate')) {
+    return 'Já existe um extra com este CPF nesta empresa.';
+  }
+  return null;
 }
 
 export const extrasStorage = {
-  listar(): PessoaExtra[] {
-    return ler().sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  async listar(): Promise<PessoaExtra[]> {
+    const empresaId = empresaIdAtual();
+    const { data, error } = await supabase
+      .from('extras')
+      .select('*')
+      .eq('empresa_id', empresaId)
+      .order('nome', { ascending: true });
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível carregar os extras.'),
+      );
+    }
+
+    return (data ?? []).map(rowParaPessoaExtra);
   },
 
-  obter(id: string): PessoaExtra | undefined {
-    return ler().find((e) => e.id === id);
+  async obter(id: string): Promise<PessoaExtra | undefined> {
+    const empresaId = empresaIdAtual();
+    const { data, error } = await supabase
+      .from('extras')
+      .select('*')
+      .eq('id', id)
+      .eq('empresa_id', empresaId)
+      .maybeSingle();
+
+    if (error || !data) return undefined;
+    return rowParaPessoaExtra(data);
   },
 
   /** Cadastro mínimo (ex.: a partir do turno). */
-  criarSóNome(nome: string): PessoaExtra {
-    const agora = new Date().toISOString();
-    const trimmed = nome.trim();
-    const novo: PessoaExtra = {
-      id: gerarId(),
-      nome: trimmed,
+  async criarSóNome(nome: string): Promise<PessoaExtra> {
+    return this.criar({
+      nome: nome.trim(),
       funcoesSecundarias: [],
-      criadoEm: agora,
-      atualizadoEm: agora,
-    };
-    const lista = ler();
-    lista.push(novo);
-    escrever(lista);
-    return novo;
+    });
   },
 
-  criar(input: PessoaExtraInput): PessoaExtra {
-    const agora = new Date().toISOString();
-    const novo: PessoaExtra = {
-      id: gerarId(),
-      nome: input.nome.trim(),
-      cpf: input.cpf,
-      localTrabalho: input.localTrabalho,
-      tipoContrato: input.tipoContrato,
-      funcaoPrincipal: input.funcaoPrincipal,
-      funcoesSecundarias: input.funcoesSecundarias ?? [],
-      dataAdmissao: input.dataAdmissao,
-      status: input.status,
-      diaFolgaSemanal: input.diaFolgaSemanal,
-      descricao: input.descricao,
-      documentos: input.documentos ?? [],
-      ausencias: input.ausencias ?? [],
-      criadoEm: agora,
-      atualizadoEm: agora,
-    };
-    const lista = ler();
-    lista.push(novo);
-    escrever(lista);
-    return novo;
+  async criar(input: PessoaExtraInput): Promise<PessoaExtra> {
+    const empresaId = empresaIdAtual();
+    const { data, error } = await supabase
+      .from('extras')
+      .insert(inputParaPessoaExtraRow(empresaId, input))
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      const duplicado = error ? mensagemErroUnico(error.message) : null;
+      if (duplicado) throw new Error(duplicado);
+      throw new Error(
+        erroMensagem(
+          error ?? { message: 'insert' },
+          'Não foi possível cadastrar o extra.',
+        ),
+      );
+    }
+
+    const extra = rowParaPessoaExtra(data);
+    registrarAtividade({
+      acao: 'criou',
+      modulo: 'extra',
+      alvo: extra.nome,
+    });
+    return extra;
   },
 
-  atualizar(id: string, input: PessoaExtraInput): PessoaExtra | undefined {
-    const lista = ler();
-    const indice = lista.findIndex((e) => e.id === id);
-    if (indice === -1) return undefined;
-    const atualizado: PessoaExtra = {
-      ...lista[indice],
-      ...input,
-      nome: input.nome.trim(),
-      funcoesSecundarias: input.funcoesSecundarias ?? [],
-      documentos: input.documentos ?? lista[indice].documentos ?? [],
-      ausencias: input.ausencias ?? lista[indice].ausencias ?? [],
-      id,
-      atualizadoEm: new Date().toISOString(),
-    };
-    lista[indice] = atualizado;
-    escrever(lista);
-    return atualizado;
+  async atualizar(
+    id: string,
+    input: PessoaExtraInput,
+  ): Promise<PessoaExtra | undefined> {
+    const empresaId = empresaIdAtual();
+    const row = inputParaPessoaExtraRow(empresaId, input);
+    const { data, error } = await supabase
+      .from('extras')
+      .update({
+        nome: row.nome,
+        cpf: row.cpf,
+        local_trabalho: row.local_trabalho,
+        tipo_contrato: row.tipo_contrato,
+        funcao_principal: row.funcao_principal,
+        funcoes_secundarias: row.funcoes_secundarias,
+        data_admissao: row.data_admissao,
+        status: row.status,
+        dia_folga_semanal: row.dia_folga_semanal,
+        descricao: row.descricao,
+        documentos: row.documentos,
+        ausencias: row.ausencias,
+      })
+      .eq('id', id)
+      .eq('empresa_id', empresaId)
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      const duplicado = error ? mensagemErroUnico(error.message) : null;
+      if (duplicado) throw new Error(duplicado);
+      if (error) {
+        throw new Error(
+          erroMensagem(error, 'Não foi possível salvar o extra.'),
+        );
+      }
+      return undefined;
+    }
+
+    const extra = rowParaPessoaExtra(data);
+    registrarAtividade({
+      acao: 'editou',
+      modulo: 'extra',
+      alvo: extra.nome,
+    });
+    return extra;
   },
 
-  excluir(id: string): boolean {
-    const lista = ler();
-    const filtrada = lista.filter((e) => e.id !== id);
-    if (filtrada.length === lista.length) return false;
-    escrever(filtrada);
-    return true;
+  async excluir(id: string): Promise<boolean> {
+    const empresaId = empresaIdAtual();
+    const existente = await this.obter(id);
+    const { error, count } = await supabase
+      .from('extras')
+      .delete({ count: 'exact' })
+      .eq('id', id)
+      .eq('empresa_id', empresaId);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível excluir o extra.'),
+      );
+    }
+
+    if ((count ?? 0) > 0 && existente) {
+      registrarAtividade({
+        acao: 'excluiu',
+        modulo: 'extra',
+        alvo: existente.nome,
+      });
+    }
+
+    return (count ?? 0) > 0;
   },
 };

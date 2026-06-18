@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '../components/ui/Button';
 import { Icon } from '../components/ui/Icon';
 import { Input } from '../components/ui/Input';
@@ -8,6 +8,9 @@ import { TurnoForm } from '../components/turnos/TurnoForm';
 import { TurnosList } from '../components/turnos/TurnosList';
 import { ConfirmDeleteTurnoModal } from '../components/turnos/ConfirmDeleteTurnoModal';
 import { turnosStorage } from '../services/turnosStorage';
+import type { Sessao } from '../services/authSession';
+import { podeEditarModulo } from '../utils/rotaPermissoes';
+import { escalaStorage } from '../services/escalaStorage';
 import { funcionariosStorage } from '../services/funcionariosStorage';
 import {
   TIPOS_TURNO,
@@ -19,28 +22,58 @@ import type { Funcionario } from '../types/funcionario';
 import type { PessoaExtra } from '../types/pessoaExtra';
 import { disparoNotificacoes } from '../hooks/useNotificacoes';
 import { extrasStorage } from '../services/extrasStorage';
-import './TurnosPage.css';
+import './FuncionariosPage.css';
 
 const FILTRO_TIPO_OPTIONS: { value: string; label: string }[] = [
   { value: 'todos', label: 'Todos os tipos' },
   ...TIPOS_TURNO.map((t) => ({ value: t.value, label: t.label })),
 ];
 
-export function TurnosPage() {
+interface TurnosPageProps {
+  sessao: Sessao;
+}
+
+export function TurnosPage({ sessao }: TurnosPageProps) {
+  const podeEditar = podeEditarModulo(sessao.permissoes, 'turnos');
   const [turnos, setTurnos] = useState<Turno[]>([]);
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [extras, setExtras] = useState<PessoaExtra[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState<string | null>(null);
   const [busca, setBusca] = useState('');
   const [filtroTipo, setFiltroTipo] = useState<string>('todos');
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Turno | undefined>(undefined);
   const [paraExcluir, setParaExcluir] = useState<Turno | undefined>(undefined);
 
+  const carregar = useCallback(async () => {
+    if (!sessao.empresaId) return;
+    setCarregando(true);
+    try {
+      const [lista, funcs, ext] = await Promise.all([
+        turnosStorage.listar(),
+        funcionariosStorage.listar(),
+        extrasStorage.listar(),
+      ]);
+      setTurnos(lista);
+      setFuncionarios(funcs);
+      setExtras(ext);
+      setErro(null);
+    } catch (e) {
+      setErro(
+        e instanceof Error ? e.message : 'Não foi possível carregar os turnos.',
+      );
+      setTurnos([]);
+      setFuncionarios([]);
+      setExtras([]);
+    } finally {
+      setCarregando(false);
+    }
+  }, [sessao.empresaId]);
+
   useEffect(() => {
-    setTurnos(turnosStorage.listar());
-    setFuncionarios(funcionariosStorage.listar());
-    setExtras(extrasStorage.listar());
-  }, []);
+    void carregar();
+  }, [carregar]);
 
   const turnosFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
@@ -72,23 +105,36 @@ export function TurnosPage() {
     setEditando(undefined);
   }
 
-  function salvar(input: TurnoInput) {
-    if (editando) {
-      turnosStorage.atualizar(editando.id, input);
-    } else {
-      turnosStorage.criar(input);
+  async function salvar(input: TurnoInput) {
+    try {
+      if (editando) {
+        await turnosStorage.atualizar(editando.id, input);
+      } else {
+        await turnosStorage.criar(input);
+      }
+      await carregar();
+      disparoNotificacoes();
+      fecharModal();
+    } catch (e) {
+      setErro(
+        e instanceof Error ? e.message : 'Não foi possível salvar o turno.',
+      );
     }
-    setTurnos(turnosStorage.listar());
-    disparoNotificacoes();
-    fecharModal();
   }
 
-  function confirmarExclusao() {
+  async function confirmarExclusao() {
     if (!paraExcluir) return;
-    turnosStorage.excluir(paraExcluir.id);
-    setTurnos(turnosStorage.listar());
-    disparoNotificacoes();
-    setParaExcluir(undefined);
+    try {
+      await turnosStorage.excluir(paraExcluir.id);
+      await escalaStorage.removerReferenciasTurno(paraExcluir.id);
+      await carregar();
+      disparoNotificacoes();
+      setParaExcluir(undefined);
+    } catch (e) {
+      setErro(
+        e instanceof Error ? e.message : 'Não foi possível excluir o turno.',
+      );
+    }
   }
 
   return (
@@ -98,14 +144,25 @@ export function TurnosPage() {
           <span className="brisa-page__eyebrow">Escala</span>
           <h1 className="brisa-page__title">Turnos</h1>
           <p className="brisa-page__subtitle">
-            Crie e gerencie os modelos de turno da Brisa — regulares,
+            Crie e gerencie os modelos de turno — regulares,
             feriados e ocasiões especiais.
           </p>
         </div>
-        <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
-          Novo turno
-        </Button>
+        {podeEditar ? (
+          <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
+            Novo turno
+          </Button>
+        ) : null}
       </header>
+
+      {erro ? (
+        <div className="brisa-funcionarios__erro" role="alert">
+          {erro}
+        </div>
+      ) : null}
+      {carregando ? (
+        <p className="brisa-funcionarios__loading">Carregando turnos…</p>
+      ) : null}
 
       <section className="brisa-page__toolbar">
         <div className="brisa-search">
@@ -131,13 +188,15 @@ export function TurnosPage() {
         </div>
       </section>
 
-      <TurnosList
-        turnos={turnosFiltrados}
-        funcionarios={funcionarios}
-        extras={extras}
-        onEdit={abrirEdicao}
-        onDelete={(t) => setParaExcluir(t)}
-      />
+      {!carregando ? (
+        <TurnosList
+          turnos={turnosFiltrados}
+          funcionarios={funcionarios}
+          extras={extras}
+          onEdit={podeEditar ? abrirEdicao : undefined}
+          onDelete={podeEditar ? (t) => setParaExcluir(t) : undefined}
+        />
+      ) : null}
 
       <Modal
         open={modalAberto}
@@ -156,9 +215,9 @@ export function TurnosPage() {
           funcionarios={funcionarios}
           extras={extras}
           onCancel={fecharModal}
-          onSubmit={salvar}
+          onSubmit={(input) => void salvar(input)}
           onExtrasChange={() => {
-            setExtras(extrasStorage.listar());
+            void extrasStorage.listar().then(setExtras).catch(() => setExtras([]));
             disparoNotificacoes();
           }}
         />
@@ -168,7 +227,7 @@ export function TurnosPage() {
         open={Boolean(paraExcluir)}
         nome={paraExcluir?.nome ?? ''}
         onCancel={() => setParaExcluir(undefined)}
-        onConfirm={confirmarExclusao}
+        onConfirm={() => void confirmarExclusao()}
       />
     </div>
   );

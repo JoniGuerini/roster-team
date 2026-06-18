@@ -1,91 +1,162 @@
-import type {
-  DiaFolgaSemanal,
-  Funcionario,
-  FuncionarioInput,
-} from '../types/funcionario';
+import {
+  inputParaFuncionarioRow,
+  rowParaFuncionario,
+} from '../lib/funcionarioMappers';
+import { supabase } from '../lib/supabase';
+import type { Funcionario, FuncionarioInput } from '../types/funcionario';
+import { authSession } from './authSession';
+import { registrarAtividade } from './atividadesStorage';
 
-const STORAGE_KEY = 'brisa-cafe:funcionarios';
-
-function gerarId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+function erroMensagem(erro: { message: string }, fallback: string): string {
+  console.error('[funcionarios]', erro.message);
+  return fallback;
 }
 
-function ler(): Funcionario[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as Funcionario[];
-    if (!Array.isArray(parsed)) return [];
-    return parsed.map((f) => ({
-      ...f,
-      ausencias: Array.isArray(f.ausencias) ? f.ausencias : [],
-      documentos: Array.isArray(f.documentos) ? f.documentos : [],
-      funcoesSecundarias: Array.isArray(f.funcoesSecundarias)
-        ? f.funcoesSecundarias
-        : [],
-      diaFolgaSemanal:
-        typeof f.diaFolgaSemanal === 'number' &&
-        f.diaFolgaSemanal >= 0 &&
-        f.diaFolgaSemanal <= 6
-          ? (f.diaFolgaSemanal as DiaFolgaSemanal)
-          : null,
-    }));
-  } catch (error) {
-    console.error('Erro ao ler funcionários do localStorage', error);
-    return [];
+function empresaIdAtual(): string {
+  const id = authSession.obter()?.empresaId;
+  if (!id) {
+    throw new Error('Empresa não identificada na sessão.');
   }
+  return id;
 }
 
-function escrever(funcionarios: Funcionario[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(funcionarios));
+function mensagemErroUnico(message: string): string | null {
+  const msg = message.toLowerCase();
+  if (msg.includes('unique') || msg.includes('duplicate')) {
+    return 'Já existe um funcionário com este CPF nesta empresa.';
+  }
+  return null;
 }
 
 export const funcionariosStorage = {
-  listar(): Funcionario[] {
-    return ler().sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  async listar(): Promise<Funcionario[]> {
+    const empresaId = empresaIdAtual();
+    const { data, error } = await supabase
+      .from('funcionarios')
+      .select('*')
+      .eq('empresa_id', empresaId)
+      .order('nome', { ascending: true });
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível carregar os funcionários.'),
+      );
+    }
+
+    return (data ?? []).map(rowParaFuncionario);
   },
 
-  obter(id: string): Funcionario | undefined {
-    return ler().find((f) => f.id === id);
+  async obter(id: string): Promise<Funcionario | undefined> {
+    const empresaId = empresaIdAtual();
+    const { data, error } = await supabase
+      .from('funcionarios')
+      .select('*')
+      .eq('id', id)
+      .eq('empresa_id', empresaId)
+      .maybeSingle();
+
+    if (error || !data) return undefined;
+    return rowParaFuncionario(data);
   },
 
-  criar(input: FuncionarioInput): Funcionario {
-    const agora = new Date().toISOString();
-    const novo: Funcionario = {
-      ...input,
-      id: gerarId(),
-      criadoEm: agora,
-      atualizadoEm: agora,
-    };
-    const lista = ler();
-    lista.push(novo);
-    escrever(lista);
-    return novo;
+  async criar(input: FuncionarioInput): Promise<Funcionario> {
+    const empresaId = empresaIdAtual();
+    const { data, error } = await supabase
+      .from('funcionarios')
+      .insert(inputParaFuncionarioRow(empresaId, input))
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      const duplicado = error ? mensagemErroUnico(error.message) : null;
+      if (duplicado) throw new Error(duplicado);
+      throw new Error(
+        erroMensagem(
+          error ?? { message: 'insert' },
+          'Não foi possível cadastrar o funcionário.',
+        ),
+      );
+    }
+
+    const funcionario = rowParaFuncionario(data);
+    registrarAtividade({
+      acao: 'criou',
+      modulo: 'funcionario',
+      alvo: funcionario.nome,
+    });
+    return funcionario;
   },
 
-  atualizar(id: string, input: FuncionarioInput): Funcionario | undefined {
-    const lista = ler();
-    const indice = lista.findIndex((f) => f.id === id);
-    if (indice === -1) return undefined;
-    const atualizado: Funcionario = {
-      ...lista[indice],
-      ...input,
-      id,
-      atualizadoEm: new Date().toISOString(),
-    };
-    lista[indice] = atualizado;
-    escrever(lista);
-    return atualizado;
+  async atualizar(
+    id: string,
+    input: FuncionarioInput,
+  ): Promise<Funcionario | undefined> {
+    const empresaId = empresaIdAtual();
+    const row = inputParaFuncionarioRow(empresaId, input);
+    const { data, error } = await supabase
+      .from('funcionarios')
+      .update({
+        nome: row.nome,
+        cpf: row.cpf,
+        local_trabalho: row.local_trabalho,
+        tipo_contrato: row.tipo_contrato,
+        funcao_principal: row.funcao_principal,
+        funcoes_secundarias: row.funcoes_secundarias,
+        data_admissao: row.data_admissao,
+        status: row.status,
+        dia_folga_semanal: row.dia_folga_semanal,
+        descricao: row.descricao,
+        documentos: row.documentos,
+        ausencias: row.ausencias,
+      })
+      .eq('id', id)
+      .eq('empresa_id', empresaId)
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      const duplicado = error ? mensagemErroUnico(error.message) : null;
+      if (duplicado) throw new Error(duplicado);
+      if (error) {
+        throw new Error(
+          erroMensagem(error, 'Não foi possível salvar o funcionário.'),
+        );
+      }
+      return undefined;
+    }
+
+    const funcionario = rowParaFuncionario(data);
+    registrarAtividade({
+      acao: 'editou',
+      modulo: 'funcionario',
+      alvo: funcionario.nome,
+    });
+    return funcionario;
   },
 
-  excluir(id: string): boolean {
-    const lista = ler();
-    const filtrada = lista.filter((f) => f.id !== id);
-    if (filtrada.length === lista.length) return false;
-    escrever(filtrada);
-    return true;
+  async excluir(id: string): Promise<boolean> {
+    const empresaId = empresaIdAtual();
+    const existente = await this.obter(id);
+    const { error, count } = await supabase
+      .from('funcionarios')
+      .delete({ count: 'exact' })
+      .eq('id', id)
+      .eq('empresa_id', empresaId);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível excluir o funcionário.'),
+      );
+    }
+
+    if ((count ?? 0) > 0 && existente) {
+      registrarAtividade({
+        acao: 'excluiu',
+        modulo: 'funcionario',
+        alvo: existente.nome,
+      });
+    }
+
+    return (count ?? 0) > 0;
   },
 };

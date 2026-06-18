@@ -34,10 +34,12 @@ function calcularResumo(
   funcionarios: Funcionario[],
   data: string,
 ): ResumoDia {
+  let total = 0;
   let alertas = 0;
   for (const te of escala.turnos) {
     const turno = turnos.find((t) => t.id === te.turnoId);
     if (!turno) continue;
+    total += 1;
     const idsAlocados = pessoasAlocadas(te);
     const faltamVagas = vagasEmFaltaNoTurno(turno, te);
     const algumIndisp = idsAlocados.some((id) => {
@@ -48,7 +50,7 @@ function calcularResumo(
       alertas += 1;
     }
   }
-  return { total: escala.turnos.length, alertas };
+  return { total, alertas };
 }
 
 export function MesView({

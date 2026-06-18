@@ -6,7 +6,11 @@ export type RotaId =
   | 'turnos'
   | 'escala'
   | 'notificacoes'
-  | 'usuarios';
+  | 'usuarios'
+  | 'configuracoes'
+  | 'atividades'
+  | 'empresas'
+  | 'perfil';
 
 const ROTAS_VALIDAS: RotaId[] = [
   'funcionarios',
@@ -15,6 +19,10 @@ const ROTAS_VALIDAS: RotaId[] = [
   'escala',
   'notificacoes',
   'usuarios',
+  'configuracoes',
+  'atividades',
+  'empresas',
+  'perfil',
 ];
 const ROTA_PADRAO: RotaId = 'escala';
 
@@ -22,12 +30,14 @@ export type EstadoHashRota = {
   rota: RotaId;
   perfilFuncionarioId: string | null;
   perfilExtraId: string | null;
+  empresaDetalheId: string | null;
 };
 
 const ESTADO_PADRAO: EstadoHashRota = {
   rota: ROTA_PADRAO,
   perfilFuncionarioId: null,
   perfilExtraId: null,
+  empresaDetalheId: null,
 };
 
 function lerHash(): EstadoHashRota {
@@ -45,22 +55,40 @@ function lerHash(): EstadoHashRota {
 
   const rota = first as RotaId;
 
-  if (
-    parts.length >= 3 &&
-    parts[1] === 'perfil' &&
-    parts[2] &&
-    parts[2].length > 0
-  ) {
+  if (parts.length >= 3 && parts[2] && parts[2].length > 0) {
     const id = parts[2];
-    if (rota === 'funcionarios') {
-      return { rota, perfilFuncionarioId: id, perfilExtraId: null };
+    if (rota === 'funcionarios' && parts[1] === 'perfil') {
+      return {
+        rota,
+        perfilFuncionarioId: id,
+        perfilExtraId: null,
+        empresaDetalheId: null,
+      };
     }
-    if (rota === 'extras') {
-      return { rota, perfilFuncionarioId: null, perfilExtraId: id };
+    if (rota === 'extras' && parts[1] === 'perfil') {
+      return {
+        rota,
+        perfilFuncionarioId: null,
+        perfilExtraId: id,
+        empresaDetalheId: null,
+      };
+    }
+    if (rota === 'empresas' && parts[1] === 'detalhe') {
+      return {
+        rota,
+        perfilFuncionarioId: null,
+        perfilExtraId: null,
+        empresaDetalheId: id,
+      };
     }
   }
 
-  return { rota, perfilFuncionarioId: null, perfilExtraId: null };
+  return {
+    rota,
+    perfilFuncionarioId: null,
+    perfilExtraId: null,
+    empresaDetalheId: null,
+  };
 }
 
 export function useHashRoute(): {
@@ -68,6 +96,7 @@ export function useHashRoute(): {
   navegarParaRota: (rota: RotaId) => void;
   navegarPerfilFuncionario: (id: string) => void;
   navegarPerfilExtra: (id: string) => void;
+  navegarDetalheEmpresa: (id: string) => void;
 } {
   const [estado, setEstado] = useState<EstadoHashRota>(() => lerHash());
 
@@ -94,6 +123,7 @@ export function useHashRoute(): {
       rota: novaRota,
       perfilFuncionarioId: null,
       perfilExtraId: null,
+      empresaDetalheId: null,
     });
   }
 
@@ -106,6 +136,7 @@ export function useHashRoute(): {
       rota: 'funcionarios',
       perfilFuncionarioId: id,
       perfilExtraId: null,
+      empresaDetalheId: null,
     });
   }
 
@@ -118,6 +149,20 @@ export function useHashRoute(): {
       rota: 'extras',
       perfilFuncionarioId: null,
       perfilExtraId: id,
+      empresaDetalheId: null,
+    });
+  }
+
+  function navegarDetalheEmpresa(id: string) {
+    const novoHash = `#empresas/detalhe/${id}`;
+    if (window.location.hash !== novoHash) {
+      window.location.hash = novoHash;
+    }
+    setEstado({
+      rota: 'empresas',
+      perfilFuncionarioId: null,
+      perfilExtraId: null,
+      empresaDetalheId: id,
     });
   }
 
@@ -126,5 +171,6 @@ export function useHashRoute(): {
     navegarParaRota,
     navegarPerfilFuncionario,
     navegarPerfilExtra,
+    navegarDetalheEmpresa,
   };
 }

@@ -15,8 +15,8 @@ import './FuncionariosList.css';
 interface FuncionariosListProps {
   funcionarios: Funcionario[];
   onOpenPerfil: (funcionario: Funcionario) => void;
-  onEdit: (funcionario: Funcionario) => void;
-  onDelete: (funcionario: Funcionario) => void;
+  onEdit?: (funcionario: Funcionario) => void;
+  onDelete?: (funcionario: Funcionario) => void;
 }
 
 export function FuncionariosList({
@@ -33,7 +33,7 @@ export function FuncionariosList({
         </div>
         <h3 className="brisa-empty__title">Nenhum funcionário cadastrado</h3>
         <p className="brisa-empty__hint">
-          Clique em <strong>Novo funcionário</strong> para começar a montar a equipe da Brisa.
+          Clique em <strong>Novo funcionário</strong> para começar a montar a equipe.
         </p>
       </div>
     );
@@ -89,56 +89,71 @@ export function FuncionariosList({
                     </div>
                     <div className="brisa-table__person-info">
                       <span className="brisa-table__name">{funcionario.nome}</span>
-                      {funcionario.funcoesSecundarias.length > 0 && (
+                      {funcionario.funcoesSecundarias &&
+                      funcionario.funcoesSecundarias.length > 0 ? (
                         <span className="brisa-table__secondary">
                           + {funcionario.funcoesSecundarias
                             .map(labelFuncao)
                             .join(', ')}
                         </span>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </td>
                 <td className="brisa-table__td brisa-table__td--clip">
-                  {labelFuncao(funcionario.funcaoPrincipal)}
+                  {funcionario.funcaoPrincipal
+                    ? labelFuncao(funcionario.funcaoPrincipal)
+                    : '—'}
                 </td>
                 <td className="brisa-table__td brisa-table__td--clip">
-                  {labelLocal(funcionario.localTrabalho)}
+                  {funcionario.localTrabalho
+                    ? labelLocal(funcionario.localTrabalho)
+                    : '—'}
                 </td>
                 <td className="brisa-table__td brisa-table__td--clip">
-                  {labelContrato(funcionario.tipoContrato)}
+                  {funcionario.tipoContrato
+                    ? labelContrato(funcionario.tipoContrato)
+                    : '—'}
                 </td>
                 <td className="brisa-table__td brisa-table__td--clip">
-                  {formatarData(funcionario.dataAdmissao)}
+                  {formatarData(funcionario.dataAdmissao ?? '')}
                 </td>
                 <td className="brisa-table__td brisa-table__td--status">
-                  <Badge tone={toneStatus(funcionario.status)}>
-                    {labelStatus(funcionario.status)}
-                  </Badge>
+                  {funcionario.status ? (
+                    <Badge tone={toneStatus(funcionario.status)}>
+                      {labelStatus(funcionario.status)}
+                    </Badge>
+                  ) : (
+                    '—'
+                  )}
                 </td>
                 <td
                   className="brisa-table__td brisa-table__td--actions"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="brisa-table__actions">
-                    <button
-                      type="button"
-                      className="brisa-icon-btn"
-                      onClick={() => onEdit(funcionario)}
-                      aria-label={`Editar ${funcionario.nome}`}
-                      title="Editar"
-                    >
-                      <Icon name="pencil" size={16} />
-                    </button>
-                    <button
-                      type="button"
-                      className="brisa-icon-btn brisa-icon-btn--danger"
-                      onClick={() => onDelete(funcionario)}
-                      aria-label={`Excluir ${funcionario.nome}`}
-                      title="Excluir"
-                    >
-                      <Icon name="trash" size={16} />
-                    </button>
+                    {onEdit ? (
+                      <button
+                        type="button"
+                        className="brisa-icon-btn"
+                        onClick={() => onEdit(funcionario)}
+                        aria-label={`Editar ${funcionario.nome}`}
+                        title="Editar"
+                      >
+                        <Icon name="pencil" size={16} />
+                      </button>
+                    ) : null}
+                    {onDelete ? (
+                      <button
+                        type="button"
+                        className="brisa-icon-btn brisa-icon-btn--danger"
+                        onClick={() => onDelete(funcionario)}
+                        aria-label={`Excluir ${funcionario.nome}`}
+                        title="Excluir"
+                      >
+                        <Icon name="trash" size={16} />
+                      </button>
+                    ) : null}
                   </div>
                 </td>
               </tr>

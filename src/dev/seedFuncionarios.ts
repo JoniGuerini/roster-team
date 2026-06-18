@@ -142,9 +142,11 @@ export type SeedFuncionariosOpcoes = {
 };
 
 /**
- * Preenche o localStorage com funcionários fictícios (apenas para desenvolvimento / testes de UI).
+ * Preenche o Supabase com funcionários fictícios (apenas para desenvolvimento / testes de UI).
  */
-export function seedFuncionarios(opcoes: SeedFuncionariosOpcoes = {}): number {
+export async function seedFuncionarios(
+  opcoes: SeedFuncionariosOpcoes = {},
+): Promise<number> {
   const quantidade = Math.min(
     200,
     Math.max(1, Math.floor(opcoes.quantidade ?? 28)),
@@ -152,24 +154,26 @@ export function seedFuncionarios(opcoes: SeedFuncionariosOpcoes = {}): number {
   const modo = opcoes.modo ?? 'append';
 
   if (modo === 'replace') {
-    for (const f of funcionariosStorage.listar()) {
-      funcionariosStorage.excluir(f.id);
+    const lista = await funcionariosStorage.listar();
+    for (const f of lista) {
+      await funcionariosStorage.excluir(f.id);
     }
   }
 
-  const existentes = modo === 'append' ? funcionariosStorage.listar().length : 0;
+  const existentes =
+    modo === 'append' ? (await funcionariosStorage.listar()).length : 0;
 
   for (let i = 0; i < quantidade; i++) {
-    funcionariosStorage.criar(gerarFuncionarioDemo(existentes + i));
+    await funcionariosStorage.criar(gerarFuncionarioDemo(existentes + i));
   }
 
   return quantidade;
 }
 
-export function limparTodosFuncionarios(): number {
-  const lista = funcionariosStorage.listar();
+export async function limparTodosFuncionarios(): Promise<number> {
+  const lista = await funcionariosStorage.listar();
   for (const f of lista) {
-    funcionariosStorage.excluir(f.id);
+    await funcionariosStorage.excluir(f.id);
   }
   return lista.length;
 }

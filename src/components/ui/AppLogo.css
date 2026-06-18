@@ -1,0 +1,48 @@
+.brisa-app-logo {
+  display: block;
+  flex-shrink: 0;
+}
+
+.brisa-app-logo__arc {
+  stroke: var(--brisa-app-logo-arc, #ffffff);
+  opacity: 0.92;
+}
+
+.brisa-app-logo__block {
+  fill: var(--brisa-app-logo-block, #ffffff);
+}
+
+.brisa-app-logo__block--1 {
+  opacity: 1;
+}
+
+.brisa-app-logo__block--2 {
+  opacity: 0.82;
+}
+
+.brisa-app-logo__block--3 {
+  opacity: 0.64;
+}
+
+.brisa-app-logo__dot {
+  fill: var(--brisa-app-logo-dot, #ffffff);
+  opacity: 0.95;
+}
+
+.brisa-app-logo--dark {
+  --brisa-app-logo-arc: #334155;
+  --brisa-app-logo-block: #334155;
+  --brisa-app-logo-dot: #475569;
+}
+
+.brisa-app-logo--dark .brisa-app-logo__block--2 {
+  opacity: 0.72;
+}
+
+.brisa-app-logo--dark .brisa-app-logo__block--3 {
+  opacity: 0.48;
+}
+
+.brisa-app-logo--dark .brisa-app-logo__arc {
+  opacity: 0.55;
+}

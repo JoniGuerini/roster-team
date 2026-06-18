@@ -124,18 +124,18 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
         setForm({
           nome: funcionario.nome,
           cpf: funcionario.cpf ?? '',
-          localTrabalho: funcionario.localTrabalho,
-          tipoContrato: funcionario.tipoContrato,
-          funcaoPrincipal: funcionario.funcaoPrincipal,
-          dataAdmissao: funcionario.dataAdmissao,
-          status: funcionario.status,
+          localTrabalho: funcionario.localTrabalho ?? '',
+          tipoContrato: funcionario.tipoContrato ?? '',
+          funcaoPrincipal: funcionario.funcaoPrincipal ?? '',
+          dataAdmissao: funcionario.dataAdmissao ?? '',
+          status: funcionario.status ?? '',
           diaFolgaSemanal:
             funcionario.diaFolgaSemanal != null
               ? String(funcionario.diaFolgaSemanal)
               : '',
-          funcoesSecundarias: funcionario.funcoesSecundarias,
+          funcoesSecundarias: funcionario.funcoesSecundarias ?? [],
           descricao: funcionario.descricao ?? '',
-          documentos: funcionario.documentos,
+          documentos: funcionario.documentos ?? [],
           ausencias: funcionario.ausencias ?? [],
         });
       } else {
@@ -198,71 +198,32 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
         ? 'Informe o nome.'
         : 'Informe o nome do funcionário.';
     }
-    if (isExtra) {
-      if (form.cpf.trim() && !cpfValido(form.cpf)) {
-        novosErros.cpf = 'CPF inválido.';
-      }
-      setErros(novosErros);
-      return Object.keys(novosErros).length === 0;
+    if (form.cpf.trim() && !cpfValido(form.cpf)) {
+      novosErros.cpf = 'CPF inválido.';
     }
-    if (!form.cpf.trim()) novosErros.cpf = 'Informe o CPF.';
-    else if (!cpfValido(form.cpf)) novosErros.cpf = 'CPF inválido.';
-    if (!form.localTrabalho)
-      novosErros.localTrabalho = 'Selecione o local de trabalho.';
-    if (!form.tipoContrato)
-      novosErros.tipoContrato = 'Selecione o tipo de contrato.';
-    if (!form.funcaoPrincipal)
-      novosErros.funcaoPrincipal = 'Selecione a função principal.';
-    if (!form.dataAdmissao)
-      novosErros.dataAdmissao = 'Informe a data de admissão.';
-    if (!form.status) novosErros.status = 'Selecione o status.';
     setErros(novosErros);
     return Object.keys(novosErros).length === 0;
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!validar()) return;
+  function montarInputComum() {
     const secundarias = form.funcoesSecundarias.filter(
       (f) => f !== form.funcaoPrincipal,
     );
-    if (props.variant === 'extra') {
-      props.onSubmit({
-        nome: form.nome.trim(),
-        cpf: form.cpf.trim() || undefined,
-        localTrabalho: form.localTrabalho
-          ? (form.localTrabalho as LocalTrabalho)
-          : undefined,
-        tipoContrato: form.tipoContrato
-          ? (form.tipoContrato as TipoContrato)
-          : undefined,
-        funcaoPrincipal: form.funcaoPrincipal
-          ? (form.funcaoPrincipal as Funcao)
-          : undefined,
-        funcoesSecundarias: secundarias,
-        dataAdmissao: form.dataAdmissao || undefined,
-        status: form.status
-          ? (form.status as StatusFuncionario)
-          : undefined,
-        diaFolgaSemanal:
-          form.diaFolgaSemanal === ''
-            ? null
-            : (Number(form.diaFolgaSemanal) as DiaFolgaSemanal),
-        descricao: form.descricao.trim() || undefined,
-        documentos: form.documentos,
-        ausencias: form.ausencias,
-      });
-      return;
-    }
-    props.onSubmit({
+    return {
       nome: form.nome.trim(),
-      cpf: form.cpf.trim(),
-      localTrabalho: form.localTrabalho as LocalTrabalho,
-      tipoContrato: form.tipoContrato as TipoContrato,
-      funcaoPrincipal: form.funcaoPrincipal as Funcao,
+      cpf: form.cpf.trim() || undefined,
+      localTrabalho: form.localTrabalho
+        ? (form.localTrabalho as LocalTrabalho)
+        : undefined,
+      tipoContrato: form.tipoContrato
+        ? (form.tipoContrato as TipoContrato)
+        : undefined,
+      funcaoPrincipal: form.funcaoPrincipal
+        ? (form.funcaoPrincipal as Funcao)
+        : undefined,
       funcoesSecundarias: secundarias,
-      dataAdmissao: form.dataAdmissao,
-      status: form.status as StatusFuncionario,
+      dataAdmissao: form.dataAdmissao || undefined,
+      status: form.status ? (form.status as StatusFuncionario) : undefined,
       diaFolgaSemanal:
         form.diaFolgaSemanal === ''
           ? null
@@ -270,7 +231,17 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
       descricao: form.descricao.trim() || undefined,
       documentos: form.documentos,
       ausencias: form.ausencias,
-    });
+    };
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!validar()) return;
+    if (props.variant === 'extra') {
+      props.onSubmit(montarInputComum());
+      return;
+    }
+    props.onSubmit(montarInputComum());
   }
 
   return (
@@ -309,9 +280,8 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
         <Field
           label="CPF"
           htmlFor="cpf"
-          required={!isExtra}
           error={erros.cpf}
-          hint={isExtra ? 'Opcional' : undefined}
+          hint="Opcional"
         >
           <Input
             id="cpf"
@@ -328,7 +298,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
           <Field
             label="Local de trabalho"
             htmlFor="localTrabalho"
-            required={!isExtra}
+            required={false}
             error={erros.localTrabalho}
           >
             <Select
@@ -346,7 +316,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
           <Field
             label="Tipo de contrato"
             htmlFor="tipoContrato"
-            required={!isExtra}
+            required={false}
             error={erros.tipoContrato}
           >
             <Select
@@ -364,7 +334,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
           <Field
             label="Data de admissão"
             htmlFor="dataAdmissao"
-            required={!isExtra}
+            required={false}
             error={erros.dataAdmissao}
           >
             <Input
@@ -379,7 +349,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
           <Field
             label="Status"
             htmlFor="status"
-            required={!isExtra}
+            required={false}
             error={erros.status}
           >
             <Select
@@ -428,7 +398,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
         <Field
           label="Função principal"
           htmlFor="funcaoPrincipal"
-          required={!isExtra}
+          required={false}
           error={erros.funcaoPrincipal}
         >
           <Select

@@ -16,8 +16,8 @@ interface DiaViewProps {
   turnos: Turno[];
   funcionarios: Funcionario[];
   extras: PessoaExtra[];
-  onAdicionar: () => void;
-  onAbrirTurno: (turnoEscaladoId: string) => void;
+  onAdicionar?: () => void;
+  onAbrirTurno?: (turnoEscaladoId: string) => void;
 }
 
 export function DiaView({
@@ -29,11 +29,13 @@ export function DiaView({
   onAdicionar,
   onAbrirTurno,
 }: DiaViewProps) {
-  const turnosOrdenados = [...escala.turnos].sort((a, b) => {
-    const ta = turnos.find((t) => t.id === a.turnoId)?.horaInicio ?? '';
-    const tb = turnos.find((t) => t.id === b.turnoId)?.horaInicio ?? '';
-    return ta.localeCompare(tb);
-  });
+  const turnosOrdenados = [...escala.turnos]
+    .filter((te) => turnos.some((t) => t.id === te.turnoId))
+    .sort((a, b) => {
+      const ta = turnos.find((t) => t.id === a.turnoId)?.horaInicio ?? '';
+      const tb = turnos.find((t) => t.id === b.turnoId)?.horaInicio ?? '';
+      return ta.localeCompare(tb);
+    });
 
   return (
     <div className="brisa-dia">
@@ -47,9 +49,11 @@ export function DiaView({
               : `${turnosOrdenados.length} ${turnosOrdenados.length === 1 ? 'turno escalado' : 'turnos escalados'}.`}
           </p>
         </div>
-        <Button onClick={onAdicionar} leftIcon={<Icon name="plus" size={14} />}>
-          Adicionar turno
-        </Button>
+        {onAdicionar ? (
+          <Button onClick={onAdicionar} leftIcon={<Icon name="plus" size={14} />}>
+            Adicionar turno
+          </Button>
+        ) : null}
       </header>
 
       {turnosOrdenados.length === 0 ? (
@@ -80,7 +84,9 @@ export function DiaView({
                   key={te.id}
                   turno={turno}
                   status={status}
-                  onCardClick={() => onAbrirTurno(te.id)}
+                  onCardClick={
+                    onAbrirTurno ? () => onAbrirTurno(te.id) : undefined
+                  }
                 />
               );
             })}

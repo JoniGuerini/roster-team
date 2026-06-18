@@ -1,137 +1,285 @@
+import {
+  alocacoesParaJson,
+  rowParaTurnoEscalado,
+  rowsParaEscalas,
+} from '../lib/escalaMappers';
+import { supabase } from '../lib/supabase';
 import type { AlocacaoFuncao, EscalaDia, TurnoEscalado } from '../types/escala';
 import type { Turno } from '../types/turno';
 import { diaSemanaDe, diasNoIntervalo } from '../utils/datas';
+import { authSession } from './authSession';
+import { registrarAtividade } from './atividadesStorage';
 
-const STORAGE_KEY = 'brisa-cafe:escalas';
+function erroMensagem(erro: { message: string }, fallback: string): string {
+  console.error('[escala]', erro.message);
+  return fallback;
+}
 
-function gerarId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
+function empresaIdAtual(): string {
+  const id = authSession.obter()?.empresaId;
+  if (!id) {
+    throw new Error('Empresa não identificada na sessão.');
   }
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return id;
 }
 
-function ler(): EscalaDia[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as EscalaDia[];
-    if (!Array.isArray(parsed)) return [];
-    return parsed;
-  } catch (error) {
-    console.error('Erro ao ler escalas do localStorage', error);
-    return [];
+async function carregarRows(
+  empresaId: string,
+  filtro?: { inicio?: string; fim?: string },
+) {
+  let query = supabase
+    .from('escala_turnos')
+    .select('*')
+    .eq('empresa_id', empresaId)
+    .order('data', { ascending: true })
+    .order('criado_em', { ascending: true });
+
+  if (filtro?.inicio) {
+    query = query.gte('data', filtro.inicio);
   }
-}
+  if (filtro?.fim) {
+    query = query.lte('data', filtro.fim);
+  }
 
-function escrever(escalas: EscalaDia[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(escalas));
-}
-
-function obterDia(escalas: EscalaDia[], data: string): EscalaDia {
-  const existente = escalas.find((e) => e.data === data);
-  if (existente) return existente;
-  const novo: EscalaDia = { data, turnos: [] };
-  escalas.push(novo);
-  return novo;
+  const { data, error } = await query;
+  if (error) {
+    throw new Error(
+      erroMensagem(error, 'Não foi possível carregar a escala.'),
+    );
+  }
+  return data ?? [];
 }
 
 export const escalaStorage = {
-  listar(): EscalaDia[] {
-    return ler();
+  async listar(): Promise<EscalaDia[]> {
+    const empresaId = empresaIdAtual();
+    const rows = await carregarRows(empresaId);
+    return rowsParaEscalas(rows);
   },
 
-  obterDia(data: string): EscalaDia {
-    return ler().find((e) => e.data === data) ?? { data, turnos: [] };
+  async obterDia(data: string): Promise<EscalaDia> {
+    const empresaId = empresaIdAtual();
+    const rows = await carregarRows(empresaId, { inicio: data, fim: data });
+    const escalas = rowsParaEscalas(rows);
+    return escalas[0] ?? { data, turnos: [] };
   },
 
-  obterIntervalo(inicio: string, fim: string): EscalaDia[] {
-    return ler().filter((e) => e.data >= inicio && e.data <= fim);
+  async obterIntervalo(inicio: string, fim: string): Promise<EscalaDia[]> {
+    const empresaId = empresaIdAtual();
+    const rows = await carregarRows(empresaId, { inicio, fim });
+    return rowsParaEscalas(rows);
   },
 
-  /**
-   * Garante que cada turno **regular** ativo com `diaSemanaRecorrente` definido
-   * exista na escala em todas as datas do intervalo cujo dia da semana coincide.
-   * Não duplica se o mesmo `turnoId` já estiver no dia.
-   */
-  sincronizarTurnosRecorrentes(
+  async sincronizarTurnosRecorrentes(
     inicio: string,
     fim: string,
     turnos: Turno[],
     obterAlocacoes: (turno: Turno, data: string) => AlocacaoFuncao[],
-  ): number {
-    const escalas = ler();
-    let adicionados = 0;
+  ): Promise<number> {
+    const empresaId = empresaIdAtual();
+    const existentes = await this.obterIntervalo(inicio, fim);
+    const idsPorDia = new Map<string, Set<string>>();
+    for (const dia of existentes) {
+      idsPorDia.set(
+        dia.data,
+        new Set(dia.turnos.map((t) => t.turnoId)),
+      );
+    }
+
     const agora = new Date().toISOString();
+    const inserts: {
+      empresa_id: string;
+      data: string;
+      turno_id: string;
+      alocacoes: ReturnType<typeof alocacoesParaJson>;
+      criado_em: string;
+      atualizado_em: string;
+    }[] = [];
+
     for (const data of diasNoIntervalo(inicio, fim)) {
-      const dia = obterDia(escalas, data);
-      const idsPresentes = new Set(dia.turnos.map((t) => t.turnoId));
+      const presentes = idsPorDia.get(data) ?? new Set<string>();
       for (const turno of turnos) {
         if (!turno.ativo || turno.tipo !== 'regular') continue;
         const dsr = turno.diaSemanaRecorrente;
         if (dsr == null || dsr < 0 || dsr > 6) continue;
         if (diaSemanaDe(data) !== dsr) continue;
-        if (idsPresentes.has(turno.id)) continue;
+        if (presentes.has(turno.id)) continue;
+
         const alocacoes = obterAlocacoes(turno, data);
-        const novo: TurnoEscalado = {
-          id: gerarId(),
-          turnoId: turno.id,
-          alocacoes,
-          criadoEm: agora,
-          atualizadoEm: agora,
-        };
-        dia.turnos.push(novo);
-        idsPresentes.add(turno.id);
-        adicionados += 1;
+        inserts.push({
+          empresa_id: empresaId,
+          data,
+          turno_id: turno.id,
+          alocacoes: alocacoesParaJson(alocacoes),
+          criado_em: agora,
+          atualizado_em: agora,
+        });
+        presentes.add(turno.id);
+        idsPorDia.set(data, presentes);
       }
     }
-    if (adicionados > 0) {
-      escrever(escalas);
+
+    if (inserts.length === 0) return 0;
+
+    const { error } = await supabase.from('escala_turnos').insert(inserts);
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível sincronizar turnos recorrentes.'),
+      );
     }
-    return adicionados;
+
+    return inserts.length;
   },
 
-  adicionarTurno(data: string, turnoId: string, alocacoes: AlocacaoFuncao[]): TurnoEscalado {
-    const escalas = ler();
-    const dia = obterDia(escalas, data);
-    const agora = new Date().toISOString();
-    const novo: TurnoEscalado = {
-      id: gerarId(),
-      turnoId,
-      alocacoes,
-      criadoEm: agora,
-      atualizadoEm: agora,
-    };
-    dia.turnos.push(novo);
-    escrever(escalas);
-    return novo;
+  async adicionarTurno(
+    data: string,
+    turnoId: string,
+    alocacoes: AlocacaoFuncao[],
+  ): Promise<TurnoEscalado> {
+    const empresaId = empresaIdAtual();
+    const { data: row, error } = await supabase
+      .from('escala_turnos')
+      .insert({
+        empresa_id: empresaId,
+        data,
+        turno_id: turnoId,
+        alocacoes: alocacoesParaJson(alocacoes),
+      })
+      .select('*')
+      .single();
+
+    if (error || !row) {
+      throw new Error(
+        erroMensagem(
+          error ?? { message: 'insert' },
+          'Não foi possível adicionar o turno à escala.',
+        ),
+      );
+    }
+
+    registrarAtividade({
+      acao: 'editou',
+      modulo: 'escala',
+      alvo: data,
+      detalhe: 'turno adicionado',
+    });
+
+    return rowParaTurnoEscalado(row);
   },
 
-  atualizarTurno(
+  async atualizarTurno(
     data: string,
     turnoEscaladoId: string,
     patch: Partial<Pick<TurnoEscalado, 'alocacoes' | 'observacao'>>,
-  ): TurnoEscalado | undefined {
-    const escalas = ler();
-    const dia = escalas.find((e) => e.data === data);
-    if (!dia) return undefined;
-    const turno = dia.turnos.find((t) => t.id === turnoEscaladoId);
-    if (!turno) return undefined;
-    if (patch.alocacoes) turno.alocacoes = patch.alocacoes;
-    if (patch.observacao !== undefined) turno.observacao = patch.observacao;
-    turno.atualizadoEm = new Date().toISOString();
-    escrever(escalas);
-    return turno;
+  ): Promise<TurnoEscalado | undefined> {
+    const empresaId = empresaIdAtual();
+    const update: {
+      alocacoes?: ReturnType<typeof alocacoesParaJson>;
+      observacao?: string | null;
+    } = {};
+
+    if (patch.alocacoes) {
+      update.alocacoes = alocacoesParaJson(patch.alocacoes);
+    }
+    if (patch.observacao !== undefined) {
+      update.observacao = patch.observacao?.trim() || null;
+    }
+
+    const { data: row, error } = await supabase
+      .from('escala_turnos')
+      .update(update)
+      .eq('id', turnoEscaladoId)
+      .eq('empresa_id', empresaId)
+      .eq('data', data)
+      .select('*')
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível atualizar a escala.'),
+      );
+    }
+
+    if (row) {
+      registrarAtividade({
+        acao: 'editou',
+        modulo: 'escala',
+        alvo: data,
+      });
+    }
+
+    return row ? rowParaTurnoEscalado(row) : undefined;
   },
 
-  removerTurno(data: string, turnoEscaladoId: string): boolean {
-    const escalas = ler();
-    const dia = escalas.find((e) => e.data === data);
-    if (!dia) return false;
-    const tamanho = dia.turnos.length;
-    dia.turnos = dia.turnos.filter((t) => t.id !== turnoEscaladoId);
-    if (dia.turnos.length === tamanho) return false;
-    escrever(escalas.filter((e) => e.turnos.length > 0));
-    return true;
+  async removerTurno(data: string, turnoEscaladoId: string): Promise<boolean> {
+    const empresaId = empresaIdAtual();
+    const { error, count } = await supabase
+      .from('escala_turnos')
+      .delete({ count: 'exact' })
+      .eq('id', turnoEscaladoId)
+      .eq('empresa_id', empresaId)
+      .eq('data', data);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível remover o turno da escala.'),
+      );
+    }
+
+    if ((count ?? 0) > 0) {
+      registrarAtividade({
+        acao: 'editou',
+        modulo: 'escala',
+        alvo: data,
+        detalhe: 'turno removido',
+      });
+    }
+
+    return (count ?? 0) > 0;
+  },
+
+  async removerReferenciasTurno(turnoId: string): Promise<number> {
+    const empresaId = empresaIdAtual();
+    const { error, count } = await supabase
+      .from('escala_turnos')
+      .delete({ count: 'exact' })
+      .eq('empresa_id', empresaId)
+      .eq('turno_id', turnoId);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(
+          error,
+          'Não foi possível remover as ocorrências do turno na escala.',
+        ),
+      );
+    }
+
+    return count ?? 0;
+  },
+
+  async limparOrfaos(turnosIds: string[]): Promise<number> {
+    const empresaId = empresaIdAtual();
+    const rows = await carregarRows(empresaId);
+    const validos = new Set(turnosIds);
+    const idsRemover = rows
+      .filter((r) => !validos.has(r.turno_id))
+      .map((r) => r.id);
+
+    if (idsRemover.length === 0) return 0;
+
+    const { error, count } = await supabase
+      .from('escala_turnos')
+      .delete({ count: 'exact' })
+      .eq('empresa_id', empresaId)
+      .in('id', idsRemover);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível limpar alocações órfãs.'),
+      );
+    }
+
+    return count ?? 0;
   },
 };

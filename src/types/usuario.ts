@@ -16,18 +16,25 @@ export type Permissao =
   | 'extras.ver'
   | 'extras.editar'
   | 'notificacoes.ver'
-  | 'usuarios.gerir';
+  | 'usuarios.gerir'
+  | 'configuracoes.gerir';
 
 export interface Usuario {
   id: string;
   nome: string;
   email: string;
+  /** Empresa (tenant) a que este usuário pertence. */
+  empresaId?: string | null;
+  /** Perfil de acesso selecionado (template de permissões). */
+  perfilAcessoId: string | null;
+  perfilAcessoNome: string | null;
+  /** Legado — mantido para compatibilidade com dados antigos. */
   papel: PapelUsuario;
   permissoes: Permissao[];
   status: StatusUsuario;
-  /** Quando uma senha foi gerada para este acesso (mock). */
+  /** Legado no tipo — não persistido; senhas são gerenciadas pelo Supabase Auth. */
   senhaDefinidaEm: string | null;
-  /** Último acesso simulado (mock). */
+  /** Último login registrado em `profiles.ultimo_acesso`. */
   ultimoAcesso: string | null;
   criadoEm: string;
   atualizadoEm: string;
@@ -35,8 +42,16 @@ export interface Usuario {
 
 export type UsuarioInput = Omit<
   Usuario,
-  'id' | 'criadoEm' | 'atualizadoEm' | 'ultimoAcesso' | 'senhaDefinidaEm'
->;
+  | 'id'
+  | 'criadoEm'
+  | 'atualizadoEm'
+  | 'ultimoAcesso'
+  | 'senhaDefinidaEm'
+  | 'perfilAcessoNome'
+  | 'papel'
+> & {
+  perfilAcessoId: string;
+};
 
 export const PAPEIS_USUARIO: {
   value: PapelUsuario;
@@ -117,9 +132,16 @@ export const GRUPOS_PERMISSOES: GrupoPermissao[] = [
   },
   {
     modulo: 'usuarios',
-    label: 'Administração',
+    label: 'Usuários',
     permissoes: [
-      { value: 'usuarios.gerir', label: 'Gerir usuários e permissões' },
+      { value: 'usuarios.gerir', label: 'Gerir usuários' },
+    ],
+  },
+  {
+    modulo: 'configuracoes',
+    label: 'Configurações',
+    permissoes: [
+      { value: 'configuracoes.gerir', label: 'Gerir perfis de acesso' },
     ],
   },
 ];

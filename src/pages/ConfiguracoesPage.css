@@ -1,0 +1,57 @@
+.brisa-configuracoes__lista {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.brisa-configuracoes__card {
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  background: var(--brisa-surface);
+}
+
+.brisa-configuracoes__card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.brisa-configuracoes__card-titulos {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.brisa-configuracoes__card-nome {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.brisa-configuracoes__card-desc {
+  margin: var(--space-1) 0 0;
+  color: var(--brisa-text-soft);
+  font-size: 0.9rem;
+}
+
+.brisa-configuracoes__card-perms {
+  margin: var(--space-3) 0 0;
+  font-size: 0.85rem;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-configuracoes__erro {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--brisa-danger) 12%, transparent);
+  color: var(--brisa-danger);
+}
+
+.brisa-configuracoes__salvando {
+  margin-top: var(--space-3);
+  font-size: 0.875rem;
+  color: var(--brisa-text-soft);
+}

@@ -59,18 +59,20 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
   const [modalEdicao, setModalEdicao] = useState(false);
   const [confirmarExcluir, setConfirmarExcluir] = useState(false);
 
-  const recarregar = useCallback(() => {
+  const recarregar = useCallback(async () => {
     if (tipo === 'funcionario') {
-      setFuncionario(funcionariosStorage.obter(id) ?? null);
+      const f = await funcionariosStorage.obter(id);
+      setFuncionario(f ?? null);
       setExtra(null);
     } else {
-      setExtra(extrasStorage.obter(id) ?? null);
+      const e = await extrasStorage.obter(id);
+      setExtra(e ?? null);
       setFuncionario(null);
     }
   }, [tipo, id]);
 
   useEffect(() => {
-    recarregar();
+    void recarregar();
   }, [recarregar]);
 
   const registro = tipo === 'funcionario' ? funcionario : extra;
@@ -84,25 +86,25 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
       ? (funcionario?.documentos ?? [])
       : (extra?.documentos ?? []);
 
-  function salvarFuncionario(input: FuncionarioInput) {
-    funcionariosStorage.atualizar(id, input);
+  async function salvarFuncionario(input: FuncionarioInput) {
+    await funcionariosStorage.atualizar(id, input);
     disparoNotificacoes();
-    recarregar();
+    await recarregar();
     setModalEdicao(false);
   }
 
-  function salvarExtra(input: PessoaExtraInput) {
-    extrasStorage.atualizar(id, input);
+  async function salvarExtra(input: PessoaExtraInput) {
+    await extrasStorage.atualizar(id, input);
     disparoNotificacoes();
-    recarregar();
+    await recarregar();
     setModalEdicao(false);
   }
 
-  function excluir() {
+  async function excluir() {
     if (tipo === 'funcionario') {
-      funcionariosStorage.excluir(id);
+      await funcionariosStorage.excluir(id);
     } else {
-      extrasStorage.excluir(id);
+      await extrasStorage.excluir(id);
     }
     disparoNotificacoes();
     setConfirmarExcluir(false);
@@ -111,7 +113,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
 
   if (!registro) {
     return (
-      <div className="brisa-perfil">
+      <div className="brisa-page brisa-perfil">
         <div className="brisa-perfil__toolbar">
           <button type="button" className="brisa-perfil__back" onClick={onVoltar}>
             <Icon name="arrow-left" size={18} />
@@ -130,7 +132,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
 
   const secundarias =
     tipo === 'funcionario'
-      ? funcionario!.funcoesSecundarias
+      ? (funcionario!.funcoesSecundarias ?? [])
       : (extra!.funcoesSecundarias ?? []);
 
   const statusVal =
@@ -139,7 +141,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
       : extra!.status ?? undefined;
 
   return (
-    <div className="brisa-perfil">
+    <div className="brisa-page brisa-perfil">
       <div className="brisa-perfil__toolbar">
         <button type="button" className="brisa-perfil__back" onClick={onVoltar}>
           <Icon name="arrow-left" size={18} />
@@ -195,7 +197,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
           </div>
           <div className="brisa-perfil__field">
             <span className="brisa-perfil__label">Funções secundárias</span>
-            {secundarias.length > 0 ? (
+            {secundarias && secundarias.length > 0 ? (
               <div className="brisa-perfil__chips">
                 {secundarias.map((f) => (
                   <span key={f} className="brisa-perfil__chip">
@@ -221,7 +223,9 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
             <span className="brisa-perfil__label">Local de trabalho</span>
             <span className="brisa-perfil__value">
               {tipo === 'funcionario'
-                ? labelLocal(funcionario!.localTrabalho)
+                ? funcionario!.localTrabalho
+                  ? labelLocal(funcionario!.localTrabalho)
+                  : '—'
                 : extra!.localTrabalho
                   ? labelLocal(extra!.localTrabalho)
                   : '—'}
@@ -231,7 +235,9 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
             <span className="brisa-perfil__label">Tipo de contrato</span>
             <span className="brisa-perfil__value">
               {tipo === 'funcionario'
-                ? labelContrato(funcionario!.tipoContrato)
+                ? funcionario!.tipoContrato
+                  ? labelContrato(funcionario!.tipoContrato)
+                  : '—'
                 : extra!.tipoContrato
                   ? labelContrato(extra!.tipoContrato)
                   : '—'}
@@ -241,7 +247,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
             <span className="brisa-perfil__label">Data de admissão</span>
             <span className="brisa-perfil__value">
               {tipo === 'funcionario'
-                ? formatarData(funcionario!.dataAdmissao)
+                ? formatarData(funcionario!.dataAdmissao ?? '')
                 : formatarData(extra!.dataAdmissao ?? '')}
             </span>
           </div>
@@ -328,7 +334,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
           <FuncionarioForm
             funcionario={funcionario}
             onCancel={() => setModalEdicao(false)}
-            onSubmit={salvarFuncionario}
+            onSubmit={(input) => void salvarFuncionario(input)}
           />
         ) : tipo === 'extra' && extra ? (
           <FuncionarioForm
@@ -336,7 +342,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
             variant="extra"
             extra={extra}
             onCancel={() => setModalEdicao(false)}
-            onSubmit={salvarExtra}
+            onSubmit={(input) => void salvarExtra(input)}
           />
         ) : null}
       </Modal>
@@ -346,7 +352,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
         nome={nome}
         titulo={tipo === 'funcionario' ? 'Excluir funcionário' : 'Excluir extra'}
         onCancel={() => setConfirmarExcluir(false)}
-        onConfirm={excluir}
+        onConfirm={() => void excluir()}
       >
         {tipo === 'extra' ? (
           <p className="brisa-confirm__text">

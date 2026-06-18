@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="Logo">
+  <path
+    d="M7 31.5C12.5 14.5 35.5 14.5 41 31.5"
+    stroke="#ffffff"
+    stroke-width="2.75"
+    stroke-linecap="round"
+    opacity="0.92"
+  />
+  <rect x="9" y="29" width="9" height="11" rx="2.5" fill="#ffffff" />
+  <rect x="19.5" y="23" width="9" height="17" rx="2.5" fill="#ffffff" opacity="0.82" />
+  <rect x="30" y="26.5" width="9" height="13.5" rx="2.5" fill="#ffffff" opacity="0.64" />
+  <circle cx="24" cy="16.5" r="2.75" fill="#ffffff" opacity="0.95" />
+</svg>

@@ -1,4 +1,10 @@
+import {
+  ordenarNotificacoes,
+  rowParaNotificacao,
+} from '../lib/notificacaoMappers';
+import { supabase } from '../lib/supabase';
 import type { Notificacao } from '../types/notificacao';
+import { hojeISO } from '../utils/datas';
 import { funcionariosStorage } from './funcionariosStorage';
 import { extrasStorage } from './extrasStorage';
 import { turnosStorage } from './turnosStorage';
@@ -8,173 +14,278 @@ import {
   detectarProblemas,
   type ProblemaDetectado,
 } from './notificacoesEngine';
-import { hojeISO } from '../utils/datas';
+import { authSession } from './authSession';
 
-const STORAGE_KEY = 'brisa-cafe:notificacoes';
+function erroMensagem(erro: { message: string }, fallback: string): string {
+  console.error('[notificacoes]', erro.message);
+  return fallback;
+}
 
-function gerarId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
+function empresaIdAtual(): string {
+  const id = authSession.obter()?.empresaId;
+  if (!id) {
+    throw new Error('Empresa não identificada na sessão.');
   }
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return id;
 }
 
-function ler(): Notificacao[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as Notificacao[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    console.error('Erro ao ler notificações do localStorage', error);
-    return [];
-  }
-}
-
-function escrever(lista: Notificacao[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
-}
-
-function notificacaoNova(p: ProblemaDetectado, agora: string): Notificacao {
+function rowInsertDeProblema(
+  empresaId: string,
+  p: ProblemaDetectado,
+  agora: string,
+) {
   return {
-    id: gerarId(),
+    empresa_id: empresaId,
     chave: p.chave,
     tipo: p.tipo,
     severidade: p.severidade,
     titulo: p.titulo,
     mensagem: p.mensagem,
     data: p.data,
-    funcionarioId: p.funcionarioId,
-    turnoEscaladoId: p.turnoEscaladoId,
-    turnoId: p.turnoId,
-    status: 'nao_lida',
-    detectadaEm: agora,
-    atualizadaEm: agora,
+    funcionario_id: p.funcionarioId ?? null,
+    turno_escalado_id: p.turnoEscaladoId ?? null,
+    turno_id: p.turnoId ?? null,
+    status: 'nao_lida' as const,
+    detectada_em: agora,
+    atualizada_em: agora,
   };
 }
 
 export const notificacoesStorage = {
-  listar(): Notificacao[] {
-    return ler().sort((a, b) => {
-      const ordemSeveridade: Record<Notificacao['severidade'], number> = {
-        alta: 0,
-        media: 1,
-        baixa: 2,
-      };
-      const sevDiff =
-        ordemSeveridade[a.severidade] - ordemSeveridade[b.severidade];
-      if (sevDiff !== 0) return sevDiff;
-      return b.detectadaEm.localeCompare(a.detectadaEm);
-    });
+  async listar(): Promise<Notificacao[]> {
+    const empresaId = empresaIdAtual();
+    const { data, error } = await supabase
+      .from('notificacoes')
+      .select('*')
+      .eq('empresa_id', empresaId);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível carregar as notificações.'),
+      );
+    }
+
+    return ordenarNotificacoes((data ?? []).map(rowParaNotificacao));
   },
 
-  contagemNaoLidasAtivas(): number {
+  async contagemNaoLidasAtivas(): Promise<number> {
     const hoje = hojeISO();
-    return ler().filter(
+    const lista = await this.listar();
+    return lista.filter(
       (n) =>
-        n.status === 'nao_lida' &&
-        (!n.snoozeAte || n.snoozeAte <= hoje),
+        n.status === 'nao_lida' && (!n.snoozeAte || n.snoozeAte <= hoje),
     ).length;
   },
 
-  marcarLida(id: string): void {
-    const lista = ler();
-    const item = lista.find((n) => n.id === id);
-    if (!item || item.status === 'resolvida') return;
-    item.status = 'lida';
-    item.atualizadaEm = new Date().toISOString();
-    escrever(lista);
-  },
-
-  marcarTodasLidas(): void {
-    const lista = ler();
+  async marcarLida(id: string): Promise<void> {
+    const empresaId = empresaIdAtual();
     const agora = new Date().toISOString();
-    let mudou = false;
-    for (const n of lista) {
-      if (n.status === 'nao_lida') {
-        n.status = 'lida';
-        n.atualizadaEm = agora;
-        mudou = true;
-      }
+    const { error } = await supabase
+      .from('notificacoes')
+      .update({ status: 'lida', atualizada_em: agora })
+      .eq('id', id)
+      .eq('empresa_id', empresaId)
+      .neq('status', 'resolvida');
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível marcar a notificação como lida.'),
+      );
     }
-    if (mudou) escrever(lista);
   },
 
-  marcarResolvida(id: string): void {
-    const lista = ler();
-    const item = lista.find((n) => n.id === id);
-    if (!item) return;
+  async marcarTodasLidas(): Promise<void> {
+    const empresaId = empresaIdAtual();
     const agora = new Date().toISOString();
-    item.status = 'resolvida';
-    item.resolvidaEm = agora;
-    item.atualizadaEm = agora;
-    escrever(lista);
+    const { error } = await supabase
+      .from('notificacoes')
+      .update({ status: 'lida', atualizada_em: agora })
+      .eq('empresa_id', empresaId)
+      .eq('status', 'nao_lida');
+
+    if (error) {
+      throw new Error(
+        erroMensagem(
+          error,
+          'Não foi possível marcar todas as notificações como lidas.',
+        ),
+      );
+    }
   },
 
-  adiar(id: string, ateData: string): void {
-    const lista = ler();
-    const item = lista.find((n) => n.id === id);
-    if (!item) return;
-    item.status = 'adiada';
-    item.snoozeAte = ateData;
-    item.atualizadaEm = new Date().toISOString();
-    escrever(lista);
+  async marcarResolvida(id: string): Promise<void> {
+    const empresaId = empresaIdAtual();
+    const agora = new Date().toISOString();
+    const { error } = await supabase
+      .from('notificacoes')
+      .update({
+        status: 'resolvida',
+        resolvida_em: agora,
+        atualizada_em: agora,
+      })
+      .eq('id', id)
+      .eq('empresa_id', empresaId);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível resolver a notificação.'),
+      );
+    }
   },
 
-  reabrir(id: string): void {
-    const lista = ler();
-    const item = lista.find((n) => n.id === id);
-    if (!item) return;
-    item.status = 'nao_lida';
-    item.snoozeAte = undefined;
-    item.atualizadaEm = new Date().toISOString();
-    escrever(lista);
+  async adiar(id: string, ateData: string): Promise<void> {
+    const empresaId = empresaIdAtual();
+    const agora = new Date().toISOString();
+    const { error } = await supabase
+      .from('notificacoes')
+      .update({
+        status: 'adiada',
+        snooze_ate: ateData,
+        atualizada_em: agora,
+      })
+      .eq('id', id)
+      .eq('empresa_id', empresaId);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível adiar a notificação.'),
+      );
+    }
   },
 
-  excluir(id: string): void {
-    escrever(ler().filter((n) => n.id !== id));
+  async reabrir(id: string): Promise<void> {
+    const empresaId = empresaIdAtual();
+    const agora = new Date().toISOString();
+    const { error } = await supabase
+      .from('notificacoes')
+      .update({
+        status: 'nao_lida',
+        snooze_ate: null,
+        resolvida_em: null,
+        atualizada_em: agora,
+      })
+      .eq('id', id)
+      .eq('empresa_id', empresaId);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível reabrir a notificação.'),
+      );
+    }
   },
 
-  limparResolvidas(): void {
-    escrever(ler().filter((n) => n.status !== 'resolvida'));
+  async excluir(id: string): Promise<void> {
+    const empresaId = empresaIdAtual();
+    const { error } = await supabase
+      .from('notificacoes')
+      .delete()
+      .eq('id', id)
+      .eq('empresa_id', empresaId);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível excluir a notificação.'),
+      );
+    }
   },
 
-  sincronizar(): { novas: number; resolvidas: number } {
-    const escalas = escalaStorage.listar();
-    const turnos = turnosStorage.listar();
-    const funcionarios = funcionariosStorage.listar();
-    const extras = extrasStorage.listar();
+  async limparResolvidas(): Promise<void> {
+    const empresaId = empresaIdAtual();
+    const { error } = await supabase
+      .from('notificacoes')
+      .delete()
+      .eq('empresa_id', empresaId)
+      .eq('status', 'resolvida');
+
+    if (error) {
+      throw new Error(
+        erroMensagem(
+          error,
+          'Não foi possível limpar as notificações resolvidas.',
+        ),
+      );
+    }
+  },
+
+  async sincronizar(): Promise<{ novas: number; resolvidas: number }> {
+    const empresaId = empresaIdAtual();
+
+    let escalas: Awaited<ReturnType<typeof escalaStorage.listar>> = [];
+    try {
+      escalas = await escalaStorage.listar();
+    } catch (error) {
+      console.error('[notificacoes] escala', error);
+    }
+    let turnos: Awaited<ReturnType<typeof turnosStorage.listar>> = [];
+    try {
+      turnos = await turnosStorage.listar();
+    } catch (error) {
+      console.error('[notificacoes] turnos', error);
+    }
+    let funcionarios: Awaited<ReturnType<typeof funcionariosStorage.listar>> =
+      [];
+    try {
+      funcionarios = await funcionariosStorage.listar();
+    } catch (error) {
+      console.error('[notificacoes] funcionários', error);
+    }
+    let extras: Awaited<ReturnType<typeof extrasStorage.listar>> = [];
+    try {
+      extras = await extrasStorage.listar();
+    } catch (error) {
+      console.error('[notificacoes] extras', error);
+    }
+
     const hoje = hojeISO();
     const agora = new Date().toISOString();
+    const problemas = detectarProblemas(
+      escalas,
+      turnos,
+      funcionarios,
+      extras,
+      hoje,
+    );
 
-    const problemas = detectarProblemas(escalas, turnos, funcionarios, extras, hoje);
-    const persistidas = ler();
-
-    const { novas, resolvidas } = compararParaSync(problemas, persistidas, agora);
-
-    let mudou = false;
-    const lista = [...persistidas];
+    const persistidas = await this.listar();
+    const { novas, resolvidas } = compararParaSync(
+      problemas,
+      persistidas,
+      agora,
+    );
 
     if (novas.length > 0) {
-      mudou = true;
-      for (const novo of novas) {
-        lista.push(notificacaoNova(novo, agora));
+      const { error } = await supabase
+        .from('notificacoes')
+        .insert(novas.map((p) => rowInsertDeProblema(empresaId, p, agora)));
+
+      if (error) {
+        throw new Error(
+          erroMensagem(error, 'Não foi possível registrar novas notificações.'),
+        );
       }
     }
 
     if (resolvidas.length > 0) {
-      mudou = true;
-      const resolvidasIds = new Set(resolvidas.map((n) => n.id));
-      for (const item of lista) {
-        if (resolvidasIds.has(item.id)) {
-          item.status = 'resolvida';
-          item.resolvidaEm = agora;
-          item.atualizadaEm = agora;
-        }
+      const ids = resolvidas.map((n) => n.id);
+      const { error } = await supabase
+        .from('notificacoes')
+        .update({
+          status: 'resolvida',
+          resolvida_em: agora,
+          atualizada_em: agora,
+        })
+        .eq('empresa_id', empresaId)
+        .in('id', ids);
+
+      if (error) {
+        throw new Error(
+          erroMensagem(
+            error,
+            'Não foi possível atualizar notificações resolvidas.',
+          ),
+        );
       }
     }
-
-    if (mudou) escrever(lista);
 
     return { novas: novas.length, resolvidas: resolvidas.length };
   },

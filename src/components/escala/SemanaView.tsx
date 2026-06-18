@@ -18,8 +18,8 @@ interface SemanaViewProps {
   turnos: Turno[];
   funcionarios: Funcionario[];
   extras: PessoaExtra[];
-  onAdicionar: (data: string) => void;
-  onAbrirTurno: (data: string, turnoEscaladoId: string) => void;
+  onAdicionar?: (data: string) => void;
+  onAbrirTurno?: (data: string, turnoEscaladoId: string) => void;
   onAbrirDia: (data: string) => void;
 }
 
@@ -77,18 +77,22 @@ export function SemanaView({
                     turno={turno}
                     funcionarios={funcionarios}
                     extras={extras}
-                    onClick={() => onAbrirTurno(dia, te.id)}
+                    onClick={
+                      onAbrirTurno ? () => onAbrirTurno(dia, te.id) : undefined
+                    }
                   />
                 );
               })}
-              <button
-                type="button"
-                className="brisa-semana__add"
-                onClick={() => onAdicionar(dia)}
-              >
-                <Icon name="plus" size={14} />
-                Turno
-              </button>
+              {onAdicionar ? (
+                <button
+                  type="button"
+                  className="brisa-semana__add"
+                  onClick={() => onAdicionar(dia)}
+                >
+                  <Icon name="plus" size={14} />
+                  Turno
+                </button>
+              ) : null}
             </div>
           </div>
         );

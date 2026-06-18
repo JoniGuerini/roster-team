@@ -8,6 +8,8 @@ interface ConfirmDeleteModalProps {
   nome: string;
   /** Padrão: excluir funcionário. */
   titulo?: string;
+  /** Texto do botão de confirmação. Padrão: Excluir. */
+  confirmLabel?: string;
   /** Se omitido, usa o texto padrão de exclusão. */
   children?: ReactNode;
   onCancel: () => void;
@@ -18,6 +20,7 @@ export function ConfirmDeleteModal({
   open,
   nome,
   titulo = 'Excluir funcionário',
+  confirmLabel = 'Excluir',
   children,
   onCancel,
   onConfirm,
@@ -34,7 +37,7 @@ export function ConfirmDeleteModal({
             Cancelar
           </Button>
           <Button variant="danger" onClick={onConfirm}>
-            Excluir
+            {confirmLabel}
           </Button>
         </>
       }

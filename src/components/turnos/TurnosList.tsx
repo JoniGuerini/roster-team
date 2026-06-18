@@ -22,8 +22,8 @@ interface TurnosListProps {
   turnos: Turno[];
   funcionarios: Funcionario[];
   extras: PessoaExtra[];
-  onEdit: (turno: Turno) => void;
-  onDelete: (turno: Turno) => void;
+  onEdit?: (turno: Turno) => void;
+  onDelete?: (turno: Turno) => void;
 }
 
 const TITULOS_GRUPO: Record<TipoTurno, string> = {
@@ -118,7 +118,7 @@ export function TurnosList({
         <h3 className="brisa-empty__title">Nenhum turno cadastrado</h3>
         <p className="brisa-empty__hint">
           Clique em <strong>Novo turno</strong> para criar o primeiro modelo de
-          turno da Brisa.
+          turno.
         </p>
       </div>
     );
@@ -159,26 +159,32 @@ export function TurnosList({
                     turno={turno}
                     status={status}
                     headActions={
-                      <>
-                        <button
-                          type="button"
-                          className="brisa-icon-btn"
-                          aria-label={`Editar ${turno.nome}`}
-                          title="Ver detalhes / Editar"
-                          onClick={() => onEdit(turno)}
-                        >
-                          <Icon name="pencil" size={15} />
-                        </button>
-                        <button
-                          type="button"
-                          className="brisa-icon-btn brisa-icon-btn--danger"
-                          aria-label={`Excluir ${turno.nome}`}
-                          title="Excluir"
-                          onClick={() => onDelete(turno)}
-                        >
-                          <Icon name="trash" size={15} />
-                        </button>
-                      </>
+                      onEdit || onDelete ? (
+                        <>
+                          {onEdit ? (
+                            <button
+                              type="button"
+                              className="brisa-icon-btn"
+                              aria-label={`Editar ${turno.nome}`}
+                              title="Ver detalhes / Editar"
+                              onClick={() => onEdit(turno)}
+                            >
+                              <Icon name="pencil" size={15} />
+                            </button>
+                          ) : null}
+                          {onDelete ? (
+                            <button
+                              type="button"
+                              className="brisa-icon-btn brisa-icon-btn--danger"
+                              aria-label={`Excluir ${turno.nome}`}
+                              title="Excluir"
+                              onClick={() => onDelete(turno)}
+                            >
+                              <Icon name="trash" size={15} />
+                            </button>
+                          ) : null}
+                        </>
+                      ) : undefined
                     }
                   />
                 );

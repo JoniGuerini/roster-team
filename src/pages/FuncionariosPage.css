@@ -1,3 +1,18 @@
+.brisa-funcionarios__erro {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--brisa-danger-soft);
+  color: var(--brisa-danger);
+  font-size: 13px;
+}
+
+.brisa-funcionarios__loading {
+  margin: 0 0 var(--space-4);
+  color: var(--brisa-text-muted);
+  font-size: 13px;
+}
+
 .brisa-page {
   display: flex;
   flex-direction: column;

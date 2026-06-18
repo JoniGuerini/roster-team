@@ -1,0 +1,146 @@
+.brisa-empresas__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+.brisa-empresa-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-xs);
+}
+
+.brisa-empresa-card--link {
+  cursor: pointer;
+  transition:
+    border-color var(--transition-base, 0.15s ease),
+    box-shadow var(--transition-base, 0.15s ease),
+    transform var(--transition-base, 0.15s ease);
+}
+
+.brisa-empresa-card--link:hover {
+  border-color: var(--brisa-border-strong);
+  box-shadow: var(--shadow-sm, 0 4px 12px rgba(20, 25, 35, 0.08));
+  transform: translateY(-1px);
+}
+
+.brisa-empresa-card--link:focus-visible {
+  outline: 2px solid var(--brisa-primary, #3c5aa6);
+  outline-offset: 2px;
+}
+
+.brisa-empresa-card__top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 2px var(--space-3);
+  align-items: center;
+}
+
+.brisa-empresa-card__top > .brisa-empresa-logo {
+  grid-row: span 2;
+}
+
+.brisa-empresa-card__id {
+  min-width: 0;
+}
+
+.brisa-empresa-card__nome {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-empresa-card__segmento {
+  font-size: 13px;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-empresa-card__tags {
+  grid-column: 2;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.brisa-empresa-card__owner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--brisa-surface-soft);
+  border-radius: var(--radius-md, 10px);
+}
+
+.brisa-empresa-card__owner-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.brisa-empresa-card__owner-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brisa-empresa-card__owner-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-empresa-card__owner-nome {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-empresa-card__owner-email {
+  font-size: 12.5px;
+  color: var(--brisa-text-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-empresa-card__acoes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--brisa-border);
+}
+
+.brisa-empresa-card__acoes-icones {
+  display: flex;
+  gap: 4px;
+}
+
+.brisa-icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

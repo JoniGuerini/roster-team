@@ -1,0 +1,63 @@
+.brisa-empresa-form__marca {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--brisa-surface-soft);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md);
+}
+
+.brisa-empresa-form__marca-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.brisa-empresa-form__marca-botoes {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.brisa-empresa-form__marca-hint {
+  font-size: 12px;
+  color: var(--brisa-text-soft);
+  line-height: 1.4;
+}
+
+.brisa-empresa-form__marca-erro {
+  font-size: 12px;
+  color: var(--brisa-danger, #c0392b);
+}
+
+.brisa-empresa-form__cor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brisa-empresa-form__cor-input {
+  width: 48px;
+  height: 40px;
+  padding: 2px;
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md, 10px);
+  background: var(--brisa-surface);
+  cursor: pointer;
+}
+
+.brisa-empresa-form__cor-valor {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--brisa-text-soft);
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 600px) {
+  .brisa-empresa-form__marca {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -19,8 +19,8 @@ function escolher(conjunto: string): string {
 }
 
 /**
- * Gera uma senha aleatória (mock, sem backend). Garante pelo menos um
- * caractere de cada grupo e embaralha o resultado.
+ * Gera uma senha provisória aleatória (aplicada via RPC no Supabase Auth).
+ * Garante pelo menos um caractere de cada grupo e embaralha o resultado.
  */
 export function gerarSenha(tamanho = 12): string {
   const comprimento = Math.max(8, tamanho);

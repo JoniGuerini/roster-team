@@ -8,6 +8,7 @@
 
 .brisa-table-wrapper {
   overflow-x: auto;
+  max-width: 100%;
 }
 
 .brisa-table {
@@ -15,7 +16,6 @@
   table-layout: fixed;
   border-collapse: collapse;
   text-align: left;
-  min-width: 1040px;
 }
 
 .brisa-table__col--person {

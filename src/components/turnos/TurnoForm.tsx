@@ -235,7 +235,7 @@ export function TurnoForm({
     const pode = podeAparecerComoSugeridoNoTurno(f);
     const ind = indisponibilidadeNoDia(f, dataReferenciaAlocacao);
     const principal = f.funcaoPrincipal;
-    const rotuloFuncao = labelFuncao(principal);
+    const rotuloFuncao = principal ? labelFuncao(principal) : 'Sem função';
     const secundarias = [
       ...new Set(
         (f.funcoesSecundarias ?? []).filter((func) => func !== principal),
@@ -491,11 +491,11 @@ export function TurnoForm({
     setErros((prev) => ({ ...prev, necessidades: undefined }));
   }
 
-  function confirmarExtraModal() {
+  async function confirmarExtraModal() {
     if (!extraModal) return;
     const nome = extraNome.trim();
     if (!nome) return;
-    const novo = extrasStorage.criarSóNome(nome);
+    const novo = await extrasStorage.criarSóNome(nome);
     onExtrasChange?.();
     atualizarSlot(extraModal.funcao, extraModal.indice, novo.id);
     setExtraModal(null);
@@ -974,7 +974,7 @@ export function TurnoForm({
             <Button
               type="button"
               variant="primary"
-              onClick={confirmarExtraModal}
+              onClick={() => void confirmarExtraModal()}
               disabled={!extraNome.trim()}
             >
               Adicionar
@@ -991,7 +991,7 @@ export function TurnoForm({
             onKeyDown={(e) => {
               if (e.key === 'Enter' && extraNome.trim()) {
                 e.preventDefault();
-                confirmarExtraModal();
+                void confirmarExtraModal();
               }
             }}
             autoFocus

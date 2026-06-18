@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '../components/ui/Button';
 import { Field } from '../components/ui/Field';
 import { Icon } from '../components/ui/Icon';
@@ -10,6 +10,8 @@ import { ListaEquipePaginacao } from '../components/equipe/ListaEquipePaginacao'
 import { ExtrasList } from '../components/extras/ExtrasList';
 import { ConfirmDeleteModal } from '../components/funcionarios/ConfirmDeleteModal';
 import { extrasStorage } from '../services/extrasStorage';
+import type { Sessao } from '../services/authSession';
+import { podeEditarModulo } from '../utils/rotaPermissoes';
 import type { PessoaExtra, PessoaExtraInput } from '../types/pessoaExtra';
 import {
   FUNCOES,
@@ -28,6 +30,7 @@ import {
 import './FuncionariosPage.css';
 
 interface ExtrasPageProps {
+  sessao: Sessao;
   onAbrirPerfil: (id: string) => void;
 }
 
@@ -45,8 +48,11 @@ const OPCAO_SEM = (rotulo: string) => ({
   label: rotulo,
 });
 
-export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
+export function ExtrasPage({ sessao, onAbrirPerfil }: ExtrasPageProps) {
+  const podeEditar = podeEditarModulo(sessao.permissoes, 'extras');
   const [extras, setExtras] = useState<PessoaExtra[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState<string | null>(null);
   const [busca, setBusca] = useState('');
   const [filtrosColuna, setFiltrosColuna] =
     useState<FiltroColunasExtra>(FILTRO_INICIAL);
@@ -58,9 +64,25 @@ export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
   const [pagina, setPagina] = useState(1);
   const [itensPorPagina, setItensPorPagina] = useState(10);
 
+  const carregar = useCallback(async () => {
+    if (!sessao.empresaId) return;
+    setCarregando(true);
+    try {
+      const lista = await extrasStorage.listar();
+      setExtras(lista);
+      setErro(null);
+    } catch (e) {
+      setErro(
+        e instanceof Error ? e.message : 'Não foi possível carregar os extras.',
+      );
+    } finally {
+      setCarregando(false);
+    }
+  }, [sessao.empresaId]);
+
   useEffect(() => {
-    setExtras(extrasStorage.listar());
-  }, []);
+    void carregar();
+  }, [carregar]);
 
   const extrasFiltrados = useMemo(() => {
     return extras.filter((e) => {
@@ -119,23 +141,35 @@ export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
     setEditando(undefined);
   }
 
-  function salvar(input: PessoaExtraInput) {
-    if (editando) {
-      extrasStorage.atualizar(editando.id, input);
-    } else {
-      extrasStorage.criar(input);
+  async function salvar(input: PessoaExtraInput) {
+    try {
+      if (editando) {
+        await extrasStorage.atualizar(editando.id, input);
+      } else {
+        await extrasStorage.criar(input);
+      }
+      await carregar();
+      disparoNotificacoes();
+      fecharModal();
+    } catch (e) {
+      setErro(
+        e instanceof Error ? e.message : 'Não foi possível salvar o extra.',
+      );
     }
-    setExtras(extrasStorage.listar());
-    disparoNotificacoes();
-    fecharModal();
   }
 
-  function confirmarExclusao() {
+  async function confirmarExclusao() {
     if (!paraExcluir) return;
-    extrasStorage.excluir(paraExcluir.id);
-    setExtras(extrasStorage.listar());
-    disparoNotificacoes();
-    setParaExcluir(undefined);
+    try {
+      await extrasStorage.excluir(paraExcluir.id);
+      await carregar();
+      disparoNotificacoes();
+      setParaExcluir(undefined);
+    } catch (e) {
+      setErro(
+        e instanceof Error ? e.message : 'Não foi possível excluir o extra.',
+      );
+    }
   }
 
   return (
@@ -157,12 +191,23 @@ export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
             ) : null}
           </p>
         </div>
-        <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
-          Novo extra
-        </Button>
+        {podeEditar ? (
+          <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
+            Novo extra
+          </Button>
+        ) : null}
       </header>
 
-      <section className="brisa-page__toolbar">
+      <div className="brisa-page__body">
+        {erro ? (
+          <div className="brisa-funcionarios__erro" role="alert">
+            {erro}
+          </div>
+        ) : null}
+        {carregando ? (
+          <p className="brisa-funcionarios__loading">Carregando extras…</p>
+        ) : null}
+        <section className="brisa-page__toolbar">
         <div className="brisa-page__toolbar-equipe">
           <div className="brisa-search brisa-search--inline">
             <Icon name="search" size={16} />
@@ -277,14 +322,14 @@ export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
         </div>
       </section>
 
-      {extras.length === 0 ? (
+      {!carregando && extras.length === 0 ? (
         <ExtrasList
           extras={[]}
           onOpenPerfil={(e) => onAbrirPerfil(e.id)}
-          onEdit={abrirEdicao}
-          onDelete={(e) => setParaExcluir(e)}
+          onEdit={podeEditar ? abrirEdicao : undefined}
+          onDelete={podeEditar ? (e) => setParaExcluir(e) : undefined}
         />
-      ) : extrasFiltrados.length === 0 ? (
+      ) : !carregando && extrasFiltrados.length === 0 ? (
         <div className="brisa-page__empty-filtro">
           <h3 className="brisa-page__empty-filtro-title">
             Nenhum resultado encontrado
@@ -297,13 +342,13 @@ export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
             Limpar busca e filtros
           </Button>
         </div>
-      ) : (
+      ) : !carregando ? (
         <>
           <ExtrasList
             extras={extrasPagina}
             onOpenPerfil={(e) => onAbrirPerfil(e.id)}
-            onEdit={abrirEdicao}
-            onDelete={(e) => setParaExcluir(e)}
+            onEdit={podeEditar ? abrirEdicao : undefined}
+            onDelete={podeEditar ? (e) => setParaExcluir(e) : undefined}
           />
           <ListaEquipePaginacao
             pagina={pagina}
@@ -314,7 +359,9 @@ export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
             onItensPorPaginaChange={handleItensPorPaginaChange}
           />
         </>
-      )}
+      ) : null}
+
+      </div>
 
       <Modal
         open={modalAberto}
@@ -332,7 +379,7 @@ export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
           variant="extra"
           extra={editando}
           onCancel={fecharModal}
-          onSubmit={salvar}
+          onSubmit={(input) => void salvar(input)}
         />
       </Modal>
 
@@ -341,7 +388,7 @@ export function ExtrasPage({ onAbrirPerfil }: ExtrasPageProps) {
         nome={paraExcluir?.nome ?? ''}
         titulo="Excluir extra"
         onCancel={() => setParaExcluir(undefined)}
-        onConfirm={confirmarExclusao}
+        onConfirm={() => void confirmarExclusao()}
       >
         <p className="brisa-confirm__text">
           Remover <strong>{paraExcluir?.nome}</strong>? Se ainda estiver em

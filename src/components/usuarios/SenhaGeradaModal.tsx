@@ -6,6 +6,7 @@ import './SenhaGeradaModal.css';
 
 interface SenhaGeradaModalProps {
   open: boolean;
+  titulo?: string;
   nomeUsuario: string;
   email: string;
   senha: string;
@@ -14,6 +15,7 @@ interface SenhaGeradaModalProps {
 
 export function SenhaGeradaModal({
   open,
+  titulo = 'Senha gerada',
   nomeUsuario,
   email,
   senha,
@@ -39,7 +41,7 @@ export function SenhaGeradaModal({
     <Modal
       open={open}
       onClose={onClose}
-      title="Senha gerada"
+      title={titulo}
       description={`Credenciais de acesso para ${nomeUsuario}.`}
       size="md"
       footer={
@@ -50,9 +52,9 @@ export function SenhaGeradaModal({
     >
       <div className="brisa-senha">
         <p className="brisa-senha__aviso">
-          Esta senha aparece apenas uma vez. Copie e compartilhe com a pessoa por
-          um canal seguro. Por enquanto isto é uma simulação (sem backend), nada
-          é enviado por e-mail.
+          Esta senha provisória aparece apenas neste momento. Copie e compartilhe
+          com a pessoa por um canal seguro. Depois do primeiro acesso, ela poderá
+          definir uma senha própria no app.
         </p>
 
         <div className="brisa-senha__campo">

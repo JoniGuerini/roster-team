@@ -1,6 +1,7 @@
 import { Button } from '../ui/Button';
 import { Select } from '../ui/Select';
 import { Icon } from '../ui/Icon';
+import { SegmentedControl } from '../ui/SegmentedControl';
 import { LOCAIS_TRABALHO, type LocalTrabalho } from '../../types/funcionario';
 import {
   diasDaSemana,
@@ -93,20 +94,12 @@ export function EscalaToolbar({
             onChange={(e) => onFiltroLocalChange(e.target.value as FiltroLocal)}
           />
         </div>
-        <div className="brisa-segmented" role="tablist" aria-label="Modo de visualização">
-          {MODOS.map((m) => (
-            <button
-              key={m.value}
-              type="button"
-              role="tab"
-              aria-selected={modo === m.value}
-              className={`brisa-segmented__btn ${modo === m.value ? 'brisa-segmented__btn--active' : ''}`}
-              onClick={() => onModoChange(m.value)}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          value={modo}
+          options={MODOS}
+          onChange={onModoChange}
+          ariaLabel="Modo de visualização"
+        />
       </div>
     </div>
   );

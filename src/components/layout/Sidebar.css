@@ -40,18 +40,34 @@
   object-position: center;
 }
 
+.brisa-logo__iniciais {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
 .brisa-sidebar__brand-text {
   display: flex;
   flex-direction: column;
   line-height: 1.05;
+  min-width: 0;
 }
 
 .brisa-sidebar__title {
   font-family: var(--font-display);
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--brisa-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .brisa-sidebar__subtitle {
@@ -140,9 +156,36 @@
 .brisa-sidebar__user {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2);
+  gap: var(--space-1);
+  padding: var(--space-1);
   border-radius: var(--radius-md);
+}
+
+.brisa-sidebar__user--active {
+  background: var(--brisa-primary-soft);
+}
+
+.brisa-sidebar__user-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-1);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-base);
+}
+
+.brisa-sidebar__user-main:hover {
+  background: var(--brisa-surface-hover);
+}
+
+.brisa-sidebar__user--active .brisa-sidebar__user-main:hover {
+  background: transparent;
 }
 
 .brisa-sidebar__avatar {
@@ -176,6 +219,28 @@
 .brisa-sidebar__user-role {
   font-size: 11.5px;
   color: var(--brisa-text-soft);
+}
+
+.brisa-sidebar__logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--brisa-text-soft);
+  cursor: pointer;
+  transition:
+    background var(--transition-base),
+    color var(--transition-base);
+}
+
+.brisa-sidebar__logout:hover {
+  background: var(--brisa-surface-hover);
+  color: var(--brisa-danger, #c0392b);
 }
 
 @media (max-width: 880px) {

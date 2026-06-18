@@ -1,0 +1,45 @@
+.brisa-switch {
+  --switch-w: 42px;
+  --switch-h: 24px;
+  --thumb: 18px;
+  position: relative;
+  width: var(--switch-w);
+  height: var(--switch-h);
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  background: var(--brisa-border-strong, #cbd2dc);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--transition-base, 0.15s ease);
+}
+
+.brisa-switch__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(20, 25, 35, 0.25);
+  transition: transform var(--transition-base, 0.15s ease);
+}
+
+.brisa-switch--on {
+  background: var(--brisa-primary, #3c5aa6);
+}
+
+.brisa-switch--on .brisa-switch__thumb {
+  transform: translateX(calc(var(--switch-w) - var(--thumb) - 6px));
+}
+
+.brisa-switch:focus-visible {
+  outline: 2px solid var(--brisa-primary, #3c5aa6);
+  outline-offset: 2px;
+}
+
+.brisa-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

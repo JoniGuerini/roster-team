@@ -1,0 +1,56 @@
+.brisa-segmented {
+  display: inline-flex;
+  background: var(--brisa-surface-soft);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-md);
+  padding: 2px;
+}
+
+.brisa-segmented__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  color: var(--brisa-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.brisa-segmented__btn:hover:not(.brisa-segmented__btn--active) {
+  color: var(--brisa-text);
+}
+
+.brisa-segmented__btn--active {
+  background: var(--brisa-surface);
+  color: var(--brisa-primary);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+.brisa-segmented__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.brisa-segmented__badge {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--brisa-surface-soft);
+  color: var(--brisa-text-soft);
+}
+
+.brisa-segmented__btn--active .brisa-segmented__badge {
+  background: var(--brisa-primary-soft, #e8edf9);
+  color: var(--brisa-primary, #3c5aa6);
+}

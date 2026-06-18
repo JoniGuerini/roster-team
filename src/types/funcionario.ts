@@ -45,18 +45,20 @@ export interface PeriodoAusencia {
 export interface Funcionario {
   id: string;
   nome: string;
-  cpf: string;
-  localTrabalho: LocalTrabalho;
-  tipoContrato: TipoContrato;
-  funcaoPrincipal: Funcao;
-  funcoesSecundarias: Funcao[];
-  dataAdmissao: string;
-  status: StatusFuncionario;
+  /** Usuário do sistema vinculado a este cadastro de equipe. */
+  profileId?: string | null;
+  cpf?: string | null;
+  localTrabalho?: LocalTrabalho | null;
+  tipoContrato?: TipoContrato | null;
+  funcaoPrincipal?: Funcao | null;
+  funcoesSecundarias?: Funcao[];
+  dataAdmissao?: string | null;
+  status?: StatusFuncionario | null;
   /** Dia da semana em que a pessoa não deve ser escalada (só para status ativo). */
-  diaFolgaSemanal: DiaFolgaSemanal | null;
+  diaFolgaSemanal?: DiaFolgaSemanal | null;
   descricao?: string;
-  documentos: DocumentoPdf[];
-  ausencias: PeriodoAusencia[];
+  documentos?: DocumentoPdf[];
+  ausencias?: PeriodoAusencia[];
   criadoEm: string;
   atualizadoEm: string;
 }

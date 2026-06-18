@@ -1,0 +1,214 @@
+.brisa-login {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: linear-gradient(
+    145deg,
+    #1e293b 0%,
+    #334155 45%,
+    #475569 100%
+  );
+  overflow: hidden;
+}
+
+.brisa-login::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(55% 55% at 90% 10%, rgba(255, 255, 255, 0.08), transparent 70%),
+    radial-gradient(45% 45% at 5% 95%, rgba(255, 255, 255, 0.06), transparent 70%);
+  pointer-events: none;
+}
+
+.brisa-login__shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-5);
+}
+
+.brisa-login__card {
+  width: 100%;
+  padding: var(--space-8) var(--space-6);
+  background: var(--brisa-surface);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 24px 48px rgba(15, 23, 42, 0.28),
+    0 8px 16px rgba(15, 23, 42, 0.12);
+}
+
+.brisa-login__header {
+  margin-bottom: var(--space-6);
+}
+
+.brisa-login__eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-login__title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--brisa-text);
+  margin: 6px 0 6px;
+}
+
+.brisa-login__subtitle {
+  font-size: 14px;
+  color: var(--brisa-text-soft);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.brisa-login__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.brisa-login__alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--brisa-danger-soft, #fdecec);
+  color: var(--brisa-danger, #c0392b);
+  border: 1px solid var(--brisa-danger-border, rgba(192, 57, 43, 0.25));
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.brisa-login__password {
+  position: relative;
+}
+
+.brisa-login__password .brisa-input {
+  padding-right: 42px;
+}
+
+.brisa-login__password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--brisa-text-soft);
+  cursor: pointer;
+  transition: color var(--transition-base), background var(--transition-base);
+}
+
+.brisa-login__password-toggle:hover {
+  color: var(--brisa-text);
+  background: var(--brisa-surface-soft);
+}
+
+.brisa-login__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.brisa-login__link {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--brisa-primary);
+  cursor: pointer;
+}
+
+.brisa-login__link:hover {
+  text-decoration: underline;
+}
+
+.brisa-login__submit {
+  margin-top: var(--space-1);
+}
+
+.brisa-login__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--brisa-text-soft);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.brisa-login__divider::before,
+.brisa-login__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--brisa-border);
+}
+
+.brisa-login__hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: var(--space-2) 0 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--brisa-surface-soft);
+  border: 1px dashed var(--brisa-border-strong, var(--brisa-border));
+  color: var(--brisa-text-soft);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.brisa-login__hint .ti {
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.brisa-login__hint strong {
+  color: var(--brisa-text);
+  font-weight: 600;
+}
+
+.brisa-login__footer {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .brisa-login {
+    padding: var(--space-4);
+    align-items: flex-start;
+    padding-top: var(--space-10);
+  }
+
+  .brisa-login__card {
+    padding: var(--space-6) var(--space-5);
+  }
+}

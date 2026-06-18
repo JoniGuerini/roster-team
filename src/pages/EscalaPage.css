@@ -1,5 +1,16 @@
 .brisa-page__heading + .brisa-escala-toolbar {
-  margin-top: var(--space-2);
+  margin-top: calc(var(--space-2) * -1);
+}
+
+.brisa-escala-views {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.brisa-escala-views > * {
+  width: 100%;
+  min-width: 0;
 }
 
 .brisa-escala-modal__remove-dia {
