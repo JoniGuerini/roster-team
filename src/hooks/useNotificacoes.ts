@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { notificacoesStorage } from '../services/notificacoesStorage';
+import { authSession } from '../services/authSession';
 import type { Notificacao } from '../types/notificacao';
 
 const listeners = new Set<() => void>();
@@ -9,6 +10,9 @@ function notificarListeners() {
 }
 
 export function disparoNotificacoes() {
+  const sessao = authSession.obter();
+  if (!sessao?.empresaId || sessao.isPlatformAdmin) return;
+
   void notificacoesStorage
     .sincronizar()
     .then(() => {
@@ -25,6 +29,13 @@ export function useNotificacoes() {
   const [carregando, setCarregando] = useState(true);
 
   const recarregar = useCallback(async () => {
+    const sessao = authSession.obter();
+    if (!sessao?.empresaId || sessao.isPlatformAdmin) {
+      setLista([]);
+      setContagem(0);
+      setCarregando(false);
+      return;
+    }
     try {
       const [items, total] = await Promise.all([
         notificacoesStorage.listar(),

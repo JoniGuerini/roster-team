@@ -41,8 +41,9 @@ export default function App() {
   const [empresa, setEmpresa] = useState<Empresa | undefined>(undefined);
 
   useEffect(() => {
+    if (!sessao?.empresaId || sessao.isPlatformAdmin) return;
     disparoNotificacoes();
-  }, []);
+  }, [sessao?.empresaId, sessao?.isPlatformAdmin]);
 
   useEffect(() => {
     let ativo = true;
