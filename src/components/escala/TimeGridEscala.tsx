@@ -152,15 +152,17 @@ export function TimeGridEscala({
                   })}
 
                   {onAdicionar ? (
-                    <button
-                      type="button"
-                      className="brisa-timegrid__add"
-                      onClick={() => onAdicionar(dia)}
-                      aria-label="Adicionar turno"
-                      title="Adicionar turno"
-                    >
-                      <Icon name="plus" size={14} />
-                    </button>
+                    <div className="brisa-timegrid__add-anchor">
+                      <button
+                        type="button"
+                        className="brisa-timegrid__add"
+                        onClick={() => onAdicionar(dia)}
+                        aria-label="Adicionar turno"
+                        title="Adicionar turno"
+                      >
+                        <Icon name="plus" size={14} />
+                      </button>
+                    </div>
                   ) : null}
                 </div>
               );

@@ -179,18 +179,24 @@
   color: var(--turno-alerta-fg);
 }
 
-.brisa-timegrid__add {
+.brisa-timegrid__add-anchor {
   position: sticky;
   bottom: var(--space-2);
-  left: 50%;
-  transform: translateX(-50%);
   z-index: 2;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: var(--space-2);
+  pointer-events: none;
+}
+
+.brisa-timegrid__add {
+  pointer-events: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
-  margin-top: var(--space-2);
   border: 1px dashed var(--brisa-border-strong);
   border-radius: var(--radius-pill);
   background: var(--brisa-surface);

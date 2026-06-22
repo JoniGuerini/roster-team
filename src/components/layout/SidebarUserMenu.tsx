@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Sessao } from '../../services/authSession';
+import { authSession, type Sessao } from '../../services/authSession';
 import { iniciaisDoNome } from '../../utils/funcionarioLabels';
 import { Icon } from '../ui/Icon';
 import './SidebarUserMenu.css';
@@ -20,6 +20,7 @@ export function SidebarUserMenu({
   const [aberto, setAberto] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const iniciais = iniciaisDoNome(sessao.nome);
+  const perfilAcesso = authSession.rotuloPermissoes(sessao);
 
   useEffect(() => {
     if (!aberto) return;
@@ -69,7 +70,9 @@ export function SidebarUserMenu({
         </div>
         <div className="brisa-sidebar-user__info">
           <span className="brisa-sidebar-user__name">{sessao.nome}</span>
-          <span className="brisa-sidebar-user__email">{sessao.email}</span>
+          {perfilAcesso ? (
+            <span className="brisa-sidebar-user__perfil">{perfilAcesso}</span>
+          ) : null}
         </div>
         <Icon
           name="selector"

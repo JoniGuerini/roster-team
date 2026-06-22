@@ -7,7 +7,7 @@ import type { PerfilAcesso, PerfilAcessoInput } from '../../types/perfilAcesso';
 import { Field } from '../ui/Field';
 import { Input } from '../ui/Input';
 import { Textarea } from '../ui/Textarea';
-import { Checkbox } from '../ui/Checkbox';
+import { Switch } from '../ui/Switch';
 import { Button } from '../ui/Button';
 import '../funcionarios/FuncionarioForm.css';
 import '../usuarios/UsuarioForm.css';
@@ -124,7 +124,7 @@ export function PerfilAcessoForm({
           <div className="brisa-form__card-text">
             <span className="brisa-form__card-title">Permissões do perfil</span>
             <span className="brisa-form__card-hint">
-              Marque o que usuários com este perfil poderão fazer.
+              Ative o que usuários com este perfil poderão fazer.
             </span>
           </div>
         </div>
@@ -138,16 +138,28 @@ export function PerfilAcessoForm({
             <fieldset className="brisa-perm-grupo" key={grupo.modulo}>
               <legend className="brisa-perm-grupo__titulo">{grupo.label}</legend>
               <div className="brisa-perm-grupo__itens">
-                {grupo.permissoes.map((permissao) => (
-                  <Checkbox
-                    key={permissao.value}
-                    label={permissao.label}
-                    checked={permissoesSelecionadas.has(permissao.value)}
-                    onChange={(e) =>
-                      alternarPermissao(permissao.value, e.target.checked)
-                    }
-                  />
-                ))}
+                {grupo.permissoes.map((permissao) => {
+                  const ativa = permissoesSelecionadas.has(permissao.value);
+                  const switchId = `perfil-perm-${permissao.value}`;
+                  return (
+                    <div className="brisa-perm-item" key={permissao.value}>
+                      <label
+                        className="brisa-perm-item__label"
+                        htmlFor={switchId}
+                      >
+                        {permissao.label}
+                      </label>
+                      <Switch
+                        id={switchId}
+                        checked={ativa}
+                        label={permissao.label}
+                        onChange={(marcada) =>
+                          alternarPermissao(permissao.value, marcada)
+                        }
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </fieldset>
           ))}

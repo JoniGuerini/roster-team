@@ -8,7 +8,7 @@
   border-radius: 999px;
   border: none;
   padding: 0;
-  background: var(--brisa-border-strong, #cbd2dc);
+  background: color-mix(in srgb, var(--brisa-text-muted) 35%, var(--brisa-surface));
   cursor: pointer;
   flex-shrink: 0;
   transition: background var(--transition-base, 0.15s ease);
@@ -27,7 +27,7 @@
 }
 
 .brisa-switch--on {
-  background: var(--brisa-primary, #3c5aa6);
+  background: var(--brisa-primary);
 }
 
 .brisa-switch--on .brisa-switch__thumb {
