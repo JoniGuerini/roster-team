@@ -1,7 +1,6 @@
 .brisa-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   font-size: 11.5px;
   font-weight: 600;
   padding: 3px 10px;
@@ -9,15 +8,6 @@
   letter-spacing: 0.02em;
   border: 1px solid var(--brisa-border);
   background: color-mix(in srgb, var(--background) 40%, transparent);
-}
-
-.brisa-badge::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.9;
 }
 
 .brisa-badge--success {
