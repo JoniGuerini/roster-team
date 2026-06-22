@@ -9,6 +9,8 @@ import { FuncionarioForm } from '../components/funcionarios/FuncionarioForm';
 import { ListaEquipePaginacao } from '../components/equipe/ListaEquipePaginacao';
 import { FuncionariosList } from '../components/funcionarios/FuncionariosList';
 import { ConfirmDeleteModal } from '../components/funcionarios/ConfirmDeleteModal';
+import { PageToolbarHead } from '../components/layout/PageToolbarHead';
+import { TableSkeleton } from '../components/ui/TableSkeleton';
 import { funcionariosStorage } from '../services/funcionariosStorage';
 import type { Sessao } from '../services/authSession';
 import { podeEditarModulo } from '../utils/rotaPermissoes';
@@ -186,23 +188,23 @@ export function FuncionariosPage({ sessao, onAbrirPerfil }: FuncionariosPageProp
         ) : null}
 
         <section className="brisa-page__toolbar">
-          <div className="brisa-page__toolbar-head">
-            <p className="brisa-page__list-count" aria-live="polite">
-              {funcionariosFiltrados.length}{' '}
-              {funcionariosFiltrados.length === 1 ? 'funcionário' : 'funcionários'}
-              {haFiltrosOuBusca && funcionarios.length > 0 ? (
-                <span className="brisa-page__count-total">
-                  {' '}
-                  de {funcionarios.length}
-                </span>
-              ) : null}
-            </p>
+          <PageToolbarHead
+            titulo="Funcionários"
+            quantidade={funcionariosFiltrados.length}
+            rotuloSingular="funcionário"
+            rotuloPlural="funcionários"
+            total={
+              haFiltrosOuBusca && funcionarios.length > 0
+                ? funcionarios.length
+                : undefined
+            }
+          >
             {podeEditar ? (
               <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
                 Novo funcionário
               </Button>
             ) : null}
-          </div>
+          </PageToolbarHead>
 
           <div className="brisa-page__toolbar-filters">
         <div className="brisa-page__toolbar-equipe">
@@ -317,9 +319,8 @@ export function FuncionariosPage({ sessao, onAbrirPerfil }: FuncionariosPageProp
         </section>
 
         {carregando ? (
-          <p className="brisa-funcionarios__loading">Carregando funcionários…</p>
+          <TableSkeleton variant="equipe" />
         ) : null}
-
       {!carregando && funcionarios.length === 0 ? (
         <FuncionariosList
           funcionarios={[]}

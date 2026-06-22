@@ -5,7 +5,7 @@ export const END_HOUR = 24;
 export const HOUR_HEIGHT = 56;
 export const PX_PER_MIN = HOUR_HEIGHT / 60;
 export const MIN_BLOCO_ALTURA = 22;
-export const SCROLL_INICIAL_H = 7;
+export const SCROLL_INICIAL_H = 5;
 
 export const HOURS = Array.from(
   { length: END_HOUR - START_HOUR },

@@ -9,6 +9,8 @@ import { FuncionarioForm } from '../components/funcionarios/FuncionarioForm';
 import { ListaEquipePaginacao } from '../components/equipe/ListaEquipePaginacao';
 import { ExtrasList } from '../components/extras/ExtrasList';
 import { ConfirmDeleteModal } from '../components/funcionarios/ConfirmDeleteModal';
+import { PageToolbarHead } from '../components/layout/PageToolbarHead';
+import { TableSkeleton } from '../components/ui/TableSkeleton';
 import { extrasStorage } from '../services/extrasStorage';
 import type { Sessao } from '../services/authSession';
 import { podeEditarModulo } from '../utils/rotaPermissoes';
@@ -194,20 +196,21 @@ export function ExtrasPage({ sessao, onAbrirPerfil }: ExtrasPageProps) {
         ) : null}
 
         <section className="brisa-page__toolbar">
-          <div className="brisa-page__toolbar-head">
-            <p className="brisa-page__list-count" aria-live="polite">
-              {extrasFiltrados.length}{' '}
-              {extrasFiltrados.length === 1 ? 'extra' : 'extras'}
-              {haFiltrosOuBusca && extras.length > 0 ? (
-                <span className="brisa-page__count-total"> de {extras.length}</span>
-              ) : null}
-            </p>
+          <PageToolbarHead
+            titulo="Extras"
+            quantidade={extrasFiltrados.length}
+            rotuloSingular="extra"
+            rotuloPlural="extras"
+            total={
+              haFiltrosOuBusca && extras.length > 0 ? extras.length : undefined
+            }
+          >
             {podeEditar ? (
               <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
                 Novo extra
               </Button>
             ) : null}
-          </div>
+          </PageToolbarHead>
 
           <div className="brisa-page__toolbar-filters">
         <div className="brisa-page__toolbar-equipe">
@@ -326,9 +329,8 @@ export function ExtrasPage({ sessao, onAbrirPerfil }: ExtrasPageProps) {
         </section>
 
         {carregando ? (
-          <p className="brisa-funcionarios__loading">Carregando extras…</p>
+          <TableSkeleton variant="equipe" />
         ) : null}
-
       {!carregando && extras.length === 0 ? (
         <ExtrasList
           extras={[]}

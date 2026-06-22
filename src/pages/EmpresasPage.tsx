@@ -9,6 +9,7 @@ import { EmpresaForm } from '../components/empresas/EmpresaForm';
 import { empresasStorage } from '../services/empresasStorage';
 import type { Empresa, EmpresaInput } from '../types/empresa';
 import { EmptyState } from '../components/ui/EmptyState';
+import { EmpresasGridSkeleton } from '../components/ui/PageSkeletons';
 import './EmpresasPage.css';
 
 interface EmpresasPageProps {
@@ -112,7 +113,7 @@ export function EmpresasPage({ onAbrir }: EmpresasPageProps) {
       ) : null}
 
       {carregando ? (
-        <p className="brisa-page__subtitle">Carregando empresas…</p>
+        <EmpresasGridSkeleton />
       ) : empresas.length === 0 ? (
         <EmptyState>
           <div className="brisa-empty__icon">

@@ -22,6 +22,10 @@ export type ResultadoAlterarSenha =
   | { ok: true }
   | { ok: false; erro: string };
 
+export type ResultadoAlterarNome =
+  | { ok: true; sessao: Sessao }
+  | { ok: false; erro: string };
+
 let sessaoCache: Sessao | null = null;
 
 function mapPapel(valor: string | null): PapelUsuario | null {
@@ -234,6 +238,53 @@ export const authSession = {
     }
 
     return { ok: true };
+  },
+
+  async alterarNome(nome: string): Promise<ResultadoAlterarNome> {
+    const sessao = sessaoCache;
+    if (!sessao) {
+      return { ok: false, erro: 'Sessão expirada. Entre novamente.' };
+    }
+
+    const nomeLimpo = nome.trim();
+    if (!nomeLimpo) {
+      return { ok: false, erro: 'Informe o nome.' };
+    }
+    if (nomeLimpo.length > 80) {
+      return { ok: false, erro: 'Nome muito longo (máx. 80 caracteres).' };
+    }
+
+    if (nomeLimpo === sessao.nome) {
+      return { ok: true, sessao };
+    }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ nome: nomeLimpo })
+      .eq('id', sessao.userId);
+
+    if (error) {
+      console.warn('[auth] alterar nome', error.message);
+      return { ok: false, erro: 'Não foi possível salvar o nome. Tente novamente.' };
+    }
+
+    if (sessao.empresaId) {
+      const { error: syncError } = await supabase.rpc(
+        'ensure_funcionario_para_profile',
+        {
+          p_profile_id: sessao.userId,
+          p_empresa_id: sessao.empresaId,
+          p_nome: nomeLimpo,
+        },
+      );
+      if (syncError) {
+        console.warn('[auth] sync funcionário', syncError.message);
+      }
+    }
+
+    const novaSessao: Sessao = { ...sessao, nome: nomeLimpo };
+    sessaoCache = novaSessao;
+    return { ok: true, sessao: novaSessao };
   },
 
   rotuloPermissoes(sessao: Sessao | null): string | null {

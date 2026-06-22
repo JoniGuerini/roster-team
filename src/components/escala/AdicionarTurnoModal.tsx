@@ -58,7 +58,7 @@ export function AdicionarTurnoModal({
   }
 
   function confirmar() {
-    if (!selecionado) return;
+    if (!selecionado || idsJaUsados.has(selecionado)) return;
     onConfirmar(selecionado);
     setSelecionado(null);
     setBusca('');
@@ -79,7 +79,7 @@ export function AdicionarTurnoModal({
           <Button
             variant="primary"
             onClick={confirmar}
-            disabled={!selecionado}
+            disabled={!selecionado || idsJaUsados.has(selecionado)}
           >
             Adicionar turno
           </Button>
@@ -123,8 +123,12 @@ export function AdicionarTurnoModal({
                 <li key={t.id}>
                   <button
                     type="button"
-                    className={`brisa-add-turno__item ${ativo ? 'brisa-add-turno__item--active' : ''}`}
-                    onClick={() => setSelecionado(t.id)}
+                    className={`brisa-add-turno__item ${ativo ? 'brisa-add-turno__item--active' : ''} ${jaUsado ? 'brisa-add-turno__item--used' : ''}`}
+                    disabled={jaUsado}
+                    onClick={() => {
+                      if (jaUsado) return;
+                      setSelecionado(t.id);
+                    }}
                   >
                     <div className="brisa-add-turno__head">
                       <h4 className="brisa-add-turno__nome">{t.nome}</h4>

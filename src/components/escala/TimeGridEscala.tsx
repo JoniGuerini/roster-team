@@ -20,6 +20,7 @@ import {
 } from '../../utils/horarioGrade';
 import { Icon } from '../ui/Icon';
 import './TimeGridEscala.css';
+import './EscalaAddMini.css';
 
 interface TimeGridEscalaProps {
   dias: string[];
@@ -155,12 +156,13 @@ export function TimeGridEscala({
                     <div className="brisa-timegrid__add-anchor">
                       <button
                         type="button"
-                        className="brisa-timegrid__add"
+                        className="brisa-escala-add-mini"
                         onClick={() => onAdicionar(dia)}
                         aria-label="Adicionar turno"
                         title="Adicionar turno"
                       >
-                        <Icon name="plus" size={14} />
+                        <Icon name="plus" size={12} />
+                        <span className="brisa-escala-add-mini__label">Turno</span>
                       </button>
                     </div>
                   ) : null}

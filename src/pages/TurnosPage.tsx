@@ -7,6 +7,8 @@ import { Select } from '../components/ui/Select';
 import { TurnoForm } from '../components/turnos/TurnoForm';
 import { TurnosList } from '../components/turnos/TurnosList';
 import { ConfirmDeleteTurnoModal } from '../components/turnos/ConfirmDeleteTurnoModal';
+import { PageToolbarHead } from '../components/layout/PageToolbarHead';
+import { TurnosListSkeleton } from '../components/ui/PageSkeletons';
 import { turnosStorage } from '../services/turnosStorage';
 import type { Sessao } from '../services/authSession';
 import { podeEditarModulo } from '../utils/rotaPermissoes';
@@ -157,17 +159,18 @@ export function TurnosPage({ sessao }: TurnosPageProps) {
       ) : null}
 
       <section className="brisa-page__toolbar">
-        <div className="brisa-page__toolbar-head">
-          <p className="brisa-page__list-count" aria-live="polite">
-            {turnosFiltrados.length}{' '}
-            {turnosFiltrados.length === 1 ? 'turno' : 'turnos'}
-          </p>
+        <PageToolbarHead
+          titulo="Turnos"
+          quantidade={turnosFiltrados.length}
+          rotuloSingular="turno"
+          rotuloPlural="turnos"
+        >
           {podeEditar ? (
             <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
               Novo turno
             </Button>
           ) : null}
-        </div>
+        </PageToolbarHead>
 
         <div className="brisa-page__toolbar-filters">
         <div className="brisa-search">
@@ -190,7 +193,7 @@ export function TurnosPage({ sessao }: TurnosPageProps) {
       </section>
 
       {carregando ? (
-        <p className="brisa-funcionarios__loading">Carregando turnos…</p>
+        <TurnosListSkeleton />
       ) : null}
 
       {!carregando ? (

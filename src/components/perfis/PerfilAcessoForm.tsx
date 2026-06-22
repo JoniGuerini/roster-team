@@ -11,6 +11,7 @@ import { Switch } from '../ui/Switch';
 import { Button } from '../ui/Button';
 import '../funcionarios/FuncionarioForm.css';
 import '../usuarios/UsuarioForm.css';
+import './PerfilAcessoForm.css';
 
 interface PerfilAcessoFormProps {
   perfil?: PerfilAcesso;
@@ -88,9 +89,13 @@ export function PerfilAcessoForm({
   }
 
   return (
-    <form className="brisa-form" onSubmit={handleSubmit} noValidate>
-      <div className="brisa-form__card">
-        <div className="brisa-form__grid">
+    <form
+      className="brisa-form brisa-perfil-acesso-form"
+      onSubmit={handleSubmit}
+      noValidate
+    >
+      <div className="brisa-perfil-acesso-form__columns">
+        <div className="brisa-form__card brisa-perfil-acesso-form__info">
           <Field
             label="Nome do perfil"
             htmlFor="perfil-acesso-nome"
@@ -105,64 +110,72 @@ export function PerfilAcessoForm({
               onChange={(e) => setForm((p) => ({ ...p, nome: e.target.value }))}
             />
           </Field>
-          <Field label="Descrição" htmlFor="perfil-acesso-descricao">
-            <Textarea
-              id="perfil-acesso-descricao"
-              value={form.descricao}
-              rows={2}
-              placeholder="Resumo do que este perfil pode fazer no sistema."
-              onChange={(e) =>
-                setForm((p) => ({ ...p, descricao: e.target.value }))
-              }
-            />
+
+          <Field
+            label="Descrição"
+            htmlFor="perfil-acesso-descricao"
+            hint="Opcional. Ajuda a identificar o perfil na lista."
+          >
+            <div className="brisa-perfil-acesso-form__descricao-field">
+              <Textarea
+                id="perfil-acesso-descricao"
+                value={form.descricao}
+                placeholder="Resumo do que este perfil pode fazer no sistema."
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, descricao: e.target.value }))
+                }
+              />
+            </div>
           </Field>
         </div>
-      </div>
 
-      <div className="brisa-form__card">
-        <div className="brisa-form__card-header">
-          <div className="brisa-form__card-text">
-            <span className="brisa-form__card-title">Permissões do perfil</span>
-            <span className="brisa-form__card-hint">
-              Ative o que usuários com este perfil poderão fazer.
-            </span>
+        <div className="brisa-form__card brisa-perfil-acesso-form__perms">
+          <div className="brisa-form__card-header">
+            <div className="brisa-form__card-text">
+              <span className="brisa-form__card-title">Permissões do perfil</span>
+              <span className="brisa-form__card-hint">
+                Ative o que usuários com este perfil poderão fazer.
+              </span>
+            </div>
           </div>
-        </div>
 
-        {erros.permissoes && (
-          <p className="brisa-form__inline-error">{erros.permissoes}</p>
-        )}
+          {erros.permissoes ? (
+            <p className="brisa-form__inline-error">{erros.permissoes}</p>
+          ) : null}
 
-        <div className="brisa-perm-grupos">
-          {GRUPOS_PERMISSOES.map((grupo) => (
-            <fieldset className="brisa-perm-grupo" key={grupo.modulo}>
-              <legend className="brisa-perm-grupo__titulo">{grupo.label}</legend>
-              <div className="brisa-perm-grupo__itens">
-                {grupo.permissoes.map((permissao) => {
-                  const ativa = permissoesSelecionadas.has(permissao.value);
-                  const switchId = `perfil-perm-${permissao.value}`;
-                  return (
-                    <div className="brisa-perm-item" key={permissao.value}>
-                      <label
-                        className="brisa-perm-item__label"
-                        htmlFor={switchId}
-                      >
-                        {permissao.label}
-                      </label>
-                      <Switch
-                        id={switchId}
-                        checked={ativa}
-                        label={permissao.label}
-                        onChange={(marcada) =>
-                          alternarPermissao(permissao.value, marcada)
-                        }
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </fieldset>
-          ))}
+          <div className="brisa-perfil-acesso-form__perms-scroll">
+            <div className="brisa-perm-grupos">
+              {GRUPOS_PERMISSOES.map((grupo) => (
+                <fieldset className="brisa-perm-grupo" key={grupo.modulo}>
+                  <legend className="brisa-perm-grupo__titulo">{grupo.label}</legend>
+                  <div className="brisa-perm-grupo__itens">
+                    {grupo.permissoes.map((permissao) => {
+                      const ativa = permissoesSelecionadas.has(permissao.value);
+                      const switchId = `perfil-perm-${permissao.value}`;
+                      return (
+                        <div className="brisa-perm-item" key={permissao.value}>
+                          <label
+                            className="brisa-perm-item__label"
+                            htmlFor={switchId}
+                          >
+                            {permissao.label}
+                          </label>
+                          <Switch
+                            id={switchId}
+                            checked={ativa}
+                            label={permissao.label}
+                            onChange={(marcada) =>
+                              alternarPermissao(permissao.value, marcada)
+                            }
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

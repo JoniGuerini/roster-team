@@ -9,7 +9,7 @@ import { Modal } from '../components/ui/Modal';
 import { PerfilAcessoForm } from '../components/perfis/PerfilAcessoForm';
 
 import { ConfirmDeleteModal } from '../components/funcionarios/ConfirmDeleteModal';
-
+import { PageToolbarHead } from '../components/layout/PageToolbarHead';
 import { perfisAcessoStorage } from '../services/perfisAcessoStorage';
 
 import type { Sessao } from '../services/authSession';
@@ -19,6 +19,7 @@ import type { PerfilAcesso, PerfilAcessoInput } from '../types/perfilAcesso';
 import { TODAS_PERMISSOES } from '../types/usuario';
 
 import { EmptyState } from '../components/ui/EmptyState';
+import { PerfisListSkeleton } from '../components/ui/PageSkeletons';
 
 import './ConfiguracoesPage.css';
 
@@ -282,34 +283,23 @@ export function ConfiguracoesPage({ sessao }: ConfiguracoesPageProps) {
 
       <section className="brisa-page__toolbar">
 
-        <div className="brisa-page__toolbar-head">
-
-          <p className="brisa-page__list-count" aria-live="polite">
-
-            {perfis.length} {perfis.length === 1 ? 'perfil' : 'perfis'}
-
-          </p>
-
+        <PageToolbarHead
+          titulo="Configurações"
+          quantidade={perfis.length}
+          rotuloSingular="perfil"
+          rotuloPlural="perfis"
+        >
           <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
-
             Novo perfil
-
           </Button>
-
-        </div>
+        </PageToolbarHead>
 
       </section>
 
 
 
       {carregando ? (
-
-        <EmptyState>
-
-          <p className="brisa-empty__hint">Carregando perfis…</p>
-
-        </EmptyState>
-
+        <PerfisListSkeleton />
       ) : perfis.length === 0 ? (
 
         <EmptyState>
@@ -424,7 +414,7 @@ export function ConfiguracoesPage({ sessao }: ConfiguracoesPageProps) {
 
         description="Defina o nome e as permissões deste perfil. Usuários herdam este conjunto ao serem cadastrados."
 
-        size="lg"
+        size="xl"
 
       >
 

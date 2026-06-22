@@ -93,6 +93,62 @@
   padding: var(--space-4) var(--space-5) var(--space-2);
 }
 
+.brisa-page__toolbar-head-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.brisa-page__toolbar-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--brisa-text);
+  line-height: 1.2;
+}
+
+.brisa-page__toolbar-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--brisa-primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brisa-primary) 18%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--brisa-primary);
+}
+
+.brisa-page__toolbar-count-value {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+.brisa-page__toolbar-count-label {
+  font-weight: 500;
+  color: color-mix(in srgb, var(--brisa-primary) 82%, var(--brisa-text));
+}
+
+.brisa-page__toolbar-count-total {
+  padding-left: 2px;
+  font-weight: 500;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-page__toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
 .brisa-page__toolbar-head .brisa-page__list-count {
   margin: 0;
 }

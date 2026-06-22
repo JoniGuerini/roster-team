@@ -121,14 +121,24 @@ export const escalaStorage = {
 
     if (inserts.length === 0) return 0;
 
-    const { error } = await supabase.from('escala_turnos').insert(inserts);
+    const rowsAtuais = await carregarRows(empresaId, { inicio, fim });
+    const jaPresentes = new Set(
+      rowsAtuais.map((r) => `${r.data}|${r.turno_id}`),
+    );
+    const insertsFinais = inserts.filter(
+      (i) => !jaPresentes.has(`${i.data}|${i.turno_id}`),
+    );
+    if (insertsFinais.length === 0) return 0;
+
+    const { error } = await supabase.from('escala_turnos').insert(insertsFinais);
     if (error) {
+      if (error.code === '23505') return 0;
       throw new Error(
         erroMensagem(error, 'Não foi possível sincronizar turnos recorrentes.'),
       );
     }
 
-    return inserts.length;
+    return insertsFinais.length;
   },
 
   async adicionarTurno(
@@ -137,6 +147,26 @@ export const escalaStorage = {
     alocacoes: AlocacaoFuncao[],
   ): Promise<TurnoEscalado> {
     const empresaId = empresaIdAtual();
+
+    const { data: existente, error: erroBusca } = await supabase
+      .from('escala_turnos')
+      .select('*')
+      .eq('empresa_id', empresaId)
+      .eq('data', data)
+      .eq('turno_id', turnoId)
+      .order('criado_em', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (erroBusca) {
+      throw new Error(
+        erroMensagem(erroBusca, 'Não foi possível verificar a escala do dia.'),
+      );
+    }
+    if (existente) {
+      return rowParaTurnoEscalado(existente);
+    }
+
     const { data: row, error } = await supabase
       .from('escala_turnos')
       .insert({
@@ -252,6 +282,42 @@ export const escalaStorage = {
           error,
           'Não foi possível remover as ocorrências do turno na escala.',
         ),
+      );
+    }
+
+    return count ?? 0;
+  },
+
+  async limparDuplicatas(): Promise<number> {
+    const empresaId = empresaIdAtual();
+    const rows = await carregarRows(empresaId);
+    const manterPorChave = new Map<string, string>();
+    const idsRemover: string[] = [];
+
+    const ordenadas = [...rows].sort((a, b) =>
+      a.criado_em.localeCompare(b.criado_em),
+    );
+
+    for (const row of ordenadas) {
+      const chave = `${row.data}|${row.turno_id}`;
+      if (manterPorChave.has(chave)) {
+        idsRemover.push(row.id);
+      } else {
+        manterPorChave.set(chave, row.id);
+      }
+    }
+
+    if (idsRemover.length === 0) return 0;
+
+    const { error, count } = await supabase
+      .from('escala_turnos')
+      .delete({ count: 'exact' })
+      .eq('empresa_id', empresaId)
+      .in('id', idsRemover);
+
+    if (error) {
+      throw new Error(
+        erroMensagem(error, 'Não foi possível limpar turnos duplicados na escala.'),
       );
     }
 

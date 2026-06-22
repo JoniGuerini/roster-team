@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { authSession, type Sessao } from '../../services/authSession';
 import { iniciaisDoNome } from '../../utils/funcionarioLabels';
 import { Icon } from '../ui/Icon';
+import { Tooltip } from '../ui/Tooltip';
 import './SidebarUserMenu.css';
 
 interface SidebarUserMenuProps {
   sessao: Sessao;
   recolhida?: boolean;
+  mostrarTooltip?: boolean;
   onAbrirConta: () => void;
   onSair: () => void;
 }
@@ -14,6 +16,7 @@ interface SidebarUserMenuProps {
 export function SidebarUserMenu({
   sessao,
   recolhida = false,
+  mostrarTooltip = false,
   onAbrirConta,
   onSair,
 }: SidebarUserMenuProps) {
@@ -52,34 +55,43 @@ export function SidebarUserMenu({
     onSair();
   }
 
+  const trigger = (
+    <button
+      type="button"
+      className="brisa-sidebar-user__trigger"
+      aria-expanded={aberto}
+      aria-haspopup="menu"
+      onClick={() => setAberto((v) => !v)}
+    >
+      <div className="brisa-sidebar-user__avatar" aria-hidden="true">
+        {iniciais}
+      </div>
+      <div className="brisa-sidebar-user__info">
+        <span className="brisa-sidebar-user__name">{sessao.nome}</span>
+        {perfilAcesso ? (
+          <span className="brisa-sidebar-user__perfil">{perfilAcesso}</span>
+        ) : null}
+      </div>
+      <Icon
+        name="selector"
+        size={16}
+        className="brisa-sidebar-user__chevron"
+      />
+    </button>
+  );
+
   return (
     <div
       className={`brisa-sidebar-user ${aberto ? 'brisa-sidebar-user--open' : ''} ${recolhida ? 'brisa-sidebar-user--collapsed' : ''}`}
       ref={wrapperRef}
     >
-      <button
-        type="button"
-        className="brisa-sidebar-user__trigger"
-        aria-expanded={aberto}
-        aria-haspopup="menu"
-        title={recolhida ? sessao.nome : undefined}
-        onClick={() => setAberto((v) => !v)}
-      >
-        <div className="brisa-sidebar-user__avatar" aria-hidden="true">
-          {iniciais}
-        </div>
-        <div className="brisa-sidebar-user__info">
-          <span className="brisa-sidebar-user__name">{sessao.nome}</span>
-          {perfilAcesso ? (
-            <span className="brisa-sidebar-user__perfil">{perfilAcesso}</span>
-          ) : null}
-        </div>
-        <Icon
-          name="selector"
-          size={16}
-          className="brisa-sidebar-user__chevron"
-        />
-      </button>
+      {mostrarTooltip ? (
+        <Tooltip content={sessao.nome} side="right">
+          {trigger}
+        </Tooltip>
+      ) : (
+        trigger
+      )}
 
       {aberto ? (
         <div className="brisa-sidebar-user__menu" role="menu" aria-label="Conta">

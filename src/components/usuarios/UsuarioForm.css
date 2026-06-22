@@ -65,11 +65,11 @@
 }
 
 .brisa-perm-item:has(.brisa-switch--on) {
-  background: color-mix(in srgb, var(--brisa-primary-soft) 55%, transparent);
+  background: var(--brisa-accent-soft);
 }
 
 .brisa-perm-item:has(.brisa-switch--on):hover {
-  background: color-mix(in srgb, var(--brisa-primary-soft) 75%, transparent);
+  background: color-mix(in srgb, var(--brisa-accent-soft) 80%, var(--brisa-surface));
 }
 
 .brisa-perm-item__label {

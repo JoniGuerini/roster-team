@@ -34,11 +34,11 @@
 }
 
 .brisa-form__card-icon {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-md);
-  background: var(--neutral-100);
-  color: var(--brisa-text-muted);
+  background: transparent;
+  color: var(--brisa-primary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -74,7 +74,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2) var(--space-5);
-  background: var(--brisa-surface-soft);
+  background: var(--brisa-surface-inset);
   border: 1px solid var(--brisa-border);
   border-radius: var(--radius-md);
   padding: var(--space-4);
@@ -89,7 +89,7 @@
   padding: var(--space-8) var(--space-4);
   border: 1.5px dashed var(--brisa-border-strong);
   border-radius: var(--radius-md);
-  background: var(--brisa-surface-soft);
+  background: var(--brisa-surface-inset);
   color: var(--brisa-text-muted);
   cursor: pointer;
   transition:

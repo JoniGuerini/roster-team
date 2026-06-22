@@ -190,28 +190,8 @@
   pointer-events: none;
 }
 
-.brisa-timegrid__add {
+.brisa-timegrid__add-anchor .brisa-escala-add-mini {
   pointer-events: auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 1px dashed var(--brisa-border-strong);
-  border-radius: var(--radius-pill);
-  background: var(--brisa-surface);
-  color: var(--brisa-text-muted);
-  cursor: pointer;
-  transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast);
-}
-
-.brisa-timegrid__add:hover {
-  background: color-mix(in srgb, var(--accent) 50%, transparent);
-  border-color: var(--brisa-primary);
-  color: var(--brisa-primary);
 }
 
 @media (max-width: 720px) {

@@ -1,0 +1,88 @@
+.brisa-page-skeleton__turno-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-xl);
+  background: var(--brisa-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.brisa-page-skeleton__turno-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brisa-page-skeleton__perfil {
+  pointer-events: none;
+}
+
+.brisa-page-skeleton__perfil-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.brisa-page-skeleton__perfil-id {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.brisa-page-skeleton__perfil-actions {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.brisa-page-skeleton__empresa-card {
+  pointer-events: none;
+}
+
+.brisa-page-skeleton__empresa-top,
+.brisa-page-skeleton__empresa-owner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.brisa-page-skeleton__empresa-lines {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.brisa-page-skeleton__empresa-detalhe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.brisa-page-skeleton__empresa-hero {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.brisa-page-skeleton__atividade {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: var(--space-3);
+  pointer-events: none;
+}
+
+.brisa-page-skeleton__atividade-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brisa-page-skeleton__dia {
+  margin-bottom: var(--space-2);
+}

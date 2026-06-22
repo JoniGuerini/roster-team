@@ -20,6 +20,8 @@ import {
 } from '../utils/atividadeLabels';
 import { tempoRelativo } from '../utils/notificacaoLabels';
 import { EmptyState } from '../components/ui/EmptyState';
+import { AtividadesListSkeleton } from '../components/ui/PageSkeletons';
+import { PageToolbarHead } from '../components/layout/PageToolbarHead';
 import './AtividadesPage.css';
 
 const FILTRO_MODULO_OPTIONS = [
@@ -145,22 +147,21 @@ export function AtividadesPage() {
       ) : null}
 
       <section className="brisa-page__toolbar">
-        <div className="brisa-page__toolbar-head">
-          <p className="brisa-page__list-count" aria-live="polite">
-            {filtradas.length}{' '}
-            {filtradas.length === 1 ? 'atividade' : 'atividades'}
-          </p>
-          <div className="brisa-atividades__actions">
-            <Button
-              variant="ghost"
-              leftIcon={<Icon name="trash" size={16} />}
-              onClick={() => void limpar()}
-              disabled={!temAtividades || processando || carregando}
-            >
-              Limpar histórico
-            </Button>
-          </div>
-        </div>
+        <PageToolbarHead
+          titulo="Atividades"
+          quantidade={filtradas.length}
+          rotuloSingular="atividade"
+          rotuloPlural="atividades"
+        >
+          <Button
+            variant="ghost"
+            leftIcon={<Icon name="trash" size={16} />}
+            onClick={() => void limpar()}
+            disabled={!temAtividades || processando || carregando}
+          >
+            Limpar histórico
+          </Button>
+        </PageToolbarHead>
 
         <div className="brisa-page__toolbar-filters">
         <div className="brisa-search">
@@ -190,9 +191,7 @@ export function AtividadesPage() {
       </section>
 
       {carregando ? (
-        <EmptyState>
-          <p className="brisa-empty__hint">Carregando atividades…</p>
-        </EmptyState>
+        <AtividadesListSkeleton />
       ) : filtradas.length === 0 ? (
         <EmptyState>
           <div className="brisa-empty__icon">

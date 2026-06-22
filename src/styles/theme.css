@@ -37,6 +37,7 @@
   --brisa-bg: var(--background);
   --brisa-surface: var(--card);
   --brisa-surface-soft: var(--muted);
+  --brisa-surface-inset: color-mix(in srgb, var(--foreground) 4%, var(--card));
   --brisa-surface-hover: var(--accent);
   --brisa-surface-dialog: var(--surface-dialog);
   --brisa-border: var(--border);

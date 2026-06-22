@@ -1,0 +1,30 @@
+.brisa-table-skeleton tbody tr {
+  pointer-events: none;
+}
+
+.brisa-table-skeleton tbody tr:hover {
+  background: transparent;
+}
+
+.brisa-table-skeleton__person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.brisa-table-skeleton__person-lines {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.brisa-table-skeleton__actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  width: 100%;
+}

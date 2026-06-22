@@ -12,6 +12,7 @@ import { EmpresasPage } from './pages/EmpresasPage';
 import { EmpresaDetalhePage } from './pages/EmpresaDetalhePage';
 import { PerfilPessoaPage } from './pages/PerfilPessoaPage';
 import { AccountDialog } from './components/conta/AccountDialog';
+import { AppShellSkeleton } from './components/ui/AppShellSkeleton';
 import { ConfiguracoesPage } from './pages/ConfiguracoesPage';
 import { LoginPage } from './pages/LoginPage';
 import { useHashRoute } from './hooks/useHashRoute';
@@ -160,11 +161,7 @@ export default function App() {
   }
 
   if (carregandoAuth) {
-    return (
-      <div className="brisa-auth-loading">
-        <p>Carregando…</p>
-      </div>
-    );
+    return <AppShellSkeleton />;
   }
 
   if (!sessao) {
@@ -253,6 +250,7 @@ export default function App() {
         onOpenChange={setContaAberta}
         sessao={sessao}
         empresa={empresa}
+        onSessaoAtualizada={setSessao}
       />
     </div>
   );

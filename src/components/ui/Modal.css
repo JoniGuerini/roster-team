@@ -32,6 +32,10 @@
   max-width: 880px;
 }
 
+.brisa-modal--xl {
+  max-width: 1040px;
+}
+
 .brisa-modal__header {
   display: flex;
   align-items: flex-start;

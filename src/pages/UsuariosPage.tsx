@@ -9,6 +9,8 @@ import { UsuariosList } from '../components/usuarios/UsuariosList';
 import { UsuarioForm } from '../components/usuarios/UsuarioForm';
 import { SenhaGeradaModal } from '../components/usuarios/SenhaGeradaModal';
 import { ConfirmDeleteModal } from '../components/funcionarios/ConfirmDeleteModal';
+import { PageToolbarHead } from '../components/layout/PageToolbarHead';
+import { TableSkeleton } from '../components/ui/TableSkeleton';
 import { profilesStorage } from '../services/profilesStorage';
 import { perfisAcessoStorage } from '../services/perfisAcessoStorage';
 import type { Sessao } from '../services/authSession';
@@ -207,18 +209,19 @@ export function UsuariosPage({ sessao }: UsuariosPageProps) {
       ) : null}
 
       <section className="brisa-page__toolbar">
-        <div className="brisa-page__toolbar-head">
-          <p className="brisa-page__list-count" aria-live="polite">
-            {usuariosFiltrados.length}{' '}
-            {usuariosFiltrados.length === 1 ? 'usuário' : 'usuários'}
-            {haFiltrosOuBusca && usuarios.length > 0 ? (
-              <span className="brisa-page__count-total"> de {usuarios.length}</span>
-            ) : null}
-          </p>
+        <PageToolbarHead
+          titulo="Usuários"
+          quantidade={usuariosFiltrados.length}
+          rotuloSingular="usuário"
+          rotuloPlural="usuários"
+          total={
+            haFiltrosOuBusca && usuarios.length > 0 ? usuarios.length : undefined
+          }
+        >
           <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
             Novo usuário
           </Button>
-        </div>
+        </PageToolbarHead>
 
         <div className="brisa-page__toolbar-filters">
           <div className="brisa-usuarios__toolbar">
@@ -285,7 +288,7 @@ export function UsuariosPage({ sessao }: UsuariosPageProps) {
       </section>
 
       {carregando ? (
-        <p className="brisa-page__subtitle">Carregando usuários…</p>
+        <TableSkeleton variant="usuarios" />
       ) : usuariosFiltrados.length === 0 && haFiltrosOuBusca ? (
         <div className="brisa-empty-shell">
           <div className="brisa-page__empty-filtro">

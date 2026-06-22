@@ -1,6 +1,7 @@
 import type { EscalaDia } from '../../types/escala';
 import type { Funcionario } from '../../types/funcionario';
 import type { Turno } from '../../types/turno';
+import { Icon } from '../ui/Icon';
 import {
   NOMES_DIAS_CURTOS,
   diasDoMesGrade,
@@ -14,6 +15,7 @@ import {
   vagasEmFaltaNoTurno,
 } from '../../utils/disponibilidade';
 import './MesView.css';
+import './EscalaAddMini.css';
 
 interface MesViewProps {
   data: string;
@@ -22,6 +24,7 @@ interface MesViewProps {
   turnos: Turno[];
   funcionarios: Funcionario[];
   onSelecionarDia: (data: string) => void;
+  onAdicionar?: (data: string) => void;
 }
 
 interface ResumoDia {
@@ -61,6 +64,7 @@ export function MesView({
   turnos,
   funcionarios,
   onSelecionarDia,
+  onAdicionar,
 }: MesViewProps) {
   const dias = diasDoMesGrade(data);
   const escalasPorData = new Map<string, EscalaDia>();
@@ -88,9 +92,10 @@ export function MesView({
           const dataObj = fromISO(dia);
 
           return (
-            <button
+            <div
               key={dia}
-              type="button"
+              role="button"
+              tabIndex={0}
               className={[
                 'brisa-mes__cell',
                 noMes ? '' : 'brisa-mes__cell--fora',
@@ -100,6 +105,12 @@ export function MesView({
                 .filter(Boolean)
                 .join(' ')}
               onClick={() => onSelecionarDia(dia)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSelecionarDia(dia);
+                }
+              }}
             >
               <span
                 className={`brisa-mes__num ${eHoje ? 'brisa-mes__num--hoje' : ''}`}
@@ -117,7 +128,24 @@ export function MesView({
                   )}
                 </span>
               )}
-            </button>
+              {onAdicionar ? (
+                <div className="brisa-mes__add-wrap">
+                  <button
+                    type="button"
+                    className="brisa-escala-add-mini"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAdicionar(dia);
+                    }}
+                    aria-label="Adicionar turno"
+                    title="Adicionar turno"
+                  >
+                    <Icon name="plus" size={12} />
+                    <span className="brisa-escala-add-mini__label">Turno</span>
+                  </button>
+                </div>
+              ) : null}
+            </div>
           );
         })}
       </div>

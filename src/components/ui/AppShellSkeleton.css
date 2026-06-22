@@ -1,0 +1,96 @@
+.brisa-app-skeleton__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 16rem;
+  flex-shrink: 0;
+  padding: var(--space-4) var(--space-3);
+  min-height: 0;
+}
+
+.brisa-app-skeleton__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+}
+
+.brisa-app-skeleton__brand-lines {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.brisa-app-skeleton__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-1);
+}
+
+.brisa-app-skeleton__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding: var(--space-2);
+}
+
+.brisa-app-skeleton__user-lines {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brisa-app-skeleton__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--brisa-border);
+  flex-shrink: 0;
+}
+
+.brisa-app-skeleton__topbar-left,
+.brisa-app-skeleton__topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brisa-app-skeleton__toolbar {
+  gap: 0;
+}
+
+.brisa-app-skeleton__toolbar-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-4) var(--space-5) var(--space-2);
+}
+
+.brisa-app-skeleton__toolbar-head > :last-child {
+  margin-left: auto;
+}
+
+.brisa-app-skeleton__toolbar-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(140px, 0.7fr));
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-5) var(--space-4);
+}
+
+@media (max-width: 880px) {
+  .brisa-app-skeleton__sidebar {
+    display: none;
+  }
+
+  .brisa-app-skeleton__toolbar-filters {
+    grid-template-columns: 1fr;
+  }
+}

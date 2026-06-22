@@ -50,6 +50,7 @@ export function rowParaTurnoEscalado(row: EscalaTurnoRow): TurnoEscalado {
 
 export function rowsParaEscalas(rows: EscalaTurnoRow[]): EscalaDia[] {
   const porData = new Map<string, TurnoEscalado[]>();
+  const turnoIdsPorData = new Map<string, Set<string>>();
   const ordenadas = [...rows].sort((a, b) => {
     const cmpData = a.data.localeCompare(b.data);
     if (cmpData !== 0) return cmpData;
@@ -57,6 +58,11 @@ export function rowsParaEscalas(rows: EscalaTurnoRow[]): EscalaDia[] {
   });
 
   for (const row of ordenadas) {
+    const jaVistos = turnoIdsPorData.get(row.data) ?? new Set<string>();
+    if (jaVistos.has(row.turno_id)) continue;
+    jaVistos.add(row.turno_id);
+    turnoIdsPorData.set(row.data, jaVistos);
+
     const lista = porData.get(row.data) ?? [];
     lista.push(rowParaTurnoEscalado(row));
     porData.set(row.data, lista);

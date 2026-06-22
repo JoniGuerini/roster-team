@@ -7,7 +7,9 @@ import { Switch } from '../components/ui/Switch';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
 import { EmpresaLogo } from '../components/empresas/EmpresaLogo';
 import { EmpresaForm } from '../components/empresas/EmpresaForm';
+import { EmpresaDetalheSkeleton } from '../components/ui/PageSkeletons';
 import { EmptyState } from '../components/ui/EmptyState';
+import { TableSkeleton } from '../components/ui/TableSkeleton';
 import { ConfirmDeleteModal } from '../components/funcionarios/ConfirmDeleteModal';
 import { UsuariosList } from '../components/usuarios/UsuariosList';
 import { UsuarioForm } from '../components/usuarios/UsuarioForm';
@@ -96,7 +98,8 @@ export function EmpresaDetalhePage({ id, onVoltar }: EmpresaDetalhePageProps) {
   if (carregando) {
     return (
       <div className="brisa-page brisa-empresa-detalhe">
-        <p className="brisa-page__subtitle">Carregando empresa…</p>
+        <EmpresaDetalheSkeleton />
+        <TableSkeleton variant="usuarios" rows={4} />
       </div>
     );
   }

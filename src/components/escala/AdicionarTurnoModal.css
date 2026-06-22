@@ -41,6 +41,17 @@
   background: var(--brisa-primary-soft);
 }
 
+.brisa-add-turno__item--used,
+.brisa-add-turno__item:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.brisa-add-turno__item--used:hover,
+.brisa-add-turno__item:disabled:hover {
+  border-color: var(--brisa-border);
+}
+
 .brisa-add-turno__head {
   display: flex;
   align-items: flex-start;

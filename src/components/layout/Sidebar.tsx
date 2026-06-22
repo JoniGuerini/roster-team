@@ -1,8 +1,10 @@
 import type { RotaId } from '../../hooks/useHashRoute';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import type { Sessao } from '../../services/authSession';
 import type { Empresa } from '../../types/empresa';
 import { podeAcessarRota, recursoDaRota } from '../../utils/rotaPermissoes';
 import { Icon } from '../ui/Icon';
+import { Tooltip } from '../ui/Tooltip';
 import { SidebarUserMenu } from './SidebarUserMenu';
 import { iniciaisEmpresa } from '../empresas/EmpresaLogo';
 import './Sidebar.css';
@@ -41,16 +43,15 @@ function renderItem(
   item: ItemMenu,
   rotaAtiva: RotaId,
   onNavegar: (rota: RotaId) => void,
-  recolhida: boolean,
+  mostrarTooltip: boolean,
 ) {
   const ativo = item.id === rotaAtiva;
-  return (
+  const botao = (
     <button
       key={item.id}
       type="button"
       className={`brisa-sidebar__item ${ativo ? 'brisa-sidebar__item--active' : ''}`}
       aria-current={ativo ? 'page' : undefined}
-      title={recolhida ? item.label : undefined}
       onClick={() => onNavegar(item.id)}
     >
       <span className="brisa-sidebar__icon">
@@ -58,6 +59,14 @@ function renderItem(
       </span>
       <span className="brisa-sidebar__label">{item.label}</span>
     </button>
+  );
+
+  if (!mostrarTooltip) return botao;
+
+  return (
+    <Tooltip key={item.id} content={item.label} side="right">
+      {botao}
+    </Tooltip>
   );
 }
 
@@ -96,6 +105,8 @@ export function Sidebar({
   const itensAdmin = sessao.isPlatformAdmin
     ? ITENS_ADMIN.filter((item) => item.id === 'empresas')
     : ITENS_ADMIN.filter(itemVisivel);
+  const isMobile = useMediaQuery('(max-width: 880px)');
+  const mostrarTooltip = recolhida && !isMobile;
 
   return (
     <aside
@@ -130,7 +141,7 @@ export function Sidebar({
         {itensGeral.length > 0 ? (
           <>
             <span className="brisa-sidebar__section">Geral</span>
-            {itensGeral.map((item) => renderItem(item, rotaAtiva, onNavegar, recolhida))}
+            {itensGeral.map((item) => renderItem(item, rotaAtiva, onNavegar, mostrarTooltip))}
           </>
         ) : null}
 
@@ -139,7 +150,7 @@ export function Sidebar({
             <span className="brisa-sidebar__section brisa-sidebar__section--gap">
               {sessao.isPlatformAdmin ? 'Plataforma' : 'Administração'}
             </span>
-            {itensAdmin.map((item) => renderItem(item, rotaAtiva, onNavegar, recolhida))}
+            {itensAdmin.map((item) => renderItem(item, rotaAtiva, onNavegar, mostrarTooltip))}
           </>
         ) : null}
       </nav>
@@ -148,6 +159,7 @@ export function Sidebar({
         <SidebarUserMenu
           sessao={sessao}
           recolhida={recolhida}
+          mostrarTooltip={mostrarTooltip}
           onAbrirConta={onAbrirConta}
           onSair={onSair}
         />

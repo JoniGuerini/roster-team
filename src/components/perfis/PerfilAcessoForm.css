@@ -1,0 +1,80 @@
+.brisa-perfil-acesso-form {
+  gap: var(--space-4);
+}
+
+.brisa-perfil-acesso-form__columns {
+  display: grid;
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: stretch;
+}
+
+.brisa-perfil-acesso-form__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-height: 100%;
+}
+
+.brisa-perfil-acesso-form__info > .brisa-field:last-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.brisa-perfil-acesso-form__descricao-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.brisa-perfil-acesso-form__descricao-field .brisa-textarea {
+  flex: 1;
+  min-height: 320px;
+  height: 100%;
+  resize: vertical;
+}
+
+.brisa-perfil-acesso-form__perms {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 0;
+}
+
+.brisa-perfil-acesso-form__perms .brisa-form__card-header {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--brisa-border);
+}
+
+.brisa-perfil-acesso-form__perms-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+}
+
+.brisa-perfil-acesso-form__perms .brisa-perm-grupos {
+  gap: var(--space-4);
+}
+
+.brisa-perfil-acesso-form__perms .brisa-perm-grupo {
+  padding: var(--space-3) var(--space-4) var(--space-2);
+}
+
+.brisa-perfil-acesso-form__perms .brisa-perm-item {
+  padding: 10px 12px;
+}
+
+@media (max-width: 760px) {
+  .brisa-perfil-acesso-form__columns {
+    grid-template-columns: 1fr;
+  }
+
+  .brisa-perfil-acesso-form__descricao-field .brisa-textarea {
+    min-height: 140px;
+  }
+}

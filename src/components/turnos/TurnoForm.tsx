@@ -38,6 +38,7 @@ import {
   podeAparecerComoSugeridoNoTurno,
 } from '../../utils/disponibilidade';
 import { extrasStorage } from '../../services/extrasStorage';
+import '../funcionarios/FuncionarioForm.css';
 import './TurnoForm.css';
 
 interface TurnoFormProps {
