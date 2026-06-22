@@ -4,21 +4,25 @@
   flex-shrink: 0;
 }
 
+.brisa-sino-wrapper--aberto {
+  z-index: 1200;
+}
+
 .brisa-sino {
   position: relative;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
   flex-shrink: 0;
   padding: 0;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   background: var(--brisa-surface);
   border: 1px solid var(--brisa-border);
   color: var(--brisa-text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-sm);
   transition:
     background var(--transition-fast),
     color var(--transition-fast),
@@ -35,9 +39,8 @@
 
 .brisa-sino:hover,
 .brisa-sino--aberto {
-  background: var(--brisa-surface-soft);
+  background: color-mix(in srgb, var(--accent) 50%, transparent);
   border-color: var(--brisa-border-strong);
-  box-shadow: var(--shadow-sm);
 }
 
 .brisa-sino__badge {
@@ -76,9 +79,9 @@
   width: 360px;
   max-width: calc(100vw - 32px);
   max-height: calc(100vh - 80px);
-  background: var(--brisa-surface);
+  background: var(--brisa-surface-dialog);
   border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-3xl);
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
@@ -151,12 +154,12 @@
   flex-direction: column;
   gap: var(--space-2);
   padding: 10px 12px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xl);
   transition: background var(--transition-fast);
 }
 
 .brisa-sino__item:hover {
-  background: var(--brisa-surface-soft);
+  background: var(--brisa-surface-hover);
 }
 
 .brisa-sino__item-main {

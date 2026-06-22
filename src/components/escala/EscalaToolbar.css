@@ -4,11 +4,11 @@
   justify-content: space-between;
   gap: var(--space-4);
   flex-wrap: wrap;
-  padding: var(--space-4);
+  padding: var(--space-3);
   background: var(--brisa-surface);
   border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xs);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-md), var(--shadow-card-ring);
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
@@ -33,16 +33,42 @@
 .brisa-escala-nav {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 2px;
-  background: var(--brisa-surface-soft);
+  gap: 4px;
+  padding: 4px;
+  background: color-mix(in srgb, var(--background) 40%, transparent);
   border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
 }
 
 .brisa-escala-nav .brisa-icon-btn {
   width: 28px;
   height: 28px;
+  border-radius: var(--radius-pill);
+}
+
+.brisa-escala-nav .brisa-icon-btn:hover {
+  background: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.brisa-escala-nav__hoje {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--brisa-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.brisa-escala-nav__hoje:hover {
+  background: color-mix(in srgb, var(--accent) 50%, transparent);
+  color: var(--brisa-text);
 }
 
 .brisa-escala-toolbar__filtro {

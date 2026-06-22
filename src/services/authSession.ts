@@ -175,7 +175,14 @@ export const authSession = {
 
     if (sessao.empresaId) {
       void import('./atividadesStorage').then(({ registrarAtividade }) => {
-        registrarAtividade({ acao: 'entrou', modulo: 'sessao', alvo: '' });
+        registrarAtividade({
+          acao: 'entrou',
+          modulo: 'sessao',
+          alvo: '',
+          autorProfileId: sessao.userId,
+          autorNome: sessao.nome,
+          autorPapel: authSession.rotuloPapel(sessao),
+        });
       });
     }
 

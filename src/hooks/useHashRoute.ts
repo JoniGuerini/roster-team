@@ -9,8 +9,7 @@ export type RotaId =
   | 'usuarios'
   | 'configuracoes'
   | 'atividades'
-  | 'empresas'
-  | 'perfil';
+  | 'empresas';
 
 const ROTAS_VALIDAS: RotaId[] = [
   'funcionarios',
@@ -22,7 +21,6 @@ const ROTAS_VALIDAS: RotaId[] = [
   'configuracoes',
   'atividades',
   'empresas',
-  'perfil',
 ];
 const ROTA_PADRAO: RotaId = 'escala';
 

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '../components/ui/Button';
-import { Badge } from '../components/ui/Badge';
 import { Icon } from '../components/ui/Icon';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
@@ -20,6 +19,7 @@ import {
   verboAcao,
 } from '../utils/atividadeLabels';
 import { tempoRelativo } from '../utils/notificacaoLabels';
+import { EmptyState } from '../components/ui/EmptyState';
 import './AtividadesPage.css';
 
 const FILTRO_MODULO_OPTIONS = [
@@ -136,16 +136,6 @@ export function AtividadesPage() {
             quando.
           </p>
         </div>
-        <div className="brisa-atividades__actions">
-          <Button
-            variant="ghost"
-            leftIcon={<Icon name="trash" size={16} />}
-            onClick={() => void limpar()}
-            disabled={!temAtividades || processando || carregando}
-          >
-            Limpar histórico
-          </Button>
-        </div>
       </header>
 
       {erro ? (
@@ -155,6 +145,24 @@ export function AtividadesPage() {
       ) : null}
 
       <section className="brisa-page__toolbar">
+        <div className="brisa-page__toolbar-head">
+          <p className="brisa-page__list-count" aria-live="polite">
+            {filtradas.length}{' '}
+            {filtradas.length === 1 ? 'atividade' : 'atividades'}
+          </p>
+          <div className="brisa-atividades__actions">
+            <Button
+              variant="ghost"
+              leftIcon={<Icon name="trash" size={16} />}
+              onClick={() => void limpar()}
+              disabled={!temAtividades || processando || carregando}
+            >
+              Limpar histórico
+            </Button>
+          </div>
+        </div>
+
+        <div className="brisa-page__toolbar-filters">
         <div className="brisa-search">
           <Icon name="search" size={16} />
           <Input
@@ -178,21 +186,17 @@ export function AtividadesPage() {
             onChange={(e) => setFiltroAcao(e.target.value)}
           />
         </div>
-
-        <div className="brisa-page__count">
-          {filtradas.length}{' '}
-          {filtradas.length === 1 ? 'atividade' : 'atividades'}
         </div>
       </section>
 
       {carregando ? (
-        <div className="brisa-empty">
+        <EmptyState>
           <p className="brisa-empty__hint">Carregando atividades…</p>
-        </div>
+        </EmptyState>
       ) : filtradas.length === 0 ? (
-        <div className="brisa-empty">
+        <EmptyState>
           <div className="brisa-empty__icon">
-            <Icon name="history" size={36} />
+            <Icon name="history" size={20} />
           </div>
           <h3 className="brisa-empty__title">
             {temAtividades
@@ -204,7 +208,7 @@ export function AtividadesPage() {
               ? 'Ajuste a busca ou os filtros para ver outros registros.'
               : 'As ações da equipe aparecerão aqui automaticamente ao usar o sistema.'}
           </p>
-        </div>
+        </EmptyState>
       ) : (
         <div className="brisa-atividades__lista">
           {grupos.map(([dia, itens]) => (
@@ -230,8 +234,24 @@ export function AtividadesPage() {
                         </span>
                       ) : null}
                       <span className="brisa-atividade__meta">
-                        <Badge tone={toneAcao(a.acao)}>{labelAcao(a.acao)}</Badge>
-                        {a.autorPapel ? <span>{a.autorPapel}</span> : null}
+                        <span
+                          className={`brisa-atividade__rotulo brisa-atividade__rotulo--${toneAcao(
+                            a.acao,
+                          )}`}
+                        >
+                          {labelAcao(a.acao)}
+                        </span>
+                        {a.autorPapel ? (
+                          <>
+                            <span className="brisa-atividade__meta-sep" aria-hidden>
+                              ·
+                            </span>
+                            <span>{a.autorPapel}</span>
+                          </>
+                        ) : null}
+                        <span className="brisa-atividade__meta-sep" aria-hidden>
+                          ·
+                        </span>
                         <span>{horaAtividade(a.data)}</span>
                       </span>
                     </div>

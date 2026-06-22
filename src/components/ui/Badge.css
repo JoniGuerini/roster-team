@@ -7,7 +7,8 @@
   padding: 3px 10px;
   border-radius: var(--radius-pill);
   letter-spacing: 0.02em;
-  border: 1px solid transparent;
+  border: 1px solid var(--brisa-border);
+  background: color-mix(in srgb, var(--background) 40%, transparent);
 }
 
 .brisa-badge::before {
@@ -22,25 +23,29 @@
 .brisa-badge--success {
   background: var(--brisa-success-soft);
   color: var(--brisa-success);
+  border-color: color-mix(in srgb, var(--brisa-success) 30%, transparent);
 }
 
 .brisa-badge--warning {
   background: var(--brisa-warning-soft);
   color: var(--brisa-warning);
+  border-color: color-mix(in srgb, var(--brisa-warning) 30%, transparent);
 }
 
 .brisa-badge--danger {
   background: var(--brisa-danger-soft);
   color: var(--brisa-danger);
+  border-color: color-mix(in srgb, var(--brisa-attention) 30%, transparent);
 }
 
 .brisa-badge--info {
   background: var(--brisa-primary-soft);
   color: var(--brisa-primary);
+  border-color: color-mix(in srgb, var(--brisa-primary) 20%, transparent);
 }
 
 .brisa-badge--neutral {
-  background: var(--brisa-surface-soft);
+  background: color-mix(in srgb, var(--background) 40%, transparent);
   color: var(--brisa-text-muted);
   border-color: var(--brisa-border);
 }

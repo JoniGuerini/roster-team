@@ -6,9 +6,9 @@
 }
 
 .brisa-field__label {
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--brisa-text);
+  color: var(--brisa-text-muted);
   letter-spacing: 0.005em;
 }
 

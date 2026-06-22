@@ -1,0 +1,155 @@
+.brisa-escala-card--sidebar {
+  width: 100%;
+  max-width: 20rem;
+  flex-shrink: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.brisa-escala-dia-painel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.brisa-escala-dia-painel__head {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.brisa-escala-dia-painel__weekday {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-escala-dia-painel__date-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.brisa-escala-dia-painel__date-row .brisa-badge {
+  margin-left: auto;
+}
+
+.brisa-escala-dia-painel__day-num {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--brisa-text);
+  line-height: 1;
+}
+
+.brisa-escala-dia-painel__month {
+  font-size: 14px;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-escala-dia-painel__divider {
+  height: 1px;
+  background: var(--brisa-border);
+  flex-shrink: 0;
+}
+
+.brisa-escala-dia-painel__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.brisa-escala-dia-painel__empty {
+  padding: var(--space-8) var(--space-2);
+  text-align: center;
+  font-size: 13px;
+  color: var(--brisa-text-muted);
+  margin: 0;
+}
+
+.brisa-escala-dia-painel__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: var(--space-3);
+  border-radius: var(--radius-xl);
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-fast);
+  font: inherit;
+}
+
+.brisa-escala-dia-painel__item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.brisa-escala-dia-painel__item-nome {
+  font-size: 13px;
+  font-weight: 600;
+  color: inherit;
+}
+
+.brisa-escala-dia-painel__item-hora {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  opacity: 0.85;
+  font-variant-numeric: tabular-nums;
+}
+
+.brisa-escala-dia-painel__item-status {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.brisa-escala-dia-painel__item--completo {
+  background: var(--turno-completo-bg);
+  border-color: var(--turno-completo-border);
+  color: var(--turno-completo-fg);
+}
+
+.brisa-escala-dia-painel__item--parcial {
+  background: var(--turno-parcial-bg);
+  border-color: var(--turno-parcial-border);
+  color: var(--turno-parcial-fg);
+}
+
+.brisa-escala-dia-painel__item--vazio {
+  background: var(--turno-vazio-bg);
+  border-color: var(--turno-vazio-border);
+  color: var(--turno-vazio-fg);
+}
+
+.brisa-escala-dia-painel__item--alerta {
+  background: var(--turno-alerta-bg);
+  border-color: var(--turno-alerta-border);
+  color: var(--turno-alerta-fg);
+}
+
+.brisa-escala-dia-painel__footer {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-top: 1px solid var(--brisa-border);
+  flex-shrink: 0;
+}
+
+@media (max-width: 920px) {
+  .brisa-escala-card--sidebar {
+    max-width: none;
+    max-height: 280px;
+  }
+}

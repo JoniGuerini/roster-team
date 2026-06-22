@@ -12,6 +12,11 @@
   color: var(--brisa-text-soft);
 }
 
+.brisa-page__toolbar-filters .brisa-usuarios__toolbar,
+.brisa-page__toolbar-filters .brisa-page__toolbar-equipe {
+  width: 100%;
+}
+
 .brisa-usuarios__toolbar {
   display: grid;
   width: 100%;

@@ -55,10 +55,11 @@
   align-items: flex-start;
   gap: var(--space-5);
   padding: var(--space-6);
-  background: var(--brisa-surface);
-  border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xs);
+  background: var(--brisa-sidebar);
+  border: 1px solid var(--brisa-sidebar-border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-md);
+  color: var(--brisa-sidebar-foreground);
 }
 
 .brisa-perfil__avatar {
@@ -103,13 +104,13 @@
   font-size: 26px;
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--brisa-text);
+  color: var(--brisa-sidebar-foreground);
   margin: 0;
 }
 
 .brisa-perfil__meta {
   font-size: 13px;
-  color: var(--brisa-text-soft);
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 70%, transparent);
 }
 
 .brisa-perfil__actions {
@@ -122,9 +123,9 @@
 .brisa-perfil__card {
   background: var(--brisa-surface);
   border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-3xl);
   padding: var(--space-6);
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-md), var(--shadow-card-ring);
 }
 
 .brisa-perfil__card-title {

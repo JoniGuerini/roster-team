@@ -37,6 +37,8 @@ export type AtividadeInput = {
   data?: string;
   autorNome?: string;
   autorPapel?: string | null;
+  /** ID do profile (auth.uid) — use no login para evitar corrida com a sessão em memória. */
+  autorProfileId?: string | null;
 };
 
 export const ACOES_ATIVIDADE: { value: AcaoAtividade; label: string }[] = [

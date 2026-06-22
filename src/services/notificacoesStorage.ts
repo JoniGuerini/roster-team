@@ -80,16 +80,22 @@ export const notificacoesStorage = {
   async marcarLida(id: string): Promise<void> {
     const empresaId = empresaIdAtual();
     const agora = new Date().toISOString();
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('notificacoes')
       .update({ status: 'lida', atualizada_em: agora })
       .eq('id', id)
       .eq('empresa_id', empresaId)
-      .neq('status', 'resolvida');
+      .neq('status', 'resolvida')
+      .select('id');
 
     if (error) {
       throw new Error(
         erroMensagem(error, 'Não foi possível marcar a notificação como lida.'),
+      );
+    }
+    if (!data?.length) {
+      throw new Error(
+        'Não foi possível marcar a notificação como lida (nenhum registro atualizado).',
       );
     }
   },
@@ -97,11 +103,12 @@ export const notificacoesStorage = {
   async marcarTodasLidas(): Promise<void> {
     const empresaId = empresaIdAtual();
     const agora = new Date().toISOString();
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('notificacoes')
       .update({ status: 'lida', atualizada_em: agora })
       .eq('empresa_id', empresaId)
-      .eq('status', 'nao_lida');
+      .eq('status', 'nao_lida')
+      .select('id');
 
     if (error) {
       throw new Error(
@@ -109,6 +116,11 @@ export const notificacoesStorage = {
           error,
           'Não foi possível marcar todas as notificações como lidas.',
         ),
+      );
+    }
+    if (!data?.length) {
+      throw new Error(
+        'Nenhuma notificação foi atualizada. Verifique se ainda há itens não lidos.',
       );
     }
   },

@@ -1,9 +1,9 @@
 .brisa-aloc-dia {
   background: var(--brisa-surface);
   border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-3xl);
   overflow: hidden;
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-md), var(--shadow-card-ring);
 }
 
 .brisa-aloc-dia__header {

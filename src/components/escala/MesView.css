@@ -2,20 +2,17 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  background: var(--brisa-surface);
-  border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-xs);
   width: 100%;
   min-width: 0;
+  min-height: 0;
+  flex: 1;
   box-sizing: border-box;
 }
 
 .brisa-mes__cabecalho {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .brisa-mes__dia-label {
@@ -30,7 +27,10 @@
 .brisa-mes__grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: var(--space-2);
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  gap: var(--space-1);
+  flex: 1;
+  min-height: 0;
 }
 
 .brisa-mes__cell {
@@ -38,46 +38,54 @@
   flex-direction: column;
   justify-content: space-between;
   gap: var(--space-2);
-  background: var(--brisa-surface-soft);
+  background: var(--brisa-surface);
   border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  padding: 6px 8px;
   min-height: 88px;
   text-align: left;
   transition:
     background var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast);
+    border-color var(--transition-fast);
 }
 
 .brisa-mes__cell:hover {
-  background: var(--brisa-surface);
-  border-color: var(--brisa-primary);
-  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--accent) 50%, transparent);
+  border-color: var(--brisa-border-strong);
 }
 
 .brisa-mes__cell--fora {
-  opacity: 0.4;
+  background: color-mix(in srgb, var(--background) 40%, transparent);
+  color: var(--brisa-text-muted);
+  opacity: 0.85;
 }
 
-.brisa-mes__cell--hoje {
+.brisa-mes__cell--selecionada {
   border-color: var(--brisa-primary);
-  background: var(--brisa-primary-soft);
+  background: var(--brisa-surface-hover);
 }
 
 .brisa-mes__cell--alerta {
-  border-color: rgba(193, 59, 59, 0.4);
+  border-color: color-mix(in srgb, var(--brisa-attention) 40%, transparent);
 }
 
 .brisa-mes__num {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--brisa-text);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
 }
 
-.brisa-mes__cell--hoje .brisa-mes__num {
-  color: var(--brisa-primary);
+.brisa-mes__num--hoje {
+  background: var(--brisa-primary);
+  color: var(--brisa-text-on-brand);
+  font-weight: 600;
 }
 
 .brisa-mes__badge {
@@ -85,24 +93,26 @@
   align-items: center;
   gap: 6px;
   align-self: flex-start;
-  background: var(--brisa-primary);
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--background) 40%, transparent);
+  border: 1px solid var(--brisa-border);
+  color: var(--brisa-text);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: var(--radius-lg);
 }
 
 .brisa-mes__badge-alerta {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--brisa-warning-soft);
-  border: 1px solid white;
+  background: var(--brisa-attention);
 }
 
 .brisa-mes__cell--alerta .brisa-mes__badge {
-  background: var(--brisa-danger);
+  border-color: color-mix(in srgb, var(--brisa-attention) 30%, transparent);
+  color: var(--brisa-attention);
 }
 
 @media (max-width: 720px) {

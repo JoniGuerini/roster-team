@@ -1,20 +1,70 @@
 .brisa-topbar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-3);
-  padding: var(--space-4) var(--space-6);
-  background: transparent;
-  position: sticky;
-  top: 0;
+  gap: var(--space-2);
+  height: 4rem;
+  flex-shrink: 0;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--brisa-border);
+  background: var(--brisa-bg);
   z-index: 50;
-  pointer-events: none;
+  position: relative;
 }
 
-.brisa-topbar > * {
-  pointer-events: auto;
+.brisa-topbar:has(.brisa-sino-wrapper--aberto) {
+  z-index: 200;
+}
+
+.brisa-topbar__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: -4px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--brisa-text-muted);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.brisa-topbar__trigger:hover {
+  background: color-mix(in srgb, var(--accent) 50%, transparent);
+  color: var(--brisa-text);
+}
+
+.brisa-topbar__trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--brisa-focus-ring);
+}
+
+.brisa-topbar__separator {
+  width: 1px;
+  height: 1rem;
+  background: var(--brisa-border-strong);
+  flex-shrink: 0;
+  margin-right: var(--space-1);
+}
+
+.brisa-topbar__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .brisa-topbar__spacer {
   flex: 1;
+  min-width: var(--space-2);
 }

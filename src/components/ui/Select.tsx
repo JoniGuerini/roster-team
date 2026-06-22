@@ -2,11 +2,14 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from './Icon';
 import './Select.css';
 
@@ -45,6 +48,35 @@ function normalizarBusca(s: string): string {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
+function posicaoMenu(
+  trigger: DOMRect,
+  placement: 'bottom' | 'top',
+): CSSProperties {
+  const gap = 6;
+  const padding = 8;
+  const width = trigger.width;
+  const left = Math.min(
+    Math.max(padding, trigger.left),
+    window.innerWidth - width - padding,
+  );
+
+  if (placement === 'top') {
+    return {
+      position: 'fixed',
+      left,
+      width,
+      bottom: window.innerHeight - trigger.top + gap,
+    };
+  }
+
+  return {
+    position: 'fixed',
+    left,
+    width,
+    top: trigger.bottom + gap,
+  };
+}
+
 export const Select = forwardRef<HTMLButtonElement, SelectProps>(
   (
     {
@@ -64,8 +96,10 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
     const [highlighted, setHighlighted] = useState<number>(-1);
+    const [menuStyle, setMenuStyle] = useState<CSSProperties>({});
     const wrapperRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
+    const popoverRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -85,7 +119,11 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     useEffect(() => {
       if (!open) return;
       const handlePointer = (event: MouseEvent) => {
-        if (!wrapperRef.current?.contains(event.target as Node)) {
+        const target = event.target as Node;
+        if (
+          !wrapperRef.current?.contains(target) &&
+          !popoverRef.current?.contains(target)
+        ) {
           setOpen(false);
           setQuery('');
         }
@@ -93,6 +131,25 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       document.addEventListener('mousedown', handlePointer);
       return () => document.removeEventListener('mousedown', handlePointer);
     }, [open]);
+
+    useLayoutEffect(() => {
+      if (!open || !buttonRef.current) return;
+
+      const atualizarPosicao = () => {
+        if (!buttonRef.current) return;
+        setMenuStyle(
+          posicaoMenu(buttonRef.current.getBoundingClientRect(), menuPlacement),
+        );
+      };
+
+      atualizarPosicao();
+      window.addEventListener('resize', atualizarPosicao);
+      window.addEventListener('scroll', atualizarPosicao, true);
+      return () => {
+        window.removeEventListener('resize', atualizarPosicao);
+        window.removeEventListener('scroll', atualizarPosicao, true);
+      };
+    }, [open, menuPlacement, opcoesVisiveis.length, searchable, query]);
 
     useEffect(() => {
       if (open && searchable) {
@@ -119,6 +176,11 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 
     function abrir() {
       if (disabled) return;
+      if (buttonRef.current) {
+        setMenuStyle(
+          posicaoMenu(buttonRef.current.getBoundingClientRect(), menuPlacement),
+        );
+      }
       setOpen(true);
     }
 
@@ -178,7 +240,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
         event.preventDefault();
         if (!open) {
-          setOpen(true);
+          abrir();
           return;
         }
         setHighlighted((prev) => {
@@ -193,7 +255,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         if (!open) {
-          setOpen(true);
+          abrir();
           return;
         }
         const opcao = opcoesVisiveis[highlighted];
@@ -234,6 +296,78 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       .filter(Boolean)
       .join(' ');
 
+    const menu = open ? (
+      <div
+        ref={popoverRef}
+        className={popoverClasses}
+        style={menuStyle}
+        role="presentation"
+      >
+        {searchable && (
+          <div className="brisa-select__search">
+            <input
+              ref={searchInputRef}
+              type="search"
+              className="brisa-select__search-input"
+              value={query}
+              placeholder={searchPlaceholder}
+              aria-label={searchPlaceholder}
+              autoComplete="off"
+              spellCheck={false}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+            />
+          </div>
+        )}
+        <div
+          className="brisa-select__options-scroll"
+          ref={listRef}
+          role="listbox"
+          aria-labelledby={id}
+          tabIndex={-1}
+        >
+          {opcoesVisiveis.length === 0 ? (
+            <div className="brisa-select__empty">
+              {searchable && query.trim()
+                ? 'Nenhum resultado'
+                : 'Nenhuma opção'}
+            </div>
+          ) : (
+            opcoesVisiveis.map((opcao, indice) => {
+              const ativo = opcao.value === value;
+              const destacado = indice === highlighted;
+              return (
+                <button
+                  key={opcao.value || '__empty__'}
+                  type="button"
+                  role="option"
+                  aria-selected={ativo}
+                  aria-disabled={opcao.disabled || undefined}
+                  data-index={indice}
+                  disabled={opcao.disabled}
+                  className={[
+                    'brisa-select__option',
+                    ativo ? 'brisa-select__option--active' : '',
+                    destacado ? 'brisa-select__option--highlighted' : '',
+                    opcao.disabled ? 'brisa-select__option--disabled' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onMouseEnter={() => setHighlighted(indice)}
+                  onClick={() => selecionar(opcao)}
+                >
+                  <span className="brisa-select__option-label">
+                    {opcao.optionContent ?? opcao.label}
+                  </span>
+                  {ativo && <Icon name="check" size={14} />}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </div>
+    ) : null;
+
     return (
       <div className="brisa-select-wrapper" ref={wrapperRef}>
         <button
@@ -261,72 +395,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
           <Icon name="chevron-down" size={14} className="brisa-select__chevron" />
         </button>
 
-        {open && (
-          <div className={popoverClasses} role="presentation">
-            {searchable && (
-              <div className="brisa-select__search">
-                <input
-                  ref={searchInputRef}
-                  type="search"
-                  className="brisa-select__search-input"
-                  value={query}
-                  placeholder={searchPlaceholder}
-                  aria-label={searchPlaceholder}
-                  autoComplete="off"
-                  spellCheck={false}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={handleSearchKeyDown}
-                />
-              </div>
-            )}
-            <div
-              className="brisa-select__options-scroll"
-              ref={listRef}
-              role="listbox"
-              aria-labelledby={id}
-              tabIndex={-1}
-            >
-              {opcoesVisiveis.length === 0 ? (
-                <div className="brisa-select__empty">
-                  {searchable && query.trim()
-                    ? 'Nenhum resultado'
-                    : 'Nenhuma opção'}
-                </div>
-              ) : (
-                opcoesVisiveis.map((opcao, indice) => {
-                  const ativo = opcao.value === value;
-                  const destacado = indice === highlighted;
-                  return (
-                    <button
-                      key={opcao.value || '__empty__'}
-                      type="button"
-                      role="option"
-                      aria-selected={ativo}
-                      aria-disabled={opcao.disabled || undefined}
-                      data-index={indice}
-                      disabled={opcao.disabled}
-                      className={[
-                        'brisa-select__option',
-                        ativo ? 'brisa-select__option--active' : '',
-                        destacado ? 'brisa-select__option--highlighted' : '',
-                        opcao.disabled ? 'brisa-select__option--disabled' : '',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                      onMouseEnter={() => setHighlighted(indice)}
-                      onClick={() => selecionar(opcao)}
-                    >
-                      <span className="brisa-select__option-label">
-                        {opcao.optionContent ?? opcao.label}
-                      </span>
-                      {ativo && <Icon name="check" size={14} />}
-                    </button>
-                  );
-                })
-              )}
-            </div>
-          </div>
-        )}
+        {menu && createPortal(menu, document.body)}
       </div>
     );
   },

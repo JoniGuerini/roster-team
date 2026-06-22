@@ -7,6 +7,7 @@ import { Switch } from '../components/ui/Switch';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
 import { EmpresaLogo } from '../components/empresas/EmpresaLogo';
 import { EmpresaForm } from '../components/empresas/EmpresaForm';
+import { EmptyState } from '../components/ui/EmptyState';
 import { ConfirmDeleteModal } from '../components/funcionarios/ConfirmDeleteModal';
 import { UsuariosList } from '../components/usuarios/UsuariosList';
 import { UsuarioForm } from '../components/usuarios/UsuarioForm';
@@ -107,15 +108,15 @@ export function EmpresaDetalhePage({ id, onVoltar }: EmpresaDetalhePageProps) {
           <Icon name="arrow-left" size={18} />
           Voltar para empresas
         </button>
-        <div className="brisa-empty">
+        <EmptyState>
           <div className="brisa-empty__icon">
-            <Icon name="building" size={36} />
+            <Icon name="building" size={20} />
           </div>
           <h3 className="brisa-empty__title">Empresa não encontrada</h3>
           <p className="brisa-empty__hint">
             Ela pode ter sido removida. Volte e selecione outra.
           </p>
-        </div>
+        </EmptyState>
       </div>
     );
   }

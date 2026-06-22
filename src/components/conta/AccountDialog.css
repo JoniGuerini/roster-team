@@ -1,0 +1,354 @@
+.brisa-account-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgba(42, 53, 68, 0.45);
+  backdrop-filter: blur(2px);
+  animation: brisa-overlay-in 160ms ease;
+}
+
+.brisa-account-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(92vw, 64rem);
+  height: min(85vh, calc(100% - 2rem));
+  max-height: calc(100% - 2rem);
+  overflow: hidden;
+  border-radius: var(--radius-3xl);
+  background: var(--brisa-sidebar);
+  color: var(--brisa-sidebar-foreground);
+  box-shadow: var(--shadow-lg);
+  animation: brisa-modal-in 200ms ease;
+}
+
+@media (min-width: 768px) {
+  .brisa-account-dialog {
+    flex-direction: row;
+  }
+}
+
+.brisa-account-dialog__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex-shrink: 0;
+  padding: var(--space-4);
+  min-height: 0;
+}
+
+@media (min-width: 768px) {
+  .brisa-account-dialog__sidebar {
+    width: 16rem;
+    padding: var(--space-5);
+  }
+}
+
+.brisa-account-dialog__sidebar-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-1) var(--space-2) var(--space-3);
+}
+
+.brisa-account-dialog__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--brisa-sidebar-foreground);
+}
+
+.brisa-account-dialog__subtitle {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 70%, transparent);
+}
+
+.brisa-account-dialog__nav {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+}
+
+@media (min-width: 768px) {
+  .brisa-account-dialog__nav {
+    flex-direction: column;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+}
+
+.brisa-account-dialog__nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  width: auto;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-xl);
+  background: transparent;
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 82%, transparent);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: default;
+}
+
+@media (min-width: 768px) {
+  .brisa-account-dialog__nav-item {
+    width: 100%;
+  }
+}
+
+.brisa-account-dialog__nav-item--active {
+  background: var(--brisa-sidebar-active-bg);
+  color: var(--brisa-sidebar-active-fg);
+}
+
+.brisa-account-dialog__user {
+  display: none;
+  margin-top: auto;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--brisa-sidebar-foreground) 6%, transparent);
+}
+
+@media (min-width: 768px) {
+  .brisa-account-dialog__user {
+    display: flex;
+    align-items: flex-start;
+  }
+}
+
+.brisa-account-dialog__avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brisa-sidebar-foreground);
+  background: color-mix(in srgb, var(--brisa-sidebar-foreground) 10%, transparent);
+}
+
+.brisa-account-dialog__user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.brisa-account-dialog__user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brisa-sidebar-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-account-dialog__user-email {
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 68%, transparent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brisa-account-dialog__user-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.brisa-account-dialog__main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  margin: var(--space-2);
+  margin-left: 0;
+  border-radius: var(--radius-3xl);
+  background: var(--brisa-surface);
+  color: var(--brisa-text);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.brisa-account-dialog__close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--brisa-text-soft);
+  cursor: pointer;
+  transition:
+    background var(--transition-base),
+    color var(--transition-base);
+}
+
+.brisa-account-dialog__close:hover {
+  background: var(--brisa-surface-hover);
+  color: var(--brisa-text);
+}
+
+.brisa-account-dialog__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-6);
+}
+
+.brisa-account-dialog__section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: var(--space-6);
+}
+
+.brisa-account-dialog__section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--brisa-text);
+}
+
+.brisa-account-dialog__section-desc {
+  margin: 0;
+  font-size: 14px;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-account-dialog__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  border-radius: var(--radius-3xl);
+  border: 1px solid var(--brisa-border);
+  background: color-mix(in srgb, var(--background) 40%, transparent);
+}
+
+.brisa-account-dialog__panel-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brisa-account-dialog__panel-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--brisa-text);
+}
+
+.brisa-account-dialog__panel-desc {
+  margin: 0;
+  font-size: 14px;
+  color: var(--brisa-text-muted);
+  line-height: 1.5;
+}
+
+.brisa-account-dialog__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.brisa-account-dialog__password-grid {
+  display: grid;
+  gap: var(--space-5);
+}
+
+@media (min-width: 640px) {
+  .brisa-account-dialog__password-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.brisa-account-dialog__password {
+  position: relative;
+}
+
+.brisa-account-dialog__password .brisa-input {
+  padding-right: 42px;
+}
+
+.brisa-account-dialog__password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--brisa-text-soft);
+  cursor: pointer;
+  transition:
+    background var(--transition-base),
+    color var(--transition-base);
+}
+
+.brisa-account-dialog__password-toggle:hover {
+  background: var(--brisa-surface-hover);
+  color: var(--brisa-text);
+}
+
+.brisa-account-dialog__alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.brisa-account-dialog__alert--erro {
+  background: var(--brisa-danger-soft);
+  color: var(--brisa-danger);
+}
+
+.brisa-account-dialog__alert--ok {
+  background: var(--brisa-success-soft);
+  color: var(--brisa-success);
+}
+
+.brisa-account-dialog__form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--brisa-border);
+}

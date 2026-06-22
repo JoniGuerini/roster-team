@@ -13,9 +13,9 @@
 .brisa-atividades__grupo {
   background: var(--brisa-surface);
   border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-3xl);
   padding: var(--space-5) var(--space-6);
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-md), var(--shadow-card-ring);
 }
 
 .brisa-atividades__dia {
@@ -114,11 +114,45 @@
 .brisa-atividade__meta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
   font-size: 12px;
   color: var(--brisa-text-soft);
   margin-top: 2px;
+}
+
+.brisa-atividade__rotulo {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.brisa-atividade__rotulo--success {
+  color: #2e7d4f;
+}
+
+.brisa-atividade__rotulo--info {
+  color: var(--brisa-primary, #3c5aa6);
+}
+
+.brisa-atividade__rotulo--warning {
+  color: #b9722f;
+}
+
+.brisa-atividade__rotulo--danger {
+  color: var(--brisa-danger, #c0392b);
+}
+
+.brisa-atividade__rotulo--neutral {
+  color: var(--brisa-text-soft);
+}
+
+.brisa-atividade__meta-sep {
+  color: var(--brisa-border-strong, #c8d0dc);
+  font-weight: 400;
+  user-select: none;
 }
 
 .brisa-atividade__time {

@@ -1,4 +1,3 @@
-import { Button } from '../ui/Button';
 import { Select } from '../ui/Select';
 import { Icon } from '../ui/Icon';
 import { SegmentedControl } from '../ui/SegmentedControl';
@@ -77,10 +76,14 @@ export function EscalaToolbar({
           >
             <Icon name="chevron-right" size={16} />
           </button>
+          <button
+            type="button"
+            className="brisa-escala-nav__hoje"
+            onClick={onHoje}
+          >
+            Hoje
+          </button>
         </div>
-        <Button variant="secondary" size="sm" onClick={onHoje}>
-          Hoje
-        </Button>
         <span className="brisa-escala-toolbar__periodo">
           {rotuloPeriodo(data, modo)}
         </span>

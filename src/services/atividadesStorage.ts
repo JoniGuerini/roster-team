@@ -18,19 +18,25 @@ function empresaIdAtual(): string {
   return id;
 }
 
-function autorAtual(): {
+async function autorAtual(): Promise<{
   profileId: string | null;
   nome: string;
   papel: string | null;
-} {
+}> {
   const sessao = authSession.obter();
-  if (!sessao) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userId = session?.user?.id ?? sessao?.userId ?? null;
+
+  if (!userId && !sessao) {
     return { profileId: null, nome: 'Sistema', papel: null };
   }
+
   return {
-    profileId: sessao.userId,
-    nome: sessao.nome,
-    papel: authSession.rotuloPapel(sessao),
+    profileId: userId,
+    nome: sessao?.nome ?? session?.user?.email ?? 'Sistema',
+    papel: sessao ? authSession.rotuloPapel(sessao) : null,
   };
 }
 
@@ -55,12 +61,13 @@ export const atividadesStorage = {
 
   async registrar(input: AtividadeInput): Promise<Atividade> {
     const empresaId = empresaIdAtual();
-    const autor = autorAtual();
+    const autor = await autorAtual();
+    const profileId = input.autorProfileId ?? autor.profileId;
     const { data, error } = await supabase
       .from('atividades')
       .insert({
         empresa_id: empresaId,
-        autor_profile_id: autor.profileId,
+        autor_profile_id: profileId,
         autor_nome: input.autorNome || autor.nome,
         autor_papel: input.autorPapel ?? autor.papel,
         acao: input.acao,

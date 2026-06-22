@@ -53,7 +53,7 @@ export function permissoesParaRota(rota: RotaId): Permissao[] | null {
 }
 
 export function recursoDaRota(rota: RotaId): RecursoEmpresa | null {
-  if (rota === 'perfil' || rota === 'empresas') return null;
+  if (rota === 'empresas') return null;
   return rota as RecursoEmpresa;
 }
 
@@ -65,8 +65,6 @@ export function podeAcessarRota(
     isPlatformAdmin?: boolean;
   },
 ): boolean {
-  if (rota === 'perfil') return true;
-
   if (rota === 'empresas') {
     return opcoes?.isPlatformAdmin === true;
   }
@@ -92,5 +90,5 @@ export function primeiraRotaDisponivel(
       return rota;
     }
   }
-  return 'perfil';
+  return 'escala';
 }

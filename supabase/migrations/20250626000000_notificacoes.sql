@@ -38,7 +38,7 @@ create unique index if not exists notificacoes_empresa_chave_ativa_idx
 drop trigger if exists notificacoes_set_updated_at on public.notificacoes;
 create trigger notificacoes_set_updated_at
   before update on public.notificacoes
-  for each row execute function public.set_profiles_updated_at();
+  for each row execute function public.set_updated_at();
 
 -- ---------------------------------------------------------------------------
 -- RLS

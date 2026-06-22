@@ -8,6 +8,7 @@ import { EmpresaLogo } from '../components/empresas/EmpresaLogo';
 import { EmpresaForm } from '../components/empresas/EmpresaForm';
 import { empresasStorage } from '../services/empresasStorage';
 import type { Empresa, EmpresaInput } from '../types/empresa';
+import { EmptyState } from '../components/ui/EmptyState';
 import './EmpresasPage.css';
 
 interface EmpresasPageProps {
@@ -113,15 +114,15 @@ export function EmpresasPage({ onAbrir }: EmpresasPageProps) {
       {carregando ? (
         <p className="brisa-page__subtitle">Carregando empresas…</p>
       ) : empresas.length === 0 ? (
-        <div className="brisa-empty">
+        <EmptyState>
           <div className="brisa-empty__icon">
-            <Icon name="building" size={36} />
+            <Icon name="building" size={20} />
           </div>
           <h3 className="brisa-empty__title">Nenhuma empresa cadastrada</h3>
           <p className="brisa-empty__hint">
             Clique em <strong>Nova empresa</strong> para cadastrar a primeira.
           </p>
-        </div>
+        </EmptyState>
       ) : (
         <div className="brisa-empresas__grid">
           {empresas.map((empresa) => {

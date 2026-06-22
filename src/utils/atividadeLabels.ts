@@ -1,3 +1,4 @@
+import type { IconName } from '../components/ui/iconRegistry';
 import {
   ACOES_ATIVIDADE,
   MODULOS_ATIVIDADE,
@@ -47,7 +48,7 @@ export function substantivoModulo(modulo: ModuloAtividade): string {
   }
 }
 
-export function iconeAcao(acao: AcaoAtividade): string {
+export function iconeAcao(acao: AcaoAtividade): IconName {
   switch (acao) {
     case 'criou':
       return 'plus';
@@ -62,7 +63,7 @@ export function iconeAcao(acao: AcaoAtividade): string {
   }
 }
 
-export function iconeModulo(modulo: ModuloAtividade): string {
+export function iconeModulo(modulo: ModuloAtividade): IconName {
   switch (modulo) {
     case 'funcionario':
       return 'users';

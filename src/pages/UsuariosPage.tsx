@@ -197,17 +197,7 @@ export function UsuariosPage({ sessao }: UsuariosPageProps) {
             Crie acessos para a equipe, defina permissões e gere senhas
             provisórias.
           </p>
-          <p className="brisa-page__list-count" aria-live="polite">
-            {usuariosFiltrados.length}{' '}
-            {usuariosFiltrados.length === 1 ? 'usuário' : 'usuários'}
-            {haFiltrosOuBusca && usuarios.length > 0 ? (
-              <span className="brisa-page__count-total"> de {usuarios.length}</span>
-            ) : null}
-          </p>
         </div>
-        <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
-          Novo usuário
-        </Button>
       </header>
 
       {erro ? (
@@ -217,7 +207,21 @@ export function UsuariosPage({ sessao }: UsuariosPageProps) {
       ) : null}
 
       <section className="brisa-page__toolbar">
-        <div className="brisa-usuarios__toolbar">
+        <div className="brisa-page__toolbar-head">
+          <p className="brisa-page__list-count" aria-live="polite">
+            {usuariosFiltrados.length}{' '}
+            {usuariosFiltrados.length === 1 ? 'usuário' : 'usuários'}
+            {haFiltrosOuBusca && usuarios.length > 0 ? (
+              <span className="brisa-page__count-total"> de {usuarios.length}</span>
+            ) : null}
+          </p>
+          <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
+            Novo usuário
+          </Button>
+        </div>
+
+        <div className="brisa-page__toolbar-filters">
+          <div className="brisa-usuarios__toolbar">
           <div className="brisa-search brisa-search--inline">
             <Icon name="search" size={16} />
             <Input
@@ -276,22 +280,25 @@ export function UsuariosPage({ sessao }: UsuariosPageProps) {
               </Button>
             </Field>
           </div>
+          </div>
         </div>
       </section>
 
       {carregando ? (
         <p className="brisa-page__subtitle">Carregando usuários…</p>
       ) : usuariosFiltrados.length === 0 && haFiltrosOuBusca ? (
-        <div className="brisa-page__empty-filtro">
-          <h3 className="brisa-page__empty-filtro-title">
-            Nenhum resultado encontrado
-          </h3>
-          <p className="brisa-page__empty-filtro-hint">
-            Ajuste a busca ou os filtros por perfil e status.
-          </p>
-          <Button type="button" variant="secondary" onClick={limparFiltrosEBusca}>
-            Limpar busca e filtros
-          </Button>
+        <div className="brisa-empty-shell">
+          <div className="brisa-page__empty-filtro">
+            <h3 className="brisa-page__empty-filtro-title">
+              Nenhum resultado encontrado
+            </h3>
+            <p className="brisa-page__empty-filtro-hint">
+              Ajuste a busca ou os filtros por perfil e status.
+            </p>
+            <Button type="button" variant="secondary" onClick={limparFiltrosEBusca}>
+              Limpar busca e filtros
+            </Button>
+          </div>
         </div>
       ) : (
         <UsuariosList

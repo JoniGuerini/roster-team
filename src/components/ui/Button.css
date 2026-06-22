@@ -4,7 +4,7 @@
   justify-content: center;
   gap: var(--space-2);
   border: 1px solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-3xl);
   font-weight: 600;
   letter-spacing: 0.005em;
   transition:
@@ -32,19 +32,19 @@
 }
 
 .brisa-btn--sm {
-  padding: 6px 12px;
+  padding: 0 12px;
   font-size: 12.5px;
   height: 32px;
 }
 
 .brisa-btn--md {
-  padding: 8px 16px;
+  padding: 0 16px;
   font-size: 13.5px;
-  height: 38px;
+  height: 36px;
 }
 
 .brisa-btn--lg {
-  padding: 10px 20px;
+  padding: 0 20px;
   font-size: 14.5px;
   height: 44px;
 }
@@ -65,15 +65,14 @@
 }
 
 .brisa-btn--secondary {
-  background: var(--brisa-surface);
+  background: var(--brisa-bg);
   color: var(--brisa-text);
   border-color: var(--brisa-border-strong);
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-sm);
 }
 
 .brisa-btn--secondary:hover:not(:disabled) {
   background: var(--brisa-surface-soft);
-  border-color: var(--neutral-400);
 }
 
 .brisa-btn--ghost {
@@ -82,13 +81,13 @@
 }
 
 .brisa-btn--ghost:hover:not(:disabled) {
-  background: var(--brisa-surface-hover);
+  background: var(--brisa-surface-soft);
   color: var(--brisa-text);
 }
 
 .brisa-btn--danger {
   background: var(--brisa-danger);
-  color: var(--brisa-text-on-brand);
+  color: #fff;
   box-shadow: var(--shadow-xs);
 }
 

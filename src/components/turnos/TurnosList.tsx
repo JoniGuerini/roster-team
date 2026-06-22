@@ -16,6 +16,7 @@ import {
 } from '../../utils/alocacoesIniciaisTurno';
 import { TurnoCard } from './TurnoCard';
 import { Icon } from '../ui/Icon';
+import { EmptyState } from '../ui/EmptyState';
 import './TurnosList.css';
 
 interface TurnosListProps {
@@ -111,16 +112,16 @@ export function TurnosList({
 
   if (turnos.length === 0) {
     return (
-      <div className="brisa-empty">
+      <EmptyState>
         <div className="brisa-empty__icon">
-          <Icon name="clock" size={36} />
+          <Icon name="clock" size={20} />
         </div>
         <h3 className="brisa-empty__title">Nenhum turno cadastrado</h3>
         <p className="brisa-empty__hint">
           Clique em <strong>Novo turno</strong> para criar o primeiro modelo de
           turno.
         </p>
-      </div>
+      </EmptyState>
     );
   }
 

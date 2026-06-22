@@ -10,9 +10,9 @@
   gap: var(--space-4);
   background: var(--brisa-surface);
   border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-3xl);
   padding: var(--space-5);
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-md), var(--shadow-card-ring);
 }
 
 .brisa-empresa-card--link {

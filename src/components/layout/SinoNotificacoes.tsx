@@ -31,12 +31,12 @@ export function SinoNotificacoes({ onAbrirCentro }: SinoNotificacoesProps) {
         setAberto(false);
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
   }, [aberto]);
 
   const ativas = lista
-    .filter((n) => n.status === 'nao_lida' || n.status === 'lida')
+    .filter((n) => n.status === 'nao_lida')
     .slice(0, 6);
 
   function abrirCentro() {
@@ -45,7 +45,10 @@ export function SinoNotificacoes({ onAbrirCentro }: SinoNotificacoesProps) {
   }
 
   return (
-    <div className="brisa-sino-wrapper" ref={wrapperRef}>
+    <div
+      className={`brisa-sino-wrapper${aberto ? ' brisa-sino-wrapper--aberto' : ''}`}
+      ref={wrapperRef}
+    >
       <button
         type="button"
         className={`brisa-sino ${aberto ? 'brisa-sino--aberto' : ''}`}
@@ -79,7 +82,10 @@ export function SinoNotificacoes({ onAbrirCentro }: SinoNotificacoesProps) {
               <button
                 type="button"
                 className="brisa-sino__action"
-                onClick={marcarTodasLidas}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  void marcarTodasLidas();
+                }}
               >
                 Marcar todas como lidas
               </button>

@@ -1,7 +1,7 @@
 .brisa-modal__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(20, 25, 35, 0.45);
+  background: rgba(42, 53, 68, 0.45);
   backdrop-filter: blur(2px);
   z-index: 1000;
   display: flex;
@@ -12,12 +12,12 @@
 }
 
 .brisa-modal {
-  background: var(--brisa-surface);
+  background: var(--brisa-surface-dialog);
   border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-3xl);
   box-shadow: var(--shadow-lg);
   width: 100%;
-  max-height: 90vh;
+  max-height: 92vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -37,9 +37,10 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-6) var(--space-6) var(--space-4);
+  padding: var(--space-4) var(--space-6);
   border-bottom: 1px solid var(--brisa-border);
-  background: var(--brisa-surface);
+  background: var(--brisa-surface-dialog);
+  flex-shrink: 0;
 }
 
 .brisa-modal__title {
@@ -62,7 +63,7 @@
   color: var(--brisa-text-soft);
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -77,16 +78,19 @@
 .brisa-modal__body {
   padding: var(--space-6);
   overflow-y: auto;
-  background: var(--neutral-50);
+  background: var(--brisa-surface-dialog);
+  flex: 1;
+  min-height: 0;
 }
 
 .brisa-modal__footer {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-3);
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-3) var(--space-4);
   border-top: 1px solid var(--brisa-border);
-  background: var(--brisa-surface);
+  background: var(--brisa-surface-dialog);
+  flex-shrink: 0;
 }
 
 @keyframes brisa-overlay-in {

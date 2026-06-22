@@ -17,10 +17,11 @@ import './MesView.css';
 
 interface MesViewProps {
   data: string;
+  dataSelecionada: string;
   escalas: EscalaDia[];
   turnos: Turno[];
   funcionarios: Funcionario[];
-  onAbrirDia: (data: string) => void;
+  onSelecionarDia: (data: string) => void;
 }
 
 interface ResumoDia {
@@ -55,10 +56,11 @@ function calcularResumo(
 
 export function MesView({
   data,
+  dataSelecionada,
   escalas,
   turnos,
   funcionarios,
-  onAbrirDia,
+  onSelecionarDia,
 }: MesViewProps) {
   const dias = diasDoMesGrade(data);
   const escalasPorData = new Map<string, EscalaDia>();
@@ -78,6 +80,7 @@ export function MesView({
         {dias.map((dia) => {
           const noMes = ehMesmoMes(dia, data);
           const eHoje = ehHoje(dia);
+          const selecionado = dia === dataSelecionada;
           const escala = escalasPorData.get(dia);
           const resumo = escala
             ? calcularResumo(escala, turnos, funcionarios, dia)
@@ -91,14 +94,18 @@ export function MesView({
               className={[
                 'brisa-mes__cell',
                 noMes ? '' : 'brisa-mes__cell--fora',
-                eHoje ? 'brisa-mes__cell--hoje' : '',
+                selecionado || eHoje ? 'brisa-mes__cell--selecionada' : '',
                 resumo.alertas > 0 ? 'brisa-mes__cell--alerta' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
-              onClick={() => onAbrirDia(dia)}
+              onClick={() => onSelecionarDia(dia)}
             >
-              <span className="brisa-mes__num">{dataObj.getDate()}</span>
+              <span
+                className={`brisa-mes__num ${eHoje ? 'brisa-mes__num--hoje' : ''}`}
+              >
+                {dataObj.getDate()}
+              </span>
               {resumo.total > 0 && (
                 <span className="brisa-mes__badge">
                   {resumo.total}

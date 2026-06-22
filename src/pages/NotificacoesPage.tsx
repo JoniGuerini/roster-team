@@ -9,6 +9,7 @@ import {
 } from '../utils/notificacaoLabels';
 import { adicionarDias, hojeISO } from '../utils/datas';
 import type { Notificacao, StatusNotificacao } from '../types/notificacao';
+import { EmptyState } from '../components/ui/EmptyState';
 import './NotificacoesPage.css';
 
 type Filtro = 'nao_lidas' | 'lidas' | 'adiadas' | 'resolvidas' | 'todas';
@@ -115,9 +116,9 @@ export function NotificacoesPage() {
       </div>
 
       {itens.length === 0 ? (
-        <div className="brisa-empty">
+        <EmptyState>
           <div className="brisa-empty__icon">
-            <Icon name="check" size={36} />
+            <Icon name="check" size={20} />
           </div>
           <h3 className="brisa-empty__title">
             {filtro === 'nao_lidas'
@@ -129,7 +130,7 @@ export function NotificacoesPage() {
               ? 'A operação está em ordem. Quando algo precisar da sua atenção, aparece aqui.'
               : 'Tente outro filtro para ver outras notificações.'}
           </p>
-        </div>
+        </EmptyState>
       ) : (
         <ul className="brisa-notif-list">
           {itens.map((n) => (

@@ -1,9 +1,49 @@
+.brisa-table-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+.brisa-table-header-wrap {
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--brisa-sidebar);
+  box-shadow: var(--shadow-sm);
+}
+
+.brisa-table-header-wrap .brisa-table th {
+  height: 3rem;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 75%, transparent);
+  border-bottom: none;
+  background: transparent;
+}
+
+.brisa-table-header-wrap .brisa-table thead {
+  background: transparent;
+}
+
 .brisa-table-card {
   background: var(--brisa-surface);
   border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-3xl);
   overflow: hidden;
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-md), var(--shadow-card-ring);
+}
+
+.brisa-table-card--body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .brisa-table-wrapper {
@@ -86,18 +126,22 @@
   background: var(--brisa-surface-soft);
 }
 
+.brisa-table-header-wrap .brisa-table thead {
+  background: transparent;
+}
+
 .brisa-table th {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--brisa-text-soft);
-  padding: 12px 20px;
+  padding: var(--density-table-cell-py) 20px;
   border-bottom: 1px solid var(--brisa-border);
 }
 
 .brisa-table td {
-  padding: 16px 20px;
+  padding: calc(var(--density-table-cell-py) + 10px) 20px;
   border-bottom: 1px solid var(--brisa-border);
   font-size: 13.5px;
   color: var(--brisa-text);
@@ -113,7 +157,7 @@
 }
 
 .brisa-table tbody tr:hover {
-  background: var(--brisa-surface-soft);
+  background: color-mix(in srgb, var(--accent) 50%, transparent);
 }
 
 .brisa-table__person {
@@ -177,7 +221,7 @@
 .brisa-icon-btn {
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   background: transparent;
   border: 1px solid transparent;
   color: var(--brisa-text-soft);
@@ -198,43 +242,6 @@
 .brisa-icon-btn--danger:hover {
   background: var(--brisa-danger-soft);
   color: var(--brisa-danger);
-}
-
-.brisa-empty {
-  background: var(--brisa-surface);
-  border: 1px dashed var(--brisa-border-strong);
-  border-radius: var(--radius-lg);
-  padding: var(--space-12) var(--space-6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--space-2);
-}
-
-.brisa-empty__icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--brisa-primary-soft);
-  color: var(--brisa-primary);
-  margin-bottom: var(--space-2);
-}
-
-.brisa-empty__title {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--brisa-text);
-}
-
-.brisa-empty__hint {
-  color: var(--brisa-text-muted);
-  font-size: 13.5px;
-  max-width: 360px;
 }
 
 .brisa-table tbody tr.brisa-table__row--clickable {

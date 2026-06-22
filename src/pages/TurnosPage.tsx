@@ -148,11 +148,6 @@ export function TurnosPage({ sessao }: TurnosPageProps) {
             feriados e ocasiões especiais.
           </p>
         </div>
-        {podeEditar ? (
-          <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
-            Novo turno
-          </Button>
-        ) : null}
       </header>
 
       {erro ? (
@@ -160,11 +155,21 @@ export function TurnosPage({ sessao }: TurnosPageProps) {
           {erro}
         </div>
       ) : null}
-      {carregando ? (
-        <p className="brisa-funcionarios__loading">Carregando turnos…</p>
-      ) : null}
 
       <section className="brisa-page__toolbar">
+        <div className="brisa-page__toolbar-head">
+          <p className="brisa-page__list-count" aria-live="polite">
+            {turnosFiltrados.length}{' '}
+            {turnosFiltrados.length === 1 ? 'turno' : 'turnos'}
+          </p>
+          {podeEditar ? (
+            <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
+              Novo turno
+            </Button>
+          ) : null}
+        </div>
+
+        <div className="brisa-page__toolbar-filters">
         <div className="brisa-search">
           <Icon name="search" size={16} />
           <Input
@@ -181,12 +186,12 @@ export function TurnosPage({ sessao }: TurnosPageProps) {
             onChange={(e) => setFiltroTipo(e.target.value)}
           />
         </div>
-
-        <div className="brisa-page__count">
-          {turnosFiltrados.length}{' '}
-          {turnosFiltrados.length === 1 ? 'turno' : 'turnos'}
         </div>
       </section>
+
+      {carregando ? (
+        <p className="brisa-funcionarios__loading">Carregando turnos…</p>
+      ) : null}
 
       {!carregando ? (
         <TurnosList

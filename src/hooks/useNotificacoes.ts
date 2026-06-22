@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { notificacoesStorage } from '../services/notificacoesStorage';
 import { authSession } from '../services/authSession';
 import type { Notificacao } from '../types/notificacao';
@@ -27,10 +27,13 @@ export function useNotificacoes() {
   const [lista, setLista] = useState<Notificacao[]>([]);
   const [contagem, setContagem] = useState(0);
   const [carregando, setCarregando] = useState(true);
+  const recarregarSeq = useRef(0);
 
   const recarregar = useCallback(async () => {
+    const seq = ++recarregarSeq.current;
     const sessao = authSession.obter();
     if (!sessao?.empresaId || sessao.isPlatformAdmin) {
+      if (seq !== recarregarSeq.current) return;
       setLista([]);
       setContagem(0);
       setCarregando(false);
@@ -41,14 +44,18 @@ export function useNotificacoes() {
         notificacoesStorage.listar(),
         notificacoesStorage.contagemNaoLidasAtivas(),
       ]);
+      if (seq !== recarregarSeq.current) return;
       setLista(items);
       setContagem(total);
     } catch (error) {
       console.error('[notificacoes] carregar', error);
+      if (seq !== recarregarSeq.current) return;
       setLista([]);
       setContagem(0);
     } finally {
-      setCarregando(false);
+      if (seq === recarregarSeq.current) {
+        setCarregando(false);
+      }
     }
   }, []);
 
@@ -65,20 +72,37 @@ export function useNotificacoes() {
   }, []);
 
   const marcarLida = useCallback((id: string) => {
+    recarregarSeq.current += 1;
+    setLista((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, status: 'lida' as const } : n)),
+    );
+    setContagem((c) => Math.max(0, c - 1));
     void notificacoesStorage
       .marcarLida(id)
       .then(notificarListeners)
-      .catch((error) => console.error('[notificacoes] marcar lida', error));
-  }, []);
+      .catch((error) => {
+        console.error('[notificacoes] marcar lida', error);
+        void recarregar();
+      });
+  }, [recarregar]);
 
-  const marcarTodasLidas = useCallback(() => {
-    void notificacoesStorage
-      .marcarTodasLidas()
-      .then(notificarListeners)
-      .catch((error) =>
-        console.error('[notificacoes] marcar todas lidas', error),
-      );
-  }, []);
+  const marcarTodasLidas = useCallback(async () => {
+    recarregarSeq.current += 1;
+    setLista((prev) =>
+      prev.map((n) =>
+        n.status === 'nao_lida' ? { ...n, status: 'lida' as const } : n,
+      ),
+    );
+    setContagem(0);
+    try {
+      await notificacoesStorage.marcarTodasLidas();
+      notificarListeners();
+    } catch (error) {
+      console.error('[notificacoes] marcar todas lidas', error);
+      await recarregar();
+      throw error;
+    }
+  }, [recarregar]);
 
   const marcarResolvida = useCallback((id: string) => {
     void notificacoesStorage

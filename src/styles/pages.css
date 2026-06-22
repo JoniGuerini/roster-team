@@ -5,14 +5,26 @@
 .brisa-empresa-detalhe {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  padding: var(--space-10);
-  max-width: var(--brisa-page-max);
+  gap: var(--density-page-gap);
+  padding: 0;
   width: 100%;
   min-width: 0;
-  margin: 0 auto;
+  flex: 1;
+  min-height: 0;
   box-sizing: border-box;
   overflow-x: clip;
+}
+
+/* Títulos vão para o header da main (Topbar) */
+.brisa-page__eyebrow,
+.brisa-page__title,
+.brisa-page__subtitle {
+  display: none;
+}
+
+.brisa-page__list-count {
+  display: block;
+  margin: 0;
 }
 
 .brisa-page__header {
@@ -32,14 +44,14 @@
 .brisa-page__eyebrow {
   font-size: 11.5px;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--brisa-accent);
 }
 
 .brisa-page__title {
   font-family: var(--font-display);
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 600;
   letter-spacing: -0.015em;
   color: var(--brisa-text);
@@ -61,11 +73,44 @@
 
 .brisa-page__toolbar {
   display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-md), var(--shadow-card-ring);
+}
+
+.brisa-page__toolbar-head {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-4) var(--space-5) var(--space-2);
+}
+
+.brisa-page__toolbar-head .brisa-page__list-count {
+  margin: 0;
+}
+
+.brisa-page__toolbar-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   flex-wrap: wrap;
   width: 100%;
+  padding: var(--space-2) var(--space-5) var(--space-4);
+  box-sizing: border-box;
+}
+
+.brisa-page__toolbar-filters:has(.brisa-page__toolbar-equipe),
+.brisa-page__toolbar-filters:has(.brisa-usuarios__toolbar) {
+  display: block;
 }
 
 .brisa-page__filter {
@@ -85,37 +130,68 @@
   opacity: 0.85;
 }
 
-.brisa-page__empty-filtro {
-  padding: var(--space-8) var(--space-5);
-  text-align: center;
-  border: 1px dashed var(--brisa-border-strong);
-  border-radius: var(--radius-lg);
-  background: var(--brisa-surface-soft);
-}
-
-.brisa-page__empty-filtro-title {
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--brisa-text);
-  margin: 0 0 var(--space-2);
-}
-
-.brisa-page__empty-filtro-hint {
-  font-size: 13px;
-  color: var(--brisa-text-muted);
-  margin: 0 0 var(--space-4);
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
+.brisa-page--escala .brisa-page__header {
+  flex-shrink: 0;
 }
 
 .brisa-page__body {
   width: 100%;
   min-width: 0;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--density-page-gap);
+}
+
+.brisa-page > .brisa-page__header,
+.brisa-page > .brisa-page__toolbar,
+.brisa-page > section.brisa-page__toolbar,
+.brisa-page > .brisa-funcionarios__erro,
+.brisa-page > .brisa-funcionarios__loading,
+.brisa-page > .brisa-notif-tabs,
+.brisa-page__body > .brisa-funcionarios__erro,
+.brisa-page__body > .brisa-funcionarios__loading,
+.brisa-page__body > section.brisa-page__toolbar {
+  flex-shrink: 0;
+}
+
+.brisa-page > .brisa-empty-shell,
+.brisa-page__body > .brisa-empty-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.brisa-page__empty-filtro {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-3);
+  padding: var(--space-10);
+  border-radius: var(--radius-xl);
+  border: 1px dashed var(--brisa-border-strong);
+  background: color-mix(in srgb, var(--background) 40%, transparent);
+}
+
+.brisa-page__empty-filtro-title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--brisa-text);
+}
+
+.brisa-page__empty-filtro-hint {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--brisa-text-muted);
+  line-height: 1.5;
+  max-width: 24rem;
 }
 
 .brisa-search {
@@ -133,7 +209,7 @@
 }
 
 .brisa-search svg,
-.brisa-search > .ti {
+.brisa-search > .brisa-icon {
   position: absolute;
   left: 14px;
   top: 50%;
@@ -152,7 +228,7 @@
   .brisa-page,
   .brisa-perfil,
   .brisa-empresa-detalhe {
-    padding: var(--space-6) var(--space-4);
+    padding: 0;
   }
 
   .brisa-page__header {
@@ -160,7 +236,7 @@
   }
 
   .brisa-page__title {
-    font-size: 26px;
+    font-size: 22px;
   }
 
   .brisa-page__filter {

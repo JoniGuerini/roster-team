@@ -1,71 +1,95 @@
-:root {
-  /** Azul da marca (logo SVG) */
-  --brisa-brand-navy: #374c7f;
+/**
+ * Roster Team — tema Refúgio (Psico Lume Design System)
+ * Tokens semânticos mapeados para variáveis --brisa-* usadas no app.
+ */
+:root,
+:root[data-theme='refugio'] {
+  /* —— Refúgio: cores semânticas —— */
+  --background: #E8EDF2;
+  --foreground: #2A3544;
+  --card: #FFFFFF;
+  --primary: #3D5166;
+  --primary-foreground: #F5F7FA;
+  --muted: #D5DDE6;
+  --muted-foreground: #5A6578;
+  --accent: #CDDAEA;
+  --accent-brand: #C97B63;
+  --attention: #C97B63;
+  --border: #3D516624;
+  --ring: #3D5166;
+  --surface-dialog: #F4F6F9;
 
-  --brisa-blue-900: #0E2A47;
-  --brisa-blue-800: #16385C;
-  --brisa-blue-700: #1E4A78;
-  --brisa-blue-600: #275F95;
-  --brisa-blue-500: #3274B0;
-  --brisa-blue-400: #5C95C9;
-  --brisa-blue-300: #98BDDD;
-  --brisa-blue-200: #CFE0EF;
-  --brisa-blue-100: #E8F1F8;
-  --brisa-blue-50:  #F4F8FC;
+  /* Sidebar */
+  --sidebar: #2D3A4A;
+  --sidebar-foreground: #F5F7FA;
+  --sidebar-primary: var(--accent-brand);
+  --sidebar-primary-foreground: #FFFAF7;
+  --sidebar-active-bg: #FFFFFF;
+  --sidebar-active-fg: var(--primary);
+  --sidebar-accent: #FFFFFF14;
+  --sidebar-accent-foreground: #F5F7FA;
+  --sidebar-border: #FFFFFF1A;
 
-  --neutral-0:   #FFFFFF;
-  --neutral-25:  #FBFBFA;
-  --neutral-50:  #F6F6F4;
-  --neutral-100: #EFEFEC;
-  --neutral-200: #E5E5E1;
-  --neutral-300: #D3D3CD;
-  --neutral-400: #A8A8A1;
-  --neutral-500: #7A7A73;
-  --neutral-600: #57574F;
-  --neutral-700: #3A3A33;
-  --neutral-800: #25251F;
-  --neutral-900: #15150F;
+  /* —— Aliases legados (--brisa-*) —— */
+  --brisa-brand-navy: var(--sidebar);
+  --brisa-logo-mark: var(--accent-brand);
 
-  --brisa-bg:           var(--neutral-25);
-  --brisa-surface:      var(--neutral-0);
-  --brisa-surface-soft: var(--neutral-50);
-  --brisa-surface-hover: var(--neutral-100);
-  --brisa-border:       var(--neutral-200);
-  --brisa-border-strong: var(--neutral-300);
+  --brisa-bg: var(--background);
+  --brisa-surface: var(--card);
+  --brisa-surface-soft: var(--muted);
+  --brisa-surface-hover: var(--accent);
+  --brisa-surface-dialog: var(--surface-dialog);
+  --brisa-border: var(--border);
+  --brisa-border-strong: #3D516640;
 
-  --brisa-text:        var(--neutral-800);
-  --brisa-text-muted:  var(--neutral-600);
-  --brisa-text-soft:   var(--neutral-500);
-  --brisa-text-on-brand: var(--neutral-0);
+  --brisa-text: var(--foreground);
+  --brisa-text-muted: var(--muted-foreground);
+  --brisa-text-soft: #6B7585;
+  --brisa-text-on-brand: var(--primary-foreground);
 
-  --brisa-primary:        var(--brisa-blue-700);
-  --brisa-primary-hover:  var(--brisa-blue-800);
-  --brisa-primary-active: var(--brisa-blue-900);
-  --brisa-primary-soft:   var(--brisa-blue-100);
+  --brisa-primary: var(--primary);
+  --brisa-primary-hover: #34465A;
+  --brisa-primary-active: #2B3949;
+  --brisa-primary-soft: #CDDAEA66;
 
-  --brisa-accent:      #B8895A;
-  --brisa-accent-soft: #F3E9DD;
+  --brisa-accent: var(--accent-brand);
+  --brisa-accent-soft: #C97B6324;
 
-  --brisa-success:      #2F8F66;
-  --brisa-success-soft: #E4F2EB;
-  --brisa-warning:      #B5832A;
-  --brisa-warning-soft: #FBF1D8;
-  --brisa-danger:       #C13B3B;
-  --brisa-danger-hover: #A82E2E;
-  --brisa-danger-soft:  #FBE7E7;
+  --brisa-attention: var(--attention);
 
-  --brisa-focus-ring: 0 0 0 3px rgba(30, 74, 120, 0.18);
+  --brisa-success: #184032;
+  --brisa-success-soft: #EAF5EF;
+  --brisa-warning: #92400E;
+  --brisa-warning-soft: #FEF3C7;
+  --brisa-danger: #991B1B;
+  --brisa-danger-hover: #7F1D1D;
+  --brisa-danger-soft: #FEE2E2;
 
+  --brisa-sidebar: var(--sidebar);
+  --brisa-sidebar-foreground: var(--sidebar-foreground);
+  --brisa-sidebar-active-bg: var(--sidebar-active-bg);
+  --brisa-sidebar-active-fg: var(--sidebar-active-fg);
+  --brisa-sidebar-accent: var(--sidebar-accent);
+  --brisa-sidebar-accent-fg: var(--sidebar-accent-foreground);
+  --brisa-sidebar-border: var(--sidebar-border);
+
+  --brisa-focus-ring: 0 0 0 3px color-mix(in srgb, var(--ring) 30%, transparent);
+
+  /* Radius scale (base 10px) */
+  --radius: 0.625rem;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
-  --radius-xl: 20px;
-  --radius-pill: 999px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
+  --radius-3xl: 26px;
+  --radius-pill: 9999px;
 
-  --shadow-xs: 0 1px 2px rgba(20, 25, 35, 0.04);
-  --shadow-sm: 0 1px 3px rgba(20, 25, 35, 0.06), 0 1px 2px rgba(20, 25, 35, 0.04);
-  --shadow-md: 0 4px 14px rgba(20, 25, 35, 0.08);
-  --shadow-lg: 0 18px 40px rgba(20, 25, 35, 0.14);
+  --shadow-xs: 0 1px 2px rgba(42, 53, 68, 0.05);
+  --shadow-sm: 0 1px 3px rgba(42, 53, 68, 0.08), 0 1px 2px rgba(42, 53, 68, 0.04);
+  --shadow-md: 0 4px 14px rgba(42, 53, 68, 0.1);
+  --shadow-lg: 0 18px 40px rgba(42, 53, 68, 0.14);
+  --shadow-card-ring: 0 0 0 1px color-mix(in srgb, var(--foreground) 5%, transparent);
 
   --space-1: 4px;
   --space-2: 8px;
@@ -77,13 +101,42 @@
   --space-10: 40px;
   --space-12: 48px;
 
-  /** Largura máxima padronizada do conteúdo das páginas. */
-  --brisa-page-max: 1240px;
+  --density-page-gap: 1rem;
+  --density-table-cell-py: 0.375rem;
+  --brisa-page-max: none;
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-  --font-display: 'Fraunces', 'Inter', Georgia, serif;
+  --font-sans: 'Manrope Variable', 'Manrope', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, serif;
 
   --transition-fast: 120ms ease;
   --transition-base: 180ms ease;
+
+  /* Status de turno na grade (espelha session-* do Psico Lume) */
+  --turno-parcial-bg: #F8F6F0;
+  --turno-parcial-border: #E5E0D5;
+  --turno-parcial-fg: #1C3351;
+  --turno-completo-bg: #EAF5EF;
+  --turno-completo-border: #8FB9A0;
+  --turno-completo-fg: #184032;
+  --turno-alerta-bg: #FEE2E2;
+  --turno-alerta-border: #F87171;
+  --turno-alerta-fg: #991B1B;
+  --turno-vazio-bg: #F3F4F6;
+  --turno-vazio-border: #D1D5DB;
+  --turno-vazio-fg: #6B7280;
+
+  /* Neutrals (compatibilidade) */
+  --neutral-0: #FFFFFF;
+  --neutral-25: var(--background);
+  --neutral-50: var(--muted);
+  --neutral-100: #C8D2DC;
+  --neutral-200: var(--muted);
+  --neutral-300: #B8C4D0;
+  --neutral-400: #8A95A5;
+  --neutral-500: var(--muted-foreground);
+  --neutral-600: var(--muted-foreground);
+  --neutral-700: var(--foreground);
+  --neutral-800: var(--foreground);
+  --neutral-900: #1A2330;
 }

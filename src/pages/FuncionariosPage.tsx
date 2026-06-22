@@ -166,27 +166,6 @@ export function FuncionariosPage({ sessao, onAbrirPerfil }: FuncionariosPageProp
     }
   }
 
-  async function handleSeed(quantidade: number, modo: 'append' | 'replace') {
-    const { seedFuncionarios } = await import('../dev/seedFuncionarios');
-    await seedFuncionarios({ quantidade, modo });
-    await carregar();
-    disparoNotificacoes();
-  }
-
-  async function handleLimparDemo() {
-    if (
-      !window.confirm(
-        'Remover todos os funcionários desta empresa? Esta ação não pode ser desfeita.',
-      )
-    ) {
-      return;
-    }
-    const { limparTodosFuncionarios } = await import('../dev/seedFuncionarios');
-    await limparTodosFuncionarios();
-    await carregar();
-    disparoNotificacoes();
-  }
-
   return (
     <div className="brisa-page">
       <header className="brisa-page__header">
@@ -196,22 +175,7 @@ export function FuncionariosPage({ sessao, onAbrirPerfil }: FuncionariosPageProp
           <p className="brisa-page__subtitle">
             Cadastre, edite e mantenha as informações da equipe da cafeteria.
           </p>
-          <p className="brisa-page__list-count" aria-live="polite">
-            {funcionariosFiltrados.length}{' '}
-            {funcionariosFiltrados.length === 1 ? 'funcionário' : 'funcionários'}
-            {haFiltrosOuBusca && funcionarios.length > 0 ? (
-              <span className="brisa-page__count-total">
-                {' '}
-                de {funcionarios.length}
-              </span>
-            ) : null}
-          </p>
         </div>
-        {podeEditar ? (
-          <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
-            Novo funcionário
-          </Button>
-        ) : null}
       </header>
 
       <div className="brisa-page__body">
@@ -220,10 +184,27 @@ export function FuncionariosPage({ sessao, onAbrirPerfil }: FuncionariosPageProp
             {erro}
           </div>
         ) : null}
-        {carregando ? (
-          <p className="brisa-funcionarios__loading">Carregando funcionários…</p>
-        ) : null}
+
         <section className="brisa-page__toolbar">
+          <div className="brisa-page__toolbar-head">
+            <p className="brisa-page__list-count" aria-live="polite">
+              {funcionariosFiltrados.length}{' '}
+              {funcionariosFiltrados.length === 1 ? 'funcionário' : 'funcionários'}
+              {haFiltrosOuBusca && funcionarios.length > 0 ? (
+                <span className="brisa-page__count-total">
+                  {' '}
+                  de {funcionarios.length}
+                </span>
+              ) : null}
+            </p>
+            {podeEditar ? (
+              <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
+                Novo funcionário
+              </Button>
+            ) : null}
+          </div>
+
+          <div className="brisa-page__toolbar-filters">
         <div className="brisa-page__toolbar-equipe">
           <div className="brisa-search brisa-search--inline">
             <Icon name="search" size={16} />
@@ -332,57 +313,12 @@ export function FuncionariosPage({ sessao, onAbrirPerfil }: FuncionariosPageProp
             </Field>
           </div>
         </div>
-      </section>
-
-      {import.meta.env.DEV ? (
-        <section
-          className="brisa-dev-seed"
-          aria-label="Dados fictícios para teste de layout (somente em desenvolvimento)"
-        >
-          <span className="brisa-dev-seed__badge">dev</span>
-          <span className="brisa-dev-seed__hint">
-            Preencher lista para testar tabela e busca (Supabase).
-          </span>
-          <div className="brisa-dev-seed__actions">
-            <button
-              type="button"
-              className="brisa-dev-seed__btn"
-              onClick={() => void handleSeed(25, 'append')}
-            >
-              +25 fictícios
-            </button>
-            <button
-              type="button"
-              className="brisa-dev-seed__btn"
-              onClick={() => void handleSeed(60, 'append')}
-            >
-              +60 fictícios
-            </button>
-            <button
-              type="button"
-              className="brisa-dev-seed__btn brisa-dev-seed__btn--warn"
-              onClick={() => {
-                if (
-                  window.confirm(
-                    'Substituir todos os funcionários atuais por 40 registros de teste?',
-                  )
-                ) {
-                  void handleSeed(40, 'replace');
-                }
-              }}
-            >
-              Trocar tudo por 40 de teste
-            </button>
-            <button
-              type="button"
-              className="brisa-dev-seed__btn brisa-dev-seed__btn--danger"
-              onClick={() => void handleLimparDemo()}
-            >
-              Limpar lista
-            </button>
           </div>
         </section>
-      ) : null}
+
+        {carregando ? (
+          <p className="brisa-funcionarios__loading">Carregando funcionários…</p>
+        ) : null}
 
       {!carregando && funcionarios.length === 0 ? (
         <FuncionariosList
@@ -392,17 +328,19 @@ export function FuncionariosPage({ sessao, onAbrirPerfil }: FuncionariosPageProp
           onDelete={podeEditar ? (f) => setParaExcluir(f) : undefined}
         />
       ) : !carregando && funcionariosFiltrados.length === 0 ? (
-        <div className="brisa-page__empty-filtro">
-          <h3 className="brisa-page__empty-filtro-title">
-            Nenhum resultado encontrado
-          </h3>
-          <p className="brisa-page__empty-filtro-hint">
-            Ajuste a busca ou os filtros por coluna — a pesquisa considera nome,
-            funções, local, contrato, data de admissão e status.
-          </p>
-          <Button type="button" variant="secondary" onClick={limparFiltrosEBusca}>
-            Limpar busca e filtros
-          </Button>
+        <div className="brisa-empty-shell">
+          <div className="brisa-page__empty-filtro">
+            <h3 className="brisa-page__empty-filtro-title">
+              Nenhum resultado encontrado
+            </h3>
+            <p className="brisa-page__empty-filtro-hint">
+              Ajuste a busca ou os filtros por coluna — a pesquisa considera nome,
+              funções, local, contrato, data de admissão e status.
+            </p>
+            <Button type="button" variant="secondary" onClick={limparFiltrosEBusca}>
+              Limpar busca e filtros
+            </Button>
+          </div>
         </div>
       ) : !carregando ? (
         <>

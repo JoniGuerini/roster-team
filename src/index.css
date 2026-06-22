@@ -1,6 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap');
 @import './styles/theme.css';
 @import './styles/pages.css';
+@import './components/ui/EmptyState.css';
 
 *,
 *::before,
@@ -17,7 +18,7 @@ body,
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: var(--brisa-bg);
+  background: var(--brisa-sidebar);
   color: var(--brisa-text);
   font-size: 14px;
   line-height: 1.5;
@@ -44,6 +45,7 @@ a {
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
+  font-family: var(--font-display);
   font-weight: 600;
   color: var(--brisa-text);
 }
@@ -57,21 +59,11 @@ p {
   color: var(--brisa-primary);
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+/* Scrollbar oculta globalmente (design system) */
+* {
+  scrollbar-width: none;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--neutral-200);
-  border-radius: var(--radius-pill);
-  border: 2px solid var(--brisa-bg);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--neutral-300);
+*::-webkit-scrollbar {
+  display: none;
 }

@@ -3,33 +3,115 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--brisa-bg);
-  color: var(--brisa-text-soft);
+  background: var(--brisa-sidebar);
+  color: var(--brisa-sidebar-foreground);
   font-size: 14px;
 }
 
 .brisa-app {
+  position: fixed;
+  inset: 0;
   display: flex;
-  min-height: 100vh;
-  background: var(--brisa-bg);
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--brisa-sidebar);
+  isolation: isolate;
+}
+
+.brisa-app__glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.brisa-app__glow-orb {
+  position: absolute;
+  width: 20rem;
+  height: 20rem;
+  border-radius: 50%;
+  filter: blur(64px);
+}
+
+.brisa-app__glow-orb--tr {
+  top: -6rem;
+  right: -6rem;
+  background: color-mix(in srgb, var(--brisa-accent) 20%, transparent);
+}
+
+.brisa-app__glow-orb--bl {
+  bottom: -7rem;
+  left: -5rem;
+  background: color-mix(in srgb, var(--brisa-accent) 10%, transparent);
+}
+
+.brisa-app__shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
 }
 
 .brisa-app__content {
+  position: relative;
   flex: 1;
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  margin: var(--space-2);
+  margin-left: 0;
+  border-radius: var(--radius-xl);
+  background: var(--brisa-bg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
 .brisa-app__page {
   flex: 1;
   min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-4);
+  gap: var(--density-page-gap);
+}
+
+.brisa-app__page > * {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.brisa-app__page:has(.brisa-page--escala) {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 @media (max-width: 880px) {
-  .brisa-app {
+  .brisa-app__shell {
     flex-direction: column;
+    height: auto;
+    min-height: 100svh;
+  }
+
+  .brisa-app__content {
+    margin: var(--space-2);
+    margin-top: 0;
+    border-radius: var(--radius-xl);
+    flex: 1;
   }
 }

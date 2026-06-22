@@ -10,6 +10,7 @@ import {
   labelStatus,
   toneStatus,
 } from '../../utils/funcionarioLabels';
+import { EmptyState } from '../ui/EmptyState';
 import './FuncionariosList.css';
 
 interface FuncionariosListProps {
@@ -27,22 +28,22 @@ export function FuncionariosList({
 }: FuncionariosListProps) {
   if (funcionarios.length === 0) {
     return (
-      <div className="brisa-empty">
+      <EmptyState>
         <div className="brisa-empty__icon">
-          <Icon name="users" size={36} />
+          <Icon name="users" size={20} />
         </div>
         <h3 className="brisa-empty__title">Nenhum funcionário cadastrado</h3>
         <p className="brisa-empty__hint">
           Clique em <strong>Novo funcionário</strong> para começar a montar a equipe.
         </p>
-      </div>
+      </EmptyState>
     );
   }
 
   return (
-    <div className="brisa-table-card">
-      <div className="brisa-table-wrapper">
-        <table className="brisa-table">
+    <div className="brisa-table-shell">
+      <div className="brisa-table-header-wrap">
+        <table className="brisa-table brisa-table--layout">
           <colgroup>
             <col className="brisa-table__col brisa-table__col--person" />
             <col className="brisa-table__col brisa-table__col--funcao" />
@@ -63,7 +64,22 @@ export function FuncionariosList({
               <th aria-label="Ações" />
             </tr>
           </thead>
-          <tbody>
+        </table>
+      </div>
+
+      <div className="brisa-table-card brisa-table-card--body">
+        <div className="brisa-table-wrapper">
+          <table className="brisa-table">
+            <colgroup>
+              <col className="brisa-table__col brisa-table__col--person" />
+              <col className="brisa-table__col brisa-table__col--funcao" />
+              <col className="brisa-table__col brisa-table__col--local" />
+              <col className="brisa-table__col brisa-table__col--contrato" />
+              <col className="brisa-table__col brisa-table__col--admissao" />
+              <col className="brisa-table__col brisa-table__col--status" />
+              <col className="brisa-table__col brisa-table__col--actions" />
+            </colgroup>
+            <tbody>
             {funcionarios.map((funcionario, indice) => (
               <tr
                 key={funcionario.id}
@@ -161,6 +177,7 @@ export function FuncionariosList({
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 }

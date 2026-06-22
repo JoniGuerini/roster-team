@@ -183,19 +183,7 @@ export function ExtrasPage({ sessao, onAbrirPerfil }: ExtrasPageProps) {
             Mesmo fluxo da lista de funcionários: busca, filtros e formulário no
             modal.
           </p>
-          <p className="brisa-page__list-count" aria-live="polite">
-            {extrasFiltrados.length}{' '}
-            {extrasFiltrados.length === 1 ? 'extra' : 'extras'}
-            {haFiltrosOuBusca && extras.length > 0 ? (
-              <span className="brisa-page__count-total"> de {extras.length}</span>
-            ) : null}
-          </p>
         </div>
-        {podeEditar ? (
-          <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
-            Novo extra
-          </Button>
-        ) : null}
       </header>
 
       <div className="brisa-page__body">
@@ -204,10 +192,24 @@ export function ExtrasPage({ sessao, onAbrirPerfil }: ExtrasPageProps) {
             {erro}
           </div>
         ) : null}
-        {carregando ? (
-          <p className="brisa-funcionarios__loading">Carregando extras…</p>
-        ) : null}
+
         <section className="brisa-page__toolbar">
+          <div className="brisa-page__toolbar-head">
+            <p className="brisa-page__list-count" aria-live="polite">
+              {extrasFiltrados.length}{' '}
+              {extrasFiltrados.length === 1 ? 'extra' : 'extras'}
+              {haFiltrosOuBusca && extras.length > 0 ? (
+                <span className="brisa-page__count-total"> de {extras.length}</span>
+              ) : null}
+            </p>
+            {podeEditar ? (
+              <Button onClick={abrirNovo} leftIcon={<Icon name="plus" size={16} />}>
+                Novo extra
+              </Button>
+            ) : null}
+          </div>
+
+          <div className="brisa-page__toolbar-filters">
         <div className="brisa-page__toolbar-equipe">
           <div className="brisa-search brisa-search--inline">
             <Icon name="search" size={16} />
@@ -320,7 +322,12 @@ export function ExtrasPage({ sessao, onAbrirPerfil }: ExtrasPageProps) {
             </Field>
           </div>
         </div>
-      </section>
+          </div>
+        </section>
+
+        {carregando ? (
+          <p className="brisa-funcionarios__loading">Carregando extras…</p>
+        ) : null}
 
       {!carregando && extras.length === 0 ? (
         <ExtrasList
@@ -330,17 +337,19 @@ export function ExtrasPage({ sessao, onAbrirPerfil }: ExtrasPageProps) {
           onDelete={podeEditar ? (e) => setParaExcluir(e) : undefined}
         />
       ) : !carregando && extrasFiltrados.length === 0 ? (
-        <div className="brisa-page__empty-filtro">
-          <h3 className="brisa-page__empty-filtro-title">
-            Nenhum resultado encontrado
-          </h3>
-          <p className="brisa-page__empty-filtro-hint">
-            Ajuste a busca ou os filtros — a pesquisa inclui nome, funções,
-            local, contrato, admissão e status (e o marcador &quot;extra&quot;).
-          </p>
-          <Button type="button" variant="secondary" onClick={limparFiltrosEBusca}>
-            Limpar busca e filtros
-          </Button>
+        <div className="brisa-empty-shell">
+          <div className="brisa-page__empty-filtro">
+            <h3 className="brisa-page__empty-filtro-title">
+              Nenhum resultado encontrado
+            </h3>
+            <p className="brisa-page__empty-filtro-hint">
+              Ajuste a busca ou os filtros — a pesquisa inclui nome, funções,
+              local, contrato, admissão e status (e o marcador &quot;extra&quot;).
+            </p>
+            <Button type="button" variant="secondary" onClick={limparFiltrosEBusca}>
+              Limpar busca e filtros
+            </Button>
+          </div>
         </div>
       ) : !carregando ? (
         <>

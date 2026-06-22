@@ -1,22 +1,31 @@
 .brisa-sidebar {
-  width: 244px;
-  background: var(--brisa-surface);
-  border-right: 1px solid var(--brisa-border);
-  padding: var(--space-6) var(--space-4);
+  width: 16rem;
+  background: transparent;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex-shrink: 0;
+  height: 100%;
+  min-height: 0;
+  transition: width 200ms ease-linear;
+}
+
+.brisa-sidebar__inner {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  flex-shrink: 0;
-  height: 100vh;
-  position: sticky;
-  top: 0;
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-4) var(--space-2);
 }
 
 .brisa-sidebar__brand {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 0 var(--space-2);
+  padding: 0 var(--space-3);
+  min-height: 3.5rem;
 }
 
 .brisa-logo {
@@ -25,18 +34,22 @@
   border-radius: 50%;
   flex-shrink: 0;
   overflow: hidden;
-  background: var(--brisa-brand-navy);
-  /* Dupla moldura como no layout original: halo branco + anel azul claro */
+  background: var(--brisa-logo-mark);
   box-shadow:
-    0 0 0 3px var(--brisa-surface),
-    0 0 0 4px var(--brisa-blue-200);
+    0 0 0 3px var(--brisa-sidebar),
+    0 0 0 4px color-mix(in srgb, var(--brisa-sidebar-foreground) 15%, transparent);
+}
+
+/* Com logo enviado: moldura redonda, sem fundo laranja atrás */
+.brisa-logo--imagem {
+  background: transparent;
 }
 
 .brisa-logo img {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
 }
 
@@ -46,7 +59,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--brisa-sidebar-primary-foreground, #fffaf7);
   font-weight: 700;
   font-size: 16px;
   text-transform: uppercase;
@@ -64,7 +77,7 @@
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--brisa-text);
+  color: var(--brisa-sidebar-foreground);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -72,8 +85,8 @@
 
 .brisa-sidebar__subtitle {
   font-size: 10.5px;
-  color: var(--brisa-text-soft);
-  letter-spacing: 0.16em;
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 70%, transparent);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   font-weight: 600;
 }
@@ -81,32 +94,36 @@
 .brisa-sidebar__nav {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-1);
   flex: 1;
+  overflow-y: auto;
 }
 
 .brisa-sidebar__section {
-  font-size: 10.5px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--brisa-text-soft);
-  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 70%, transparent);
+  font-weight: 500;
   padding: 0 12px;
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-1);
+  min-height: 2rem;
+  display: flex;
+  align-items: center;
 }
 
 .brisa-sidebar__section--gap {
-  margin-top: var(--space-5);
+  margin-top: var(--space-4);
 }
 
 .brisa-sidebar__item {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 9px 12px;
-  border-radius: var(--radius-md);
-  color: var(--brisa-text-muted);
-  font-size: 13.5px;
+  padding: 0 12px;
+  height: 36px;
+  border-radius: var(--radius-lg);
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 85%, transparent);
+  font-size: 14px;
   font-weight: 500;
   text-decoration: none;
   transition:
@@ -123,25 +140,30 @@
 }
 
 .brisa-sidebar__item:hover {
-  background: var(--brisa-surface-hover);
-  color: var(--brisa-text);
+  background: var(--brisa-sidebar-accent);
+  color: var(--brisa-sidebar-accent-fg);
 }
 
 .brisa-sidebar__item--active {
-  background: var(--brisa-primary-soft);
-  color: var(--brisa-primary);
+  background: var(--brisa-sidebar-active-bg);
+  color: var(--brisa-sidebar-active-fg);
   font-weight: 600;
 }
 
+.brisa-sidebar__item--active:hover {
+  background: var(--brisa-sidebar-active-bg);
+  color: var(--brisa-sidebar-active-fg);
+}
+
 .brisa-sidebar__item--active .brisa-sidebar__icon {
-  color: var(--brisa-primary);
+  color: var(--brisa-sidebar-active-fg);
 }
 
 .brisa-sidebar__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--brisa-text-soft);
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 70%, transparent);
 }
 
 .brisa-sidebar__label {
@@ -149,8 +171,9 @@
 }
 
 .brisa-sidebar__footer {
-  border-top: 1px solid var(--brisa-border);
+  border-top: 1px solid var(--brisa-sidebar-border);
   padding-top: var(--space-4);
+  margin-top: auto;
 }
 
 .brisa-sidebar__user {
@@ -158,11 +181,11 @@
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
 }
 
 .brisa-sidebar__user--active {
-  background: var(--brisa-primary-soft);
+  background: var(--brisa-sidebar-accent);
 }
 
 .brisa-sidebar__user-main {
@@ -174,14 +197,14 @@
   padding: var(--space-1);
   border: none;
   background: transparent;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   cursor: pointer;
   text-align: left;
   transition: background var(--transition-base);
 }
 
 .brisa-sidebar__user-main:hover {
-  background: var(--brisa-surface-hover);
+  background: var(--brisa-sidebar-accent);
 }
 
 .brisa-sidebar__user--active .brisa-sidebar__user-main:hover {
@@ -192,7 +215,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--brisa-accent-soft);
+  background: color-mix(in srgb, var(--brisa-accent) 25%, transparent);
   color: var(--brisa-accent);
   display: inline-flex;
   align-items: center;
@@ -213,12 +236,12 @@
 .brisa-sidebar__user-name {
   font-size: 13px;
   font-weight: 600;
-  color: var(--brisa-text);
+  color: var(--brisa-sidebar-foreground);
 }
 
 .brisa-sidebar__user-role {
   font-size: 11.5px;
-  color: var(--brisa-text-soft);
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 70%, transparent);
 }
 
 .brisa-sidebar__logout {
@@ -230,8 +253,8 @@
   flex-shrink: 0;
   border: none;
   background: transparent;
-  border-radius: var(--radius-md);
-  color: var(--brisa-text-soft);
+  border-radius: var(--radius-lg);
+  color: color-mix(in srgb, var(--brisa-sidebar-foreground) 70%, transparent);
   cursor: pointer;
   transition:
     background var(--transition-base),
@@ -239,18 +262,67 @@
 }
 
 .brisa-sidebar__logout:hover {
-  background: var(--brisa-surface-hover);
-  color: var(--brisa-danger, #c0392b);
+  background: var(--brisa-sidebar-accent);
+  color: #fca5a5;
+}
+
+.brisa-sidebar--collapsed {
+  width: 3.5rem;
+}
+
+.brisa-sidebar--collapsed .brisa-sidebar__inner {
+  padding: var(--space-4) var(--space-1);
+  align-items: center;
+}
+
+.brisa-sidebar--collapsed .brisa-sidebar__brand {
+  justify-content: center;
+  padding: 0;
+  width: 100%;
+}
+
+.brisa-sidebar--collapsed .brisa-sidebar__brand-text,
+.brisa-sidebar--collapsed .brisa-sidebar__label,
+.brisa-sidebar--collapsed .brisa-sidebar__section {
+  display: none;
+}
+
+.brisa-sidebar--collapsed .brisa-sidebar__nav {
+  width: 100%;
+  align-items: center;
+}
+
+.brisa-sidebar--collapsed .brisa-sidebar__item {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  justify-content: center;
+}
+
+.brisa-sidebar--collapsed .brisa-logo {
+  width: 36px;
+  height: 36px;
 }
 
 @media (max-width: 880px) {
   .brisa-sidebar {
-    position: static;
-    height: auto;
     width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--brisa-border);
-    padding: var(--space-4);
+    height: auto;
+    padding: var(--space-2) var(--space-2) 0;
+  }
+
+  .brisa-sidebar--collapsed {
+    width: 100%;
+  }
+
+  .brisa-sidebar--collapsed .brisa-sidebar__brand-text,
+  .brisa-sidebar--collapsed .brisa-sidebar__label,
+  .brisa-sidebar--collapsed .brisa-sidebar__section {
+    display: initial;
+  }
+
+  .brisa-sidebar__inner {
+    padding: var(--space-3);
   }
 
   .brisa-sidebar__nav {

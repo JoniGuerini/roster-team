@@ -11,7 +11,7 @@ import { AtividadesPage } from './pages/AtividadesPage';
 import { EmpresasPage } from './pages/EmpresasPage';
 import { EmpresaDetalhePage } from './pages/EmpresaDetalhePage';
 import { PerfilPessoaPage } from './pages/PerfilPessoaPage';
-import { PerfilContaPage } from './pages/PerfilContaPage';
+import { AccountDialog } from './components/conta/AccountDialog';
 import { ConfiguracoesPage } from './pages/ConfiguracoesPage';
 import { LoginPage } from './pages/LoginPage';
 import { useHashRoute } from './hooks/useHashRoute';
@@ -25,6 +25,7 @@ import {
   recursoDaRota,
 } from './utils/rotaPermissoes';
 import type { Empresa } from './types/empresa';
+import { tituloPagina } from './utils/tituloPagina';
 import './App.css';
 
 export default function App() {
@@ -39,6 +40,19 @@ export default function App() {
   const [sessao, setSessao] = useState<Sessao | null>(null);
   const [carregandoAuth, setCarregandoAuth] = useState(true);
   const [empresa, setEmpresa] = useState<Empresa | undefined>(undefined);
+  const [sidebarRecolhida, setSidebarRecolhida] = useState(false);
+  const [contaAberta, setContaAberta] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        setSidebarRecolhida((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   useEffect(() => {
     if (!sessao?.empresaId || sessao.isPlatformAdmin) return;
@@ -96,10 +110,25 @@ export default function App() {
 
   useEffect(() => {
     if (!sessao?.isPlatformAdmin) return;
-    if (estado.rota !== 'empresas' && estado.rota !== 'perfil') {
+    if (estado.rota !== 'empresas') {
       navegarParaRota('empresas');
     }
   }, [sessao, estado.rota, navegarParaRota]);
+
+  useEffect(() => {
+    if (!sessao) return;
+    const raw = window.location.hash.replace(/^#/, '').trim().toLowerCase();
+    if (raw === 'perfil' || raw.startsWith('perfil/')) {
+      setContaAberta(true);
+      if (sessao.isPlatformAdmin) {
+        navegarParaRota('empresas');
+      } else {
+        navegarParaRota(
+          primeiraRotaDisponivel(sessao.permissoes, empresa?.recursos),
+        );
+      }
+    }
+  }, [sessao, empresa?.recursos, navegarParaRota]);
 
   useEffect(() => {
     if (!sessao || sessao.isPlatformAdmin) return;
@@ -144,22 +173,33 @@ export default function App() {
 
   const pageKey = `${estado.rota}-${estado.perfilFuncionarioId ?? ''}-${estado.perfilExtraId ?? ''}-${estado.empresaDetalheId ?? ''}`;
   const somentePlataforma = sessao.isPlatformAdmin;
+  const tituloAtual = tituloPagina(estado);
 
   return (
     <div className="brisa-app">
-      <Sidebar
-        rotaAtiva={estado.rota}
-        onNavegar={navegarParaRota}
-        sessao={sessao}
-        onSair={sair}
-        empresa={empresa}
-      />
-      <main className="brisa-app__content">
-        <Topbar sessao={sessao} onNavegar={navegarParaRota} />
-        <div className="brisa-app__page" key={pageKey}>
-          {estado.rota === 'perfil' ? (
-            <PerfilContaPage sessao={sessao} empresa={empresa} />
-          ) : null}
+      <div className="brisa-app__glow" aria-hidden="true">
+        <div className="brisa-app__glow-orb brisa-app__glow-orb--tr" />
+        <div className="brisa-app__glow-orb brisa-app__glow-orb--bl" />
+      </div>
+      <div className="brisa-app__shell">
+        <Sidebar
+          rotaAtiva={estado.rota}
+          onNavegar={navegarParaRota}
+          sessao={sessao}
+          onSair={sair}
+          empresa={empresa}
+          recolhida={sidebarRecolhida}
+          onAbrirConta={() => setContaAberta(true)}
+        />
+        <main className="brisa-app__content">
+          <Topbar
+            sessao={sessao}
+            titulo={tituloAtual}
+            sidebarRecolhida={sidebarRecolhida}
+            onAlternarSidebar={() => setSidebarRecolhida((v) => !v)}
+            onNavegar={navegarParaRota}
+          />
+          <div className="brisa-app__page" key={pageKey}>
           {!somentePlataforma && estado.rota === 'escala' && <EscalaPage />}
           {!somentePlataforma && estado.rota === 'funcionarios' && !estado.perfilFuncionarioId && (
             <FuncionariosPage
@@ -205,7 +245,15 @@ export default function App() {
             />
           )}
         </div>
-      </main>
+        </main>
+      </div>
+
+      <AccountDialog
+        open={contaAberta}
+        onOpenChange={setContaAberta}
+        sessao={sessao}
+        empresa={empresa}
+      />
     </div>
   );
 }

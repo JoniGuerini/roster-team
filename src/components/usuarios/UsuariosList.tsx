@@ -9,6 +9,7 @@ import {
   labelStatusUsuario,
   toneStatusUsuario,
 } from '../../utils/usuarioLabels';
+import { EmptyState } from '../ui/EmptyState';
 import '../funcionarios/FuncionariosList.css';
 import './UsuariosList.css';
 
@@ -33,20 +34,20 @@ export function UsuariosList({
 }: UsuariosListProps) {
   if (usuarios.length === 0) {
     return (
-      <div className="brisa-empty">
+      <EmptyState>
         <div className="brisa-empty__icon">
-          <Icon name="users" size={36} />
+          <Icon name="users" size={20} />
         </div>
         <h3 className="brisa-empty__title">{emptyTitle}</h3>
         <p className="brisa-empty__hint">{emptyHint}</p>
-      </div>
+      </EmptyState>
     );
   }
 
   return (
-    <div className="brisa-table-card">
-      <div className="brisa-table-wrapper">
-        <table className="brisa-table">
+    <div className="brisa-table-shell">
+      <div className="brisa-table-header-wrap">
+        <table className="brisa-table brisa-table--layout">
           <colgroup>
             <col className="brisa-ucol brisa-ucol--user" />
             <col className="brisa-ucol brisa-ucol--papel" />
@@ -65,7 +66,21 @@ export function UsuariosList({
               <th aria-label="Ações" />
             </tr>
           </thead>
-          <tbody>
+        </table>
+      </div>
+
+      <div className="brisa-table-card brisa-table-card--body">
+        <div className="brisa-table-wrapper">
+          <table className="brisa-table">
+            <colgroup>
+              <col className="brisa-ucol brisa-ucol--user" />
+              <col className="brisa-ucol brisa-ucol--papel" />
+              <col className="brisa-ucol brisa-ucol--perm" />
+              <col className="brisa-ucol brisa-ucol--status" />
+              <col className="brisa-ucol brisa-ucol--acesso" />
+              <col className="brisa-ucol brisa-ucol--actions" />
+            </colgroup>
+            <tbody>
             {usuarios.map((usuario, indice) => {
               const ehVoce = usuarioAtualId === usuario.id;
               return (
@@ -152,6 +167,7 @@ export function UsuariosList({
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
   labelStatus,
   toneStatus,
 } from '../../utils/funcionarioLabels';
+import { EmptyState } from '../ui/EmptyState';
 import '../funcionarios/FuncionariosList.css';
 
 interface ExtrasListProps {
@@ -22,23 +23,23 @@ interface ExtrasListProps {
 export function ExtrasList({ extras, onOpenPerfil, onEdit, onDelete }: ExtrasListProps) {
   if (extras.length === 0) {
     return (
-      <div className="brisa-empty">
+      <EmptyState>
         <div className="brisa-empty__icon">
-          <Icon name="user-plus" size={36} />
+          <Icon name="user-plus" size={20} />
         </div>
         <h3 className="brisa-empty__title">Nenhum extra cadastrado</h3>
         <p className="brisa-empty__hint">
           Clique em <strong>Novo extra</strong> para cadastrar ou use o botão
           Extra ao alocar vagas no modelo de turno.
         </p>
-      </div>
+      </EmptyState>
     );
   }
 
   return (
-    <div className="brisa-table-card">
-      <div className="brisa-table-wrapper">
-        <table className="brisa-table">
+    <div className="brisa-table-shell">
+      <div className="brisa-table-header-wrap">
+        <table className="brisa-table brisa-table--layout">
           <colgroup>
             <col className="brisa-table__col brisa-table__col--person" />
             <col className="brisa-table__col brisa-table__col--funcao" />
@@ -59,7 +60,22 @@ export function ExtrasList({ extras, onOpenPerfil, onEdit, onDelete }: ExtrasLis
               <th aria-label="Ações" />
             </tr>
           </thead>
-          <tbody>
+        </table>
+      </div>
+
+      <div className="brisa-table-card brisa-table-card--body">
+        <div className="brisa-table-wrapper">
+          <table className="brisa-table">
+            <colgroup>
+              <col className="brisa-table__col brisa-table__col--person" />
+              <col className="brisa-table__col brisa-table__col--funcao" />
+              <col className="brisa-table__col brisa-table__col--local" />
+              <col className="brisa-table__col brisa-table__col--contrato" />
+              <col className="brisa-table__col brisa-table__col--admissao" />
+              <col className="brisa-table__col brisa-table__col--status" />
+              <col className="brisa-table__col brisa-table__col--actions" />
+            </colgroup>
+            <tbody>
             {extras.map((extra, indice) => {
               const secundarias = extra.funcoesSecundarias ?? [];
               return (
@@ -157,6 +173,7 @@ export function ExtrasList({ extras, onOpenPerfil, onEdit, onDelete }: ExtrasLis
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 }

@@ -1,44 +1,140 @@
-.brisa-configuracoes__lista {
+.brisa-config-perfis__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.brisa-config-perfil {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-3);
-}
-
-.brisa-configuracoes__card {
-  border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
+  min-height: 100%;
+  padding: var(--space-5);
   background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-md), var(--shadow-card-ring);
 }
 
-.brisa-configuracoes__card-head {
+.brisa-config-perfil__header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-4);
-}
-
-.brisa-configuracoes__card-titulos {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
   gap: var(--space-2);
 }
 
-.brisa-configuracoes__card-nome {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 600;
+.brisa-config-perfil__identity {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
-.brisa-configuracoes__card-desc {
-  margin: var(--space-1) 0 0;
+.brisa-config-perfil__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brisa-config-perfil__icon--success {
+  background: #e7f5ec;
+  color: #2e7d4f;
+}
+
+.brisa-config-perfil__icon--info {
+  background: var(--brisa-primary-soft, #e8edf9);
+  color: var(--brisa-primary, #3c5aa6);
+}
+
+.brisa-config-perfil__icon--warning {
+  background: #fdf0e2;
+  color: #b9722f;
+}
+
+.brisa-config-perfil__icon--neutral {
+  background: var(--brisa-surface-soft);
   color: var(--brisa-text-soft);
-  font-size: 0.9rem;
 }
 
-.brisa-configuracoes__card-perms {
-  margin: var(--space-3) 0 0;
-  font-size: 0.85rem;
+.brisa-config-perfil__titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.brisa-config-perfil__nome {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  line-height: 1.3;
+}
+
+.brisa-config-perfil__acoes {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.brisa-config-perfil__desc {
+  margin: 0;
+  flex: 1;
+  font-size: 13px;
+  color: var(--brisa-text-soft);
+  line-height: 1.5;
+}
+
+.brisa-config-perfil__perms {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+.brisa-config-perfil__bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--brisa-surface-soft);
+  overflow: hidden;
+}
+
+.brisa-config-perfil__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.35s ease;
+}
+
+.brisa-config-perfil__bar-fill--success {
+  background: #2e7d4f;
+}
+
+.brisa-config-perfil__bar-fill--info {
+  background: var(--brisa-primary, #3c5aa6);
+}
+
+.brisa-config-perfil__bar-fill--warning {
+  background: #b9722f;
+}
+
+.brisa-config-perfil__bar-fill--neutral {
+  background: var(--brisa-text-soft);
+}
+
+.brisa-config-perfil__perms-label {
+  font-size: 12px;
   color: var(--brisa-text-soft);
 }
 
@@ -54,4 +150,10 @@
   margin-top: var(--space-3);
   font-size: 0.875rem;
   color: var(--brisa-text-soft);
+}
+
+@media (max-width: 560px) {
+  .brisa-config-perfis__lista {
+    grid-template-columns: 1fr;
+  }
 }
