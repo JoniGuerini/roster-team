@@ -229,13 +229,23 @@ export function EscalaPage() {
 
   async function salvarModeloTurno(input: TurnoInput) {
     if (!modalEdicaoTurno) return;
-    await turnosStorage.atualizar(modalEdicaoTurno.turno.id, input);
+    const turnoAtualizado = await turnosStorage.atualizar(
+      modalEdicaoTurno.turno.id,
+      input,
+    );
     const alocacoes = montarAlocacoesAPartirDoInputTurno(input);
     await escalaStorage.atualizarTurno(
       modalEdicaoTurno.data,
       modalEdicaoTurno.turnoEscaladoId,
       { alocacoes },
     );
+    if (turnoAtualizado) {
+      await escalaStorage.refreshAlocacoesVaziasDoTurno(
+        turnoAtualizado,
+        funcionarios,
+        extras,
+      );
+    }
     fecharModalEdicaoTurno();
     await recarregar(true);
   }
@@ -264,8 +274,8 @@ export function EscalaPage() {
               escalas={escalasFiltradas}
               turnos={turnos}
               funcionarios={funcionarios}
+              extras={extras}
               onSelecionarDia={selecionarDia}
-              onAdicionar={podeEditar ? abrirAdicionarPara : undefined}
             />
           )}
 
@@ -311,6 +321,7 @@ export function EscalaPage() {
           escala={escalaDiaSelecionado}
           turnos={turnos}
           funcionarios={funcionarios}
+          extras={extras}
           onAdicionar={
             podeEditar ? () => abrirAdicionarPara(data) : undefined
           }

@@ -5,10 +5,18 @@ import {
 } from '../lib/escalaMappers';
 import { supabase } from '../lib/supabase';
 import type { AlocacaoFuncao, EscalaDia, TurnoEscalado } from '../types/escala';
+import type { Funcionario } from '../types/funcionario';
+import type { PessoaExtra } from '../types/pessoaExtra';
 import type { Turno } from '../types/turno';
 import { diaSemanaDe, diasNoIntervalo } from '../utils/datas';
+import {
+  montarAlocacoesIniciaisDoTurno,
+  totalSlotsEmAlocacoes,
+} from '../utils/alocacoesIniciaisTurno';
+import { totalSlotsAlocados } from '../utils/disponibilidade';
 import { authSession } from './authSession';
 import { registrarAtividade } from './atividadesStorage';
+import { isRecorrenciaEscala, RECORRENCIA_TODO_DIA } from '../types/turno';
 
 function erroMensagem(erro: { message: string }, fallback: string): string {
   console.error('[escala]', erro.message);
@@ -101,8 +109,8 @@ export const escalaStorage = {
       for (const turno of turnos) {
         if (!turno.ativo || turno.tipo !== 'regular') continue;
         const dsr = turno.diaSemanaRecorrente;
-        if (dsr == null || dsr < 0 || dsr > 6) continue;
-        if (diaSemanaDe(data) !== dsr) continue;
+        if (!isRecorrenciaEscala(dsr)) continue;
+        if (dsr !== RECORRENCIA_TODO_DIA && diaSemanaDe(data) !== dsr) continue;
         if (presentes.has(turno.id)) continue;
 
         const alocacoes = obterAlocacoes(turno, data);
@@ -286,6 +294,52 @@ export const escalaStorage = {
     }
 
     return count ?? 0;
+  },
+
+  /**
+   * Preenche alocações em dias da escala que ainda estão vazios,
+   * a partir do modelo do turno (inclui extras sugeridos).
+   */
+  async refreshAlocacoesVaziasDoTurno(
+    turno: Turno,
+    funcionarios: Funcionario[],
+    extras: PessoaExtra[],
+  ): Promise<number> {
+    const empresaId = empresaIdAtual();
+    const rows = await carregarRows(empresaId);
+    const doTurno = rows.filter((r) => r.turno_id === turno.id);
+    let atualizados = 0;
+
+    for (const row of doTurno) {
+      const te = rowParaTurnoEscalado(row);
+      if (totalSlotsAlocados(te) > 0) continue;
+
+      const alocacoes = montarAlocacoesIniciaisDoTurno(
+        turno,
+        funcionarios,
+        extras,
+        row.data,
+      );
+      if (totalSlotsEmAlocacoes(alocacoes) === 0) continue;
+
+      const { error } = await supabase
+        .from('escala_turnos')
+        .update({ alocacoes: alocacoesParaJson(alocacoes) })
+        .eq('id', row.id)
+        .eq('empresa_id', empresaId);
+
+      if (error) {
+        throw new Error(
+          erroMensagem(
+            error,
+            'Não foi possível atualizar alocações vazias na escala.',
+          ),
+        );
+      }
+      atualizados += 1;
+    }
+
+    return atualizados;
   },
 
   async limparDuplicatas(): Promise<number> {

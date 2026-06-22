@@ -42,7 +42,7 @@ export function TimeGridEscala({
   escalasPorData,
   turnos,
   funcionarios,
-  extras: _extras,
+  extras,
   onAbrirDia,
   onAbrirTurno,
   onAdicionar,
@@ -126,6 +126,7 @@ export function TimeGridEscala({
                       turno,
                       te,
                       funcionarios,
+                      extras,
                     );
                     const top = topTurnoPx(turno.horaInicio);
                     const height = alturaTurnoPx(

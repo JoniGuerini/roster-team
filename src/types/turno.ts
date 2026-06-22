@@ -10,6 +10,13 @@ export type CategoriaTurno = 'manha' | 'tarde' | 'noite' | 'integral' | 'outro';
 /** 0 = domingo … 6 = sábado (igual a `Date.getDay()`). */
 export type DiaSemanaRecorrente = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
+/** -1 = entra automaticamente em todos os dias da escala. */
+export const RECORRENCIA_TODO_DIA = -1 as const;
+
+export type RecorrenciaEscala =
+  | DiaSemanaRecorrente
+  | typeof RECORRENCIA_TODO_DIA;
+
 export const ROTULO_DIA_SEMANA_RECORRENTE: Record<DiaSemanaRecorrente, string> = {
   0: 'Todo domingo',
   1: 'Toda segunda-feira',
@@ -20,9 +27,35 @@ export const ROTULO_DIA_SEMANA_RECORRENTE: Record<DiaSemanaRecorrente, string> =
   6: 'Todo sábado',
 };
 
+export function isRecorrenciaEscala(
+  valor: number | null | undefined,
+): valor is RecorrenciaEscala {
+  if (valor == null) return false;
+  return valor === RECORRENCIA_TODO_DIA || (valor >= 0 && valor <= 6);
+}
+
+export function rotuloRecorrenciaEscala(valor: RecorrenciaEscala): string {
+  if (valor === RECORRENCIA_TODO_DIA) return 'Todo dia';
+  return ROTULO_DIA_SEMANA_RECORRENTE[valor];
+}
+
+export function parseRecorrenciaEscala(
+  valor: string,
+): RecorrenciaEscala | undefined {
+  if (valor === '') return undefined;
+  const n = Number(valor);
+  if (n === RECORRENCIA_TODO_DIA) return RECORRENCIA_TODO_DIA;
+  if (n >= 0 && n <= 6) return n as DiaSemanaRecorrente;
+  return undefined;
+}
+
 /** Opções do select: valor vazio = sem recorrência automática. */
 export const OPCOES_DIA_SEMANA_RECORRENTE: { value: string; label: string }[] = [
   { value: '', label: 'Não — só entra na escala quando alguém adicionar' },
+  {
+    value: String(RECORRENCIA_TODO_DIA),
+    label: rotuloRecorrenciaEscala(RECORRENCIA_TODO_DIA),
+  },
   ...([0, 1, 2, 3, 4, 5, 6] as const).map((n) => ({
     value: String(n),
     label: ROTULO_DIA_SEMANA_RECORRENTE[n],
@@ -44,9 +77,9 @@ export interface Turno {
   horaFim: string;
   /**
    * Só para turnos `regular`: ao ver a escala, o sistema cria este turno em
-   * cada data cujo dia da semana coincide (se ainda não existir nesse dia).
+   * cada data cujo dia da semana coincide, ou em todo dia se for `-1`.
    */
-  diaSemanaRecorrente?: DiaSemanaRecorrente | null;
+  diaSemanaRecorrente?: RecorrenciaEscala | null;
   necessidades: NecessidadeFuncao[];
   /** União ordenada dos sugeridos (retrocompatível com telas que só leem a lista). */
   funcionariosSugeridos: string[];

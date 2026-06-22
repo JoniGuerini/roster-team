@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import {
   CATEGORIAS_TURNO,
+  isRecorrenciaEscala,
   OPCOES_DIA_SEMANA_RECORRENTE,
+  parseRecorrenciaEscala,
+  RECORRENCIA_TODO_DIA,
   TIPOS_TURNO,
   type CategoriaTurno,
-  type DiaSemanaRecorrente,
   type NecessidadeFuncao,
   type TipoTurno,
   type Turno,
@@ -223,11 +225,10 @@ export function TurnoForm({
   }, [funcionarios, form.localTrabalho]);
 
   const dataReferenciaAlocacao = useMemo(() => {
-    if (form.tipo === 'regular' && form.diaSemanaRecorrente !== '') {
-      const d = Number(form.diaSemanaRecorrente);
-      if (!Number.isNaN(d) && d >= 0 && d <= 6) {
-        return proximaDataComDiaSemana(hojeISO(), d);
-      }
+    const rec = parseRecorrenciaEscala(form.diaSemanaRecorrente);
+    if (form.tipo === 'regular' && rec != null) {
+      if (rec === RECORRENCIA_TODO_DIA) return hojeISO();
+      return proximaDataComDiaSemana(hojeISO(), rec);
     }
     return hojeISO();
   }, [form.tipo, form.diaSemanaRecorrente]);
@@ -392,9 +393,7 @@ export function TurnoForm({
         sugestoesSlots,
         diaSemanaRecorrente:
           turno.tipo === 'regular' &&
-          turno.diaSemanaRecorrente != null &&
-          turno.diaSemanaRecorrente >= 0 &&
-          turno.diaSemanaRecorrente <= 6
+          isRecorrenciaEscala(turno.diaSemanaRecorrente)
             ? String(turno.diaSemanaRecorrente)
             : '',
         observacoes: turno.observacoes ?? '',
@@ -580,8 +579,8 @@ export function TurnoForm({
     );
 
     const diaRec =
-      form.tipo === 'regular' && form.diaSemanaRecorrente !== ''
-        ? (Number(form.diaSemanaRecorrente) as DiaSemanaRecorrente)
+      form.tipo === 'regular'
+        ? parseRecorrenciaEscala(form.diaSemanaRecorrente)
         : undefined;
 
     onSubmit({

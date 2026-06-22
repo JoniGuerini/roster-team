@@ -5,13 +5,14 @@ import { Input } from '../ui/Input';
 import { Icon } from '../ui/Icon';
 import type { EscalaDia } from '../../types/escala';
 import {
-  ROTULO_DIA_SEMANA_RECORRENTE,
-  type DiaSemanaRecorrente,
+  isRecorrenciaEscala,
+  rotuloRecorrenciaEscala,
   type Turno,
 } from '../../types/turno';
+import { turnoRecorreNaData } from '../../utils/recorrenciaTurno';
 import { labelLocal } from '../../utils/funcionarioLabels';
 import { labelCategoria } from '../../utils/turnoLabels';
-import { diaSemanaDe, rotuloDataLonga } from '../../utils/datas';
+import { rotuloDataLonga } from '../../utils/datas';
 import './AdicionarTurnoModal.css';
 
 interface AdicionarTurnoModalProps {
@@ -107,18 +108,16 @@ export function AdicionarTurnoModal({
             {turnosAtivos.map((t) => {
               const jaUsado = idsJaUsados.has(t.id);
               const ativo = selecionado === t.id;
-              const diaRecorrente =
-                t.tipo === 'regular' &&
-                t.diaSemanaRecorrente != null &&
-                t.diaSemanaRecorrente >= 0 &&
-                t.diaSemanaRecorrente <= 6
-                  ? ROTULO_DIA_SEMANA_RECORRENTE[
-                      t.diaSemanaRecorrente as DiaSemanaRecorrente
-                    ]
+              const recorrencia =
+                t.tipo === 'regular' && isRecorrenciaEscala(t.diaSemanaRecorrente)
+                  ? t.diaSemanaRecorrente
+                  : null;
+              const rotuloRecorrencia =
+                recorrencia != null
+                  ? rotuloRecorrenciaEscala(recorrencia)
                   : null;
               const encaixaNoDia =
-                diaRecorrente != null &&
-                diaSemanaDe(data) === t.diaSemanaRecorrente;
+                recorrencia != null && turnoRecorreNaData(recorrencia, data);
               return (
                 <li key={t.id}>
                   <button
@@ -150,21 +149,15 @@ export function AdicionarTurnoModal({
                         <Icon name="calendar" size={13} />
                         {labelCategoria(t.categoria)}
                       </li>
-                      {diaRecorrente && (
-                        <li className="brisa-add-turno__line brisa-add-turno__line--muted">
+                      {rotuloRecorrencia && (
+                        <li className="brisa-add-turno__line brisa-add-turno__line--rec">
                           <Icon name="repeat" size={13} />
-                          {diaRecorrente}
-                          {encaixaNoDia ? (
-                            <span className="brisa-add-turno__rec-badge">
-                              {' '}
-                              · já entra sozinho neste dia
-                            </span>
-                          ) : (
-                            <span className="brisa-add-turno__rec-badge">
-                              {' '}
-                              · adição extra neste dia
-                            </span>
-                          )}
+                          <span className="brisa-add-turno__rec-text">
+                            {rotuloRecorrencia}
+                            {encaixaNoDia
+                              ? ' · já entra sozinho neste dia'
+                              : ' · adição extra neste dia'}
+                          </span>
                         </li>
                       )}
                     </ul>

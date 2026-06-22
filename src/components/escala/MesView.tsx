@@ -1,7 +1,7 @@
 import type { EscalaDia } from '../../types/escala';
 import type { Funcionario } from '../../types/funcionario';
+import type { PessoaExtra } from '../../types/pessoaExtra';
 import type { Turno } from '../../types/turno';
-import { Icon } from '../ui/Icon';
 import {
   NOMES_DIAS_CURTOS,
   diasDoMesGrade,
@@ -9,13 +9,8 @@ import {
   ehMesmoMes,
   fromISO,
 } from '../../utils/datas';
-import {
-  indisponibilidadeNoDia,
-  pessoasAlocadas,
-  vagasEmFaltaNoTurno,
-} from '../../utils/disponibilidade';
+import { calcularStatusTurnoEscaladoNoDia } from '../../utils/statusTurnoEscalado';
 import './MesView.css';
-import './EscalaAddMini.css';
 
 interface MesViewProps {
   data: string;
@@ -23,8 +18,8 @@ interface MesViewProps {
   escalas: EscalaDia[];
   turnos: Turno[];
   funcionarios: Funcionario[];
+  extras: PessoaExtra[];
   onSelecionarDia: (data: string) => void;
-  onAdicionar?: (data: string) => void;
 }
 
 interface ResumoDia {
@@ -36,6 +31,7 @@ function calcularResumo(
   escala: EscalaDia,
   turnos: Turno[],
   funcionarios: Funcionario[],
+  extras: PessoaExtra[],
   data: string,
 ): ResumoDia {
   let total = 0;
@@ -44,13 +40,14 @@ function calcularResumo(
     const turno = turnos.find((t) => t.id === te.turnoId);
     if (!turno) continue;
     total += 1;
-    const idsAlocados = pessoasAlocadas(te);
-    const faltamVagas = vagasEmFaltaNoTurno(turno, te);
-    const algumIndisp = idsAlocados.some((id) => {
-      const f = funcionarios.find((x) => x.id === id);
-      return f ? indisponibilidadeNoDia(f, data) !== null : false;
-    });
-    if (algumIndisp || faltamVagas > 0) {
+    const status = calcularStatusTurnoEscaladoNoDia(
+      data,
+      turno,
+      te,
+      funcionarios,
+      extras,
+    );
+    if (status.key !== 'completo') {
       alertas += 1;
     }
   }
@@ -63,8 +60,8 @@ export function MesView({
   escalas,
   turnos,
   funcionarios,
+  extras,
   onSelecionarDia,
-  onAdicionar,
 }: MesViewProps) {
   const dias = diasDoMesGrade(data);
   const escalasPorData = new Map<string, EscalaDia>();
@@ -87,15 +84,14 @@ export function MesView({
           const selecionado = dia === dataSelecionada;
           const escala = escalasPorData.get(dia);
           const resumo = escala
-            ? calcularResumo(escala, turnos, funcionarios, dia)
+            ? calcularResumo(escala, turnos, funcionarios, extras, dia)
             : { total: 0, alertas: 0 };
           const dataObj = fromISO(dia);
 
           return (
-            <div
+            <button
               key={dia}
-              role="button"
-              tabIndex={0}
+              type="button"
               className={[
                 'brisa-mes__cell',
                 noMes ? '' : 'brisa-mes__cell--fora',
@@ -105,12 +101,6 @@ export function MesView({
                 .filter(Boolean)
                 .join(' ')}
               onClick={() => onSelecionarDia(dia)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelecionarDia(dia);
-                }
-              }}
             >
               <span
                 className={`brisa-mes__num ${eHoje ? 'brisa-mes__num--hoje' : ''}`}
@@ -128,24 +118,7 @@ export function MesView({
                   )}
                 </span>
               )}
-              {onAdicionar ? (
-                <div className="brisa-mes__add-wrap">
-                  <button
-                    type="button"
-                    className="brisa-escala-add-mini"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onAdicionar(dia);
-                    }}
-                    aria-label="Adicionar turno"
-                    title="Adicionar turno"
-                  >
-                    <Icon name="plus" size={12} />
-                    <span className="brisa-escala-add-mini__label">Turno</span>
-                  </button>
-                </div>
-              ) : null}
-            </div>
+            </button>
           );
         })}
       </div>

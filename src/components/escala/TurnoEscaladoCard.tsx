@@ -20,7 +20,7 @@ export function TurnoEscaladoCard({
   turnoEscalado,
   turno,
   funcionarios,
-  extras: _extras,
+  extras,
   onClick,
 }: TurnoEscaladoCardProps) {
   const status = calcularStatusTurnoEscaladoNoDia(
@@ -28,6 +28,7 @@ export function TurnoEscaladoCard({
     turno,
     turnoEscalado,
     funcionarios,
+    extras,
   );
 
   const mostrarTipo = turno.tipo !== 'regular';

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import {
-  ROTULO_DIA_SEMANA_RECORRENTE,
-  type DiaSemanaRecorrente,
+  isRecorrenciaEscala,
+  rotuloRecorrenciaEscala,
   type Turno,
 } from '../../types/turno';
 import { labelCategoria } from '../../utils/turnoLabels';
@@ -65,16 +65,10 @@ export function TurnoCard({
           {labelCategoria(turno.categoria)}
         </li>
         {turno.tipo === 'regular' &&
-          turno.diaSemanaRecorrente != null &&
-          turno.diaSemanaRecorrente >= 0 &&
-          turno.diaSemanaRecorrente <= 6 && (
+          isRecorrenciaEscala(turno.diaSemanaRecorrente) && (
             <li className="brisa-turno-card__line brisa-turno-card__line--accent">
               <Icon name="repeat" size={13} />
-              {
-                ROTULO_DIA_SEMANA_RECORRENTE[
-                  turno.diaSemanaRecorrente as DiaSemanaRecorrente
-                ]
-              }
+              {rotuloRecorrenciaEscala(turno.diaSemanaRecorrente)}
               {' · '}
               <span className="brisa-turno-card__rec-automatica">na escala</span>
             </li>

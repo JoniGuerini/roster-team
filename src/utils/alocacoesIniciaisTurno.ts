@@ -2,8 +2,14 @@ import type { AlocacaoFuncao } from '../types/escala';
 import type { Funcionario } from '../types/funcionario';
 import type { PessoaExtra } from '../types/pessoaExtra';
 import type { Turno, TurnoInput } from '../types/turno';
+import {
+  isRecorrenciaEscala,
+  RECORRENCIA_TODO_DIA,
+  type DiaSemanaRecorrente,
+} from '../types/turno';
 import { adicionarDias, fromISO } from './datas';
 import {
+  indisponibilidadeExtraNoDia,
   indisponibilidadeNoDia,
   podeAparecerComoSugeridoNoTurno,
   sanearAlocacoesUmaPessoaPorTurno,
@@ -30,6 +36,7 @@ export function montarAlocacoesIniciaisDoTurno(
       const extra = extras.find((x) => x.id === id);
       if (extra) {
         if (jaAlocados.has(id)) return false;
+        if (indisponibilidadeExtraNoDia(extra, data) !== null) return false;
         ids.push(id);
         jaAlocados.add(id);
         return true;
@@ -52,7 +59,7 @@ export function montarAlocacoesIniciaisDoTurno(
     const sugeridosCompativeis = turno.funcionariosSugeridos.filter((id) => {
       if (jaAlocados.has(id)) return false;
       const extra = extras.find((x) => x.id === id);
-      if (extra) return true;
+      if (extra) return indisponibilidadeExtraNoDia(extra, data) === null;
       const f = funcionarios.find((x) => x.id === id);
       if (!f || !podeAparecerComoSugeridoNoTurno(f)) return false;
       if (indisponibilidadeNoDia(f, data) !== null) return false;
@@ -142,11 +149,13 @@ export function dataReferenciaParaSugestoesDoTurno(
 ): string {
   if (
     turno.tipo === 'regular' &&
-    turno.diaSemanaRecorrente != null &&
-    turno.diaSemanaRecorrente >= 0 &&
-    turno.diaSemanaRecorrente <= 6
+    isRecorrenciaEscala(turno.diaSemanaRecorrente)
   ) {
-    return proximaDataComDiaSemana(aPartirDe, turno.diaSemanaRecorrente);
+    if (turno.diaSemanaRecorrente === RECORRENCIA_TODO_DIA) return aPartirDe;
+    return proximaDataComDiaSemana(
+      aPartirDe,
+      turno.diaSemanaRecorrente as DiaSemanaRecorrente,
+    );
   }
   return aPartirDe;
 }

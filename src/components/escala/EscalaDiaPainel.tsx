@@ -1,5 +1,6 @@
 import type { EscalaDia, TurnoEscalado } from '../../types/escala';
 import type { Funcionario } from '../../types/funcionario';
+import type { PessoaExtra } from '../../types/pessoaExtra';
 import type { Turno } from '../../types/turno';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
@@ -14,6 +15,7 @@ interface EscalaDiaPainelProps {
   escala: EscalaDia;
   turnos: Turno[];
   funcionarios: Funcionario[];
+  extras: PessoaExtra[];
   onAdicionar?: () => void;
   onAbrirTurno?: (turnoEscaladoId: string) => void;
 }
@@ -27,6 +29,7 @@ export function EscalaDiaPainel({
   escala,
   turnos,
   funcionarios,
+  extras,
   onAdicionar,
   onAbrirTurno,
 }: EscalaDiaPainelProps) {
@@ -80,6 +83,7 @@ export function EscalaDiaPainel({
               turno,
               te,
               funcionarios,
+              extras,
             );
             return (
               <button

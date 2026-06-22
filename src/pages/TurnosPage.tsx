@@ -110,7 +110,14 @@ export function TurnosPage({ sessao }: TurnosPageProps) {
   async function salvar(input: TurnoInput) {
     try {
       if (editando) {
-        await turnosStorage.atualizar(editando.id, input);
+        const turnoAtualizado = await turnosStorage.atualizar(editando.id, input);
+        if (turnoAtualizado) {
+          await escalaStorage.refreshAlocacoesVaziasDoTurno(
+            turnoAtualizado,
+            funcionarios,
+            extras,
+          );
+        }
       } else {
         await turnosStorage.criar(input);
       }

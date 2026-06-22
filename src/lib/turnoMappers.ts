@@ -2,11 +2,13 @@ import type {
   CategoriaTurno,
   DiaSemanaRecorrente,
   NecessidadeFuncao,
+  RecorrenciaEscala,
   SugestoesPorFuncao,
   TipoTurno,
   Turno,
   TurnoInput,
 } from '../types/turno';
+import { RECORRENCIA_TODO_DIA } from '../types/turno';
 import type { Funcao, LocalTrabalho } from '../types/funcionario';
 import type { Database, Json } from '../types/database';
 
@@ -58,8 +60,9 @@ function mapSugestoesPorFuncao(valor: unknown): SugestoesPorFuncao | undefined {
 
 function mapDiaSemanaRecorrente(
   valor: number | null,
-): DiaSemanaRecorrente | null | undefined {
+): RecorrenciaEscala | null | undefined {
   if (valor == null) return null;
+  if (valor === RECORRENCIA_TODO_DIA) return RECORRENCIA_TODO_DIA;
   if (valor >= 0 && valor <= 6) return valor as DiaSemanaRecorrente;
   return null;
 }

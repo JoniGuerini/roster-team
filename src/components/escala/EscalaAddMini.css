@@ -41,12 +41,3 @@
   width: calc(100% - 8px);
   margin: 0 4px;
 }
-
-.brisa-mes__add-wrap {
-  margin-top: auto;
-  width: 100%;
-}
-
-.brisa-mes__cell .brisa-escala-add-mini {
-  width: 100%;
-}
