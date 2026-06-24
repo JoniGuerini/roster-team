@@ -10,17 +10,12 @@ import type {
 } from '../types/turno';
 import { RECORRENCIA_TODO_DIA } from '../types/turno';
 import type { Funcao, LocalTrabalho } from '../types/funcionario';
+import { FUNCOES_VALORES } from '../types/funcionario';
 import type { Database, Json } from '../types/database';
 
 export type TurnoRow = Database['public']['Tables']['turnos']['Row'];
 
-const FUNCOES_VALIDAS: Funcao[] = [
-  'atendente',
-  'barista',
-  'chapeiro',
-  'gerente',
-  'supervisor',
-];
+const FUNCOES_VALIDAS = FUNCOES_VALORES;
 
 function mapNecessidades(valor: unknown): NecessidadeFuncao[] {
   if (!Array.isArray(valor)) return [];

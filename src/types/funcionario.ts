@@ -7,7 +7,10 @@ export type Funcao =
   | 'barista'
   | 'chapeiro'
   | 'gerente'
-  | 'supervisor';
+  | 'supervisor'
+  | 'cumim'
+  | 'suporte-bebida'
+  | 'suporte-chapa';
 
 export type StatusFuncionario = 'ativo' | 'inativo' | 'ferias' | 'afastado';
 
@@ -93,7 +96,12 @@ export const FUNCOES: { value: Funcao; label: string }[] = [
   { value: 'chapeiro', label: 'Chapeiro' },
   { value: 'gerente', label: 'Gerente' },
   { value: 'supervisor', label: 'Supervisor' },
+  { value: 'cumim', label: 'Cumim' },
+  { value: 'suporte-bebida', label: 'Suporte Bebida' },
+  { value: 'suporte-chapa', label: 'Suporte Chapa' },
 ];
+
+export const FUNCOES_VALORES: Funcao[] = FUNCOES.map((f) => f.value);
 
 export const STATUS_FUNCIONARIO: {
   value: StatusFuncionario;

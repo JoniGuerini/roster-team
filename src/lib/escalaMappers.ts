@@ -4,19 +4,14 @@ import type {
   TurnoEscalado,
 } from '../types/escala';
 import type { Funcao } from '../types/funcionario';
+import { FUNCOES_VALORES } from '../types/funcionario';
 import type { Database, Json } from '../types/database';
 import { totalSlotsAlocados } from '../utils/disponibilidade';
 
 export type EscalaTurnoRow =
   Database['public']['Tables']['escala_turnos']['Row'];
 
-const FUNCOES_VALIDAS: Funcao[] = [
-  'atendente',
-  'barista',
-  'chapeiro',
-  'gerente',
-  'supervisor',
-];
+const FUNCOES_VALIDAS = FUNCOES_VALORES;
 
 function mapAlocacoes(valor: unknown): AlocacaoFuncao[] {
   if (!Array.isArray(valor)) return [];

@@ -9,6 +9,7 @@ import type {
   StatusFuncionario,
   TipoContrato,
 } from '../types/funcionario';
+import { FUNCOES_VALORES } from '../types/funcionario';
 import { mapDocumentos } from './documentoMappers';
 import type { Database, Json } from '../types/database';
 
@@ -17,14 +18,9 @@ export type FuncionarioRow =
 
 function mapFuncoesSecundarias(valor: unknown): Funcao[] {
   if (!Array.isArray(valor)) return [];
-  const validas: Funcao[] = [
-    'atendente',
-    'barista',
-    'chapeiro',
-    'gerente',
-    'supervisor',
-  ];
-  return valor.filter((f): f is Funcao => validas.includes(f as Funcao));
+  return valor.filter((f): f is Funcao =>
+    FUNCOES_VALORES.includes(f as Funcao),
+  );
 }
 
 function mapAusencias(valor: unknown): PeriodoAusencia[] {

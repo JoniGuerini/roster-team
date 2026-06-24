@@ -72,13 +72,9 @@ type FormErrors = Partial<
   Record<keyof FormState | 'necessidades' | 'horario', string>
 >;
 
-const NECESSIDADES_VAZIAS: Record<Funcao, number> = {
-  atendente: 0,
-  barista: 0,
-  chapeiro: 0,
-  gerente: 0,
-  supervisor: 0,
-};
+const NECESSIDADES_VAZIAS = Object.fromEntries(
+  FUNCOES.map(({ value }) => [value, 0]),
+) as Record<Funcao, number>;
 
 function slotsParaQuantidades(
   necessidades: Record<Funcao, number>,
