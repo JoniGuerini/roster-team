@@ -14,8 +14,13 @@ import { PerfilPessoaPage } from './pages/PerfilPessoaPage';
 import { AccountDialog } from './components/conta/AccountDialog';
 import { AppShellSkeleton } from './components/ui/AppShellSkeleton';
 import { ConfiguracoesPage } from './pages/ConfiguracoesPage';
+import { PlanosPage } from './pages/PlanosPage';
 import { LoginPage } from './pages/LoginPage';
-import { useHashRoute } from './hooks/useHashRoute';
+import {
+  isRotaPlataforma,
+  lerEstadoHash,
+  useHashRoute,
+} from './hooks/useHashRoute';
 import { disparoNotificacoes } from './hooks/useNotificacoes';
 import { authSession, type Sessao } from './services/authSession';
 import { empresasStorage, EVENTO_EMPRESAS } from './services/empresasStorage';
@@ -111,10 +116,18 @@ export default function App() {
 
   useEffect(() => {
     if (!sessao?.isPlatformAdmin) return;
-    if (estado.rota !== 'empresas') {
-      navegarParaRota('empresas');
+
+    function validarRotaPlataforma() {
+      const { rota } = lerEstadoHash();
+      if (!isRotaPlataforma(rota)) {
+        navegarParaRota('empresas');
+      }
     }
-  }, [sessao, estado.rota, navegarParaRota]);
+
+    validarRotaPlataforma();
+    window.addEventListener('hashchange', validarRotaPlataforma);
+    return () => window.removeEventListener('hashchange', validarRotaPlataforma);
+  }, [sessao?.isPlatformAdmin, navegarParaRota]);
 
   useEffect(() => {
     if (!sessao) return;
@@ -241,6 +254,7 @@ export default function App() {
               onVoltar={() => navegarParaRota('empresas')}
             />
           )}
+          {somentePlataforma && estado.rota === 'planos' && <PlanosPage />}
         </div>
         </main>
       </div>

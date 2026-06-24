@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
 export type RotaId =
   | 'funcionarios'
@@ -9,7 +9,8 @@ export type RotaId =
   | 'usuarios'
   | 'configuracoes'
   | 'atividades'
-  | 'empresas';
+  | 'empresas'
+  | 'planos';
 
 const ROTAS_VALIDAS: RotaId[] = [
   'funcionarios',
@@ -21,8 +22,15 @@ const ROTAS_VALIDAS: RotaId[] = [
   'configuracoes',
   'atividades',
   'empresas',
+  'planos',
 ];
 const ROTA_PADRAO: RotaId = 'escala';
+
+export const ROTAS_PLATAFORMA: readonly RotaId[] = ['empresas', 'planos'];
+
+export function isRotaPlataforma(rota: RotaId): boolean {
+  return (ROTAS_PLATAFORMA as readonly string[]).includes(rota);
+}
 
 export type EstadoHashRota = {
   rota: RotaId;
@@ -38,7 +46,7 @@ const ESTADO_PADRAO: EstadoHashRota = {
   empresaDetalheId: null,
 };
 
-function lerHash(): EstadoHashRota {
+export function lerEstadoHash(): EstadoHashRota {
   if (typeof window === 'undefined') return ESTADO_PADRAO;
   let raw = window.location.hash.replace(/^#/, '').trim().toLowerCase();
   const q = raw.indexOf('?');
@@ -96,14 +104,14 @@ export function useHashRoute(): {
   navegarPerfilExtra: (id: string) => void;
   navegarDetalheEmpresa: (id: string) => void;
 } {
-  const [estado, setEstado] = useState<EstadoHashRota>(() => lerHash());
+  const [estado, setEstado] = useState<EstadoHashRota>(() => lerEstadoHash());
 
   useLayoutEffect(() => {
-    setEstado(lerHash());
+    setEstado(lerEstadoHash());
   }, []);
 
   useEffect(() => {
-    const handler = () => setEstado(lerHash());
+    const handler = () => setEstado(lerEstadoHash());
     window.addEventListener('hashchange', handler);
     window.addEventListener('popstate', handler);
     return () => {
@@ -112,7 +120,7 @@ export function useHashRoute(): {
     };
   }, []);
 
-  function navegarParaRota(novaRota: RotaId) {
+  const navegarParaRota = useCallback((novaRota: RotaId) => {
     const novoHash = `#${novaRota}`;
     if (window.location.hash !== novoHash) {
       window.location.hash = novoHash;
@@ -123,9 +131,9 @@ export function useHashRoute(): {
       perfilExtraId: null,
       empresaDetalheId: null,
     });
-  }
+  }, []);
 
-  function navegarPerfilFuncionario(id: string) {
+  const navegarPerfilFuncionario = useCallback((id: string) => {
     const novoHash = `#funcionarios/perfil/${id}`;
     if (window.location.hash !== novoHash) {
       window.location.hash = novoHash;
@@ -136,9 +144,9 @@ export function useHashRoute(): {
       perfilExtraId: null,
       empresaDetalheId: null,
     });
-  }
+  }, []);
 
-  function navegarPerfilExtra(id: string) {
+  const navegarPerfilExtra = useCallback((id: string) => {
     const novoHash = `#extras/perfil/${id}`;
     if (window.location.hash !== novoHash) {
       window.location.hash = novoHash;
@@ -149,9 +157,9 @@ export function useHashRoute(): {
       perfilExtraId: id,
       empresaDetalheId: null,
     });
-  }
+  }, []);
 
-  function navegarDetalheEmpresa(id: string) {
+  const navegarDetalheEmpresa = useCallback((id: string) => {
     const novoHash = `#empresas/detalhe/${id}`;
     if (window.location.hash !== novoHash) {
       window.location.hash = novoHash;
@@ -162,7 +170,7 @@ export function useHashRoute(): {
       perfilExtraId: null,
       empresaDetalheId: id,
     });
-  }
+  }, []);
 
   return {
     estado,

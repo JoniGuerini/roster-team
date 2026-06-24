@@ -16,8 +16,13 @@ import {
   SCROLL_INICIAL_H,
   alturaTurnoPx,
   formatarHoraGrade,
+  horarioToMin,
   topTurnoPx,
 } from '../../utils/horarioGrade';
+import {
+  calcularLayoutSobreposicao,
+  estiloBlocoSobreposicao,
+} from '../../utils/sobreposicaoGrade';
 import { Icon } from '../ui/Icon';
 import './TimeGridEscala.css';
 import './EscalaAddMini.css';
@@ -110,6 +115,14 @@ export function TimeGridEscala({
                 })
                 .filter(Boolean) as { te: TurnoEscalado; turno: Turno }[];
 
+              const layoutSobreposicao = calcularLayoutSobreposicao(
+                turnosDoDia.map(({ te, turno }) => ({
+                  id: te.id,
+                  inicioMin: horarioToMin(turno.horaInicio),
+                  fimMin: horarioToMin(turno.horaFim),
+                })),
+              );
+
               return (
                 <div key={dia} className="brisa-timegrid__col">
                   {HOURS.map((hour) => (
@@ -133,13 +146,21 @@ export function TimeGridEscala({
                       turno.horaInicio,
                       turno.horaFim,
                     );
+                    const layout = layoutSobreposicao.get(te.id) ?? { nivel: 0 };
+                    const posicao = estiloBlocoSobreposicao(layout);
 
                     return (
                       <button
                         key={te.id}
                         type="button"
                         className={`brisa-timegrid__bloco ${classeStatus(status.key)}`}
-                        style={{ top, height }}
+                        style={{
+                          top,
+                          height,
+                          left: posicao.left,
+                          width: posicao.width,
+                          zIndex: posicao.zIndex,
+                        }}
                         onClick={() => onAbrirTurno?.(dia, te.id)}
                         title={turno.nome}
                       >

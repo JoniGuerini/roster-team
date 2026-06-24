@@ -37,6 +37,7 @@ const ITENS_ADMIN: ItemMenu[] = [
   { id: 'configuracoes', label: 'Configurações', icon: 'settings' },
   { id: 'atividades', label: 'Atividades', icon: 'history' },
   { id: 'empresas', label: 'Empresas', icon: 'building-store' },
+  { id: 'planos', label: 'Planos', icon: 'badge' },
 ];
 
 function renderItem(
@@ -103,7 +104,7 @@ export function Sidebar({
     ? []
     : ITENS.filter(itemVisivel);
   const itensAdmin = sessao.isPlatformAdmin
-    ? ITENS_ADMIN.filter((item) => item.id === 'empresas')
+    ? ITENS_ADMIN.filter((item) => item.id === 'empresas' || item.id === 'planos')
     : ITENS_ADMIN.filter(itemVisivel);
   const isMobile = useMediaQuery('(max-width: 880px)');
   const mostrarTooltip = recolhida && !isMobile;

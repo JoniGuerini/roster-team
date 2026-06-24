@@ -1,0 +1,309 @@
+.brisa-planos {
+  gap: var(--space-6);
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.brisa-planos__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  text-align: center;
+  padding: var(--space-2) 0 var(--space-4);
+}
+
+.brisa-planos__hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 640px;
+}
+
+.brisa-planos__eyebrow {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brisa-accent);
+}
+
+.brisa-planos__headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--brisa-text);
+}
+
+.brisa-planos__lede {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-planos__billing {
+  display: flex;
+  justify-content: center;
+}
+
+.brisa-planos__billing-toggle {
+  min-width: min(100%, 320px);
+}
+
+.brisa-planos__save-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--brisa-success);
+  background: var(--brisa-success-soft);
+}
+
+.brisa-planos__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.brisa-planos__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--brisa-border);
+  background: var(--brisa-surface);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--brisa-text) 4%, transparent);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.brisa-planos__card:hover {
+  border-color: var(--brisa-border-strong);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--brisa-primary) 8%, transparent);
+  transform: translateY(-2px);
+}
+
+.brisa-planos__card--featured {
+  border-color: color-mix(in srgb, var(--brisa-accent) 45%, var(--brisa-border));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--brisa-accent) 6%, var(--brisa-surface)) 0%,
+    var(--brisa-surface) 42%
+  );
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--brisa-text) 4%, transparent),
+    0 12px 32px color-mix(in srgb, var(--brisa-accent) 12%, transparent);
+}
+
+.brisa-planos__badge {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--brisa-accent);
+  background: var(--brisa-accent-soft);
+}
+
+.brisa-planos__card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: var(--space-1);
+}
+
+.brisa-planos__card-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--brisa-text);
+}
+
+.brisa-planos__card-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--brisa-text-muted);
+  min-height: 2.9em;
+}
+
+.brisa-planos__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
+}
+
+.brisa-planos__price-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--brisa-text);
+}
+
+.brisa-planos__price-period {
+  font-size: 14px;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-planos__price-equiv {
+  flex: 1 0 100%;
+  font-size: 12.5px;
+  color: var(--brisa-success);
+  font-weight: 500;
+}
+
+.brisa-planos__features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.brisa-planos__features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--brisa-text);
+}
+
+.brisa-planos__features .brisa-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--brisa-accent);
+}
+
+.brisa-planos__footnote {
+  margin: 0;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--brisa-text-soft);
+  line-height: 1.5;
+}
+
+.brisa-planos__checkout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.brisa-planos__checkout-resumo {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--brisa-surface-inset);
+  border: 1px solid var(--brisa-border);
+}
+
+.brisa-planos__checkout-resumo > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brisa-planos__checkout-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-planos__checkout-total {
+  color: var(--brisa-accent);
+}
+
+.brisa-planos__checkout-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.brisa-planos__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--brisa-text);
+}
+
+.brisa-planos__field input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brisa-border);
+  background: var(--brisa-surface-inset);
+  font: inherit;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-planos__field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.brisa-planos__checkout-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--brisa-text-muted);
+  background: var(--brisa-primary-soft);
+}
+
+.brisa-planos__checkout-hint .brisa-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--brisa-primary);
+}
+
+@media (max-width: 960px) {
+  .brisa-planos__grid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .brisa-planos__card--featured {
+    order: -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .brisa-planos__checkout-resumo {
+    grid-template-columns: 1fr;
+  }
+}

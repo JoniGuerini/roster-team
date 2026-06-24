@@ -10,6 +10,7 @@ const ROTULOS: Record<RotaId, string> = {
   configuracoes: 'Configurações',
   atividades: 'Atividades',
   empresas: 'Empresas',
+  planos: 'Planos',
 };
 
 export function tituloPagina(estado: EstadoHashRota): string {
