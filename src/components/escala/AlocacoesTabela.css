@@ -215,21 +215,6 @@
   color: white;
 }
 
-.brisa-aloc-dia__pessoa--conflito {
-  background: var(--brisa-danger-soft);
-  border-color: rgba(196, 72, 72, 0.25);
-}
-
-.brisa-aloc-dia__pessoa--conflito .brisa-aloc-dia__pessoa-nome {
-  color: var(--brisa-danger);
-  font-weight: 700;
-}
-
-.brisa-aloc-dia__pessoa--conflito .brisa-aloc-dia__avatar {
-  background: var(--brisa-danger);
-  color: white;
-}
-
 @media (max-width: 560px) {
   .brisa-aloc-dia__pessoa {
     flex-wrap: wrap;

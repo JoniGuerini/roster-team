@@ -6,7 +6,6 @@ import type { PessoaExtra } from '../../types/pessoaExtra';
 import type { Turno } from '../../types/turno';
 import { Badge } from '../ui/Badge';
 import {
-  detectarConflitos,
   indisponibilidadeNoDia,
   type Indisponibilidade,
 } from '../../utils/disponibilidade';
@@ -38,7 +37,6 @@ interface LinhaAloc {
   horaFim: string;
   localTrabalho: Turno['localTrabalho'];
   indisp: Indisponibilidade | null;
-  conflitoCom: string[];
 }
 
 interface FuncaoGrupo {
@@ -67,20 +65,11 @@ function montarLinha(
   funcionarios: Funcionario[],
   extras: PessoaExtra[],
   data: string,
-  escala: EscalaDia,
-  turnos: Turno[],
 ): LinhaAloc | null {
   const f = funcionarios.find((x) => x.id === funcionarioId);
   const ehExtra = Boolean(extras.find((x) => x.id === funcionarioId));
   if (!f && !ehExtra) return null;
   const indisp = f ? indisponibilidadeNoDia(f, data) : null;
-  const conflitos = detectarConflitos(
-    funcionarioId,
-    te.id,
-    turno,
-    escala,
-    turnos,
-  );
   const nome = nomePessoaAlocada(funcionarioId, funcionarios, extras);
   return {
     chave: `${te.id}-${alocacao.funcao}-${funcionarioId}`,
@@ -94,7 +83,6 @@ function montarLinha(
     horaFim: turno.horaFim,
     localTrabalho: turno.localTrabalho,
     indisp,
-    conflitoCom: conflitos.map((c) => c.turnoNome),
   };
 }
 
@@ -132,15 +120,13 @@ export function AlocacoesTabela({
             funcionarios,
             extras,
             data,
-            escala,
-            turnos,
           );
           if (!linha) continue;
           const arr = porFuncao.get(alocacao.funcao) ?? [];
           arr.push(linha);
           porFuncao.set(alocacao.funcao, arr);
           linhasTotais += 1;
-          if (linha.indisp || linha.conflitoCom.length > 0) alertas += 1;
+          if (linha.indisp) alertas += 1;
         }
       }
 
@@ -237,12 +223,10 @@ export function AlocacoesTabela({
                   </h5>
                   <ul className="brisa-aloc-dia__pessoas">
                     {bloco.linhas.map((linha) => {
-                      const temConflito = linha.conflitoCom.length > 0;
                       const folga = linha.indisp?.motivo === 'folga';
                       const temIndisp = Boolean(linha.indisp);
                       const rowClass = [
                         'brisa-aloc-dia__pessoa',
-                        temConflito ? 'brisa-aloc-dia__pessoa--conflito' : '',
                         folga ? 'brisa-aloc-dia__pessoa--folga' : '',
                         !folga && temIndisp
                           ? 'brisa-aloc-dia__pessoa--indisp'
@@ -259,11 +243,7 @@ export function AlocacoesTabela({
                             {linha.funcionarioNome}
                           </span>
                           <span className="brisa-aloc-dia__pessoa-status">
-                            {temConflito ? (
-                              <Badge tone="danger">
-                                Conflito · {linha.conflitoCom.join(', ')}
-                              </Badge>
-                            ) : temIndisp ? (
+                            {temIndisp ? (
                               <Badge tone={folga ? 'info' : 'warning'}>
                                 {linha.indisp!.rotulo}
                                 {linha.indisp!.detalhe

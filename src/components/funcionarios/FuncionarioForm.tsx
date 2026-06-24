@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useState, type ChangeEvent, type DragEvent, type FormEvent } from 'react';
 import {
   FUNCOES,
   LOCAIS_TRABALHO,
@@ -26,6 +26,26 @@ import { Icon } from '../ui/Icon';
 import { AusenciasEditor } from './AusenciasEditor';
 import { cpfValido, formatarCpf } from '../../utils/cpf';
 import './FuncionarioForm.css';
+
+const TIPOS_DOCUMENTO_ACEITOS = new Set([
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/heic',
+  'image/heif',
+]);
+
+const EXTENSAO_DOCUMENTO_ACEITA = /\.(pdf|jpe?g|png|gif|webp|heic|heif)$/i;
+
+const ACCEPT_DOCUMENTOS = 'application/pdf,image/*';
+
+function arquivoDocumentoAceito(arquivo: File): boolean {
+  if (TIPOS_DOCUMENTO_ACEITOS.has(arquivo.type)) return true;
+  if (!arquivo.type) return EXTENSAO_DOCUMENTO_ACEITA.test(arquivo.name);
+  return arquivo.type.startsWith('image/');
+}
 
 export type FuncionarioFormProps =
   | {
@@ -95,6 +115,7 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
 
   const [form, setForm] = useState<FormState>(ESTADO_INICIAL);
   const [erros, setErros] = useState<FormErrors>({});
+  const [arrastandoDocumentos, setArrastandoDocumentos] = useState(false);
 
   useEffect(() => {
     if (isExtra) {
@@ -165,11 +186,9 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
     });
   }
 
-  function adicionarArquivos(event: ChangeEvent<HTMLInputElement>) {
-    const arquivos = event.target.files;
-    if (!arquivos) return;
+  function processarArquivosLista(arquivos: FileList | File[]) {
     const novos: DocumentoPdf[] = Array.from(arquivos)
-      .filter((arquivo) => arquivo.type === 'application/pdf')
+      .filter(arquivoDocumentoAceito)
       .map((arquivo) => ({
         id: gerarIdDocumento(),
         nome: arquivo.name,
@@ -181,7 +200,41 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
       ...prev,
       documentos: [...prev.documentos, ...novos],
     }));
+  }
+
+  function adicionarArquivos(event: ChangeEvent<HTMLInputElement>) {
+    const arquivos = event.target.files;
+    if (!arquivos) return;
+    processarArquivosLista(arquivos);
     event.target.value = '';
+  }
+
+  function handleDocumentosDragEnter(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    setArrastandoDocumentos(true);
+  }
+
+  function handleDocumentosDragOver(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  function handleDocumentosDragLeave(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      setArrastandoDocumentos(false);
+    }
+  }
+
+  function handleDocumentosDrop(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    setArrastandoDocumentos(false);
+    if (event.dataTransfer.files.length > 0) {
+      processarArquivosLista(event.dataTransfer.files);
+    }
   }
 
   function removerDocumento(id: string) {
@@ -480,28 +533,43 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
             <Icon name="file-text" size={18} />
           </span>
           <div className="brisa-form__card-text">
-            <h3 className="brisa-form__card-title">Documentos (PDF)</h3>
+            <h3 className="brisa-form__card-title">Documentos</h3>
             <p className="brisa-form__card-hint">
-              Anexe contratos, exames médicos e outros documentos importantes.
+              Anexe contratos, exames médicos e outros documentos importantes
+              (PDF ou imagem).
             </p>
           </div>
         </header>
 
-        <label className="brisa-upload" htmlFor="documentos">
+        <label
+          className={[
+            'brisa-upload',
+            arrastandoDocumentos ? 'brisa-upload--drag' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          htmlFor="documentos"
+          onDragEnter={handleDocumentosDragEnter}
+          onDragOver={handleDocumentosDragOver}
+          onDragLeave={handleDocumentosDragLeave}
+          onDrop={handleDocumentosDrop}
+        >
           <input
             id="documentos"
             type="file"
-            accept="application/pdf"
+            accept={ACCEPT_DOCUMENTOS}
             multiple
             hidden
             onChange={adicionarArquivos}
           />
           <Icon name="upload" size={22} />
           <span className="brisa-upload__title">
-            Clique para subir arquivos PDF
+            {arrastandoDocumentos
+              ? 'Solte os arquivos aqui'
+              : 'Clique ou arraste PDF e imagens'}
           </span>
           <span className="brisa-upload__hint">
-            Exames médicos, contratos, etc.
+            Exames médicos, contratos, fotos de documentos, etc.
           </span>
         </label>
 

@@ -7,9 +7,7 @@ import type {
   TipoNotificacao,
 } from '../types/notificacao';
 import type { Turno } from '../types/turno';
-import { nomePessoaAlocada } from '../utils/pessoaAlocada';
 import {
-  detectarConflitos,
   indisponibilidadeNoDia,
   pessoasAlocadas,
   totalSlotsAlocados,
@@ -29,14 +27,6 @@ export interface ProblemaDetectado {
   funcionarioId?: string;
   turnoEscaladoId?: string;
   turnoId?: string;
-}
-
-function nomePessoa(
-  id: string,
-  funcionarios: Funcionario[],
-  extras: PessoaExtra[],
-): string {
-  return nomePessoaAlocada(id, funcionarios, extras);
 }
 
 function dataPassou(data: string, hoje: string): boolean {
@@ -123,22 +113,6 @@ export function detectarProblemas(
               turnoId: turno.id,
             });
           }
-        }
-
-        const conflitos = detectarConflitos(id, te.id, turno, escala, turnos);
-        for (const c of conflitos) {
-          const idsOrdenados = [te.id, c.turnoEscaladoId].sort();
-          problemas.push({
-            chave: `conflito:${escala.data}:${id}:${idsOrdenados.join('|')}`,
-            tipo: 'conflito',
-            severidade: 'media',
-            titulo: `${nomePessoa(id, funcionarios, extras)} em conflito de horário`,
-            mensagem: `${dataLonga} · "${turno.nome}" (${turno.horaInicio}–${turno.horaFim}) sobrepõe "${c.turnoNome}" (${c.horaInicio}–${c.horaFim}).`,
-            data: escala.data,
-            funcionarioId: id,
-            turnoEscaladoId: te.id,
-            turnoId: turno.id,
-          });
         }
       }
     }

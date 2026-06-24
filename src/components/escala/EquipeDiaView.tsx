@@ -9,7 +9,6 @@ import { Button } from '../ui/Button';
 import { EmptyState } from '../ui/EmptyState';
 import { Icon } from '../ui/Icon';
 import {
-  detectarConflitos,
   indisponibilidadeNoDia,
   type Indisponibilidade,
 } from '../../utils/disponibilidade';
@@ -37,7 +36,6 @@ interface TurnoDaPessoa {
   horaInicio: string;
   horaFim: string;
   localLabel: string;
-  conflitoCom: string[];
 }
 
 interface PessoaNoGrupo {
@@ -74,8 +72,6 @@ function montarAlocacao(
   funcionarios: Funcionario[],
   extras: PessoaExtra[],
   data: string,
-  escala: EscalaDia,
-  turnos: Turno[],
 ): AlocacaoBruta | null {
   const f = funcionarios.find((x) => x.id === pessoaId);
   const ehExtra = Boolean(extras.find((x) => x.id === pessoaId));
@@ -93,13 +89,6 @@ function montarAlocacao(
       horaInicio: turno.horaInicio,
       horaFim: turno.horaFim,
       localLabel: labelLocal(turno.localTrabalho),
-      conflitoCom: detectarConflitos(
-        pessoaId,
-        te.id,
-        turno,
-        escala,
-        turnos,
-      ).map((c) => c.turnoNome),
     },
   };
 }
@@ -137,10 +126,7 @@ function agruparPessoasNoGrupo(itens: AlocacaoBruta[]): PessoaNoGrupo[] {
 }
 
 function pessoaTemAlerta(pessoa: PessoaNoGrupo): boolean {
-  return (
-    Boolean(pessoa.indisp) ||
-    pessoa.turnos.some((t) => t.conflitoCom.length > 0)
-  );
+  return Boolean(pessoa.indisp);
 }
 
 export function EquipeDiaView({
@@ -177,8 +163,6 @@ export function EquipeDiaView({
             funcionarios,
             extras,
             data,
-            escala,
-            turnos,
           );
           if (!item) continue;
           brutos.push(item);
@@ -297,14 +281,10 @@ export function EquipeDiaView({
 
             <ul className="brisa-equipe-dia__lista">
               {grupo.pessoas.map((pessoa) => {
-                const temConflito = pessoa.turnos.some(
-                  (t) => t.conflitoCom.length > 0,
-                );
                 const folga = pessoa.indisp?.motivo === 'folga';
                 const temIndisp = Boolean(pessoa.indisp);
                 const rowClass = [
                   'brisa-equipe-dia__pessoa',
-                  temConflito ? 'brisa-equipe-dia__pessoa--conflito' : '',
                   folga ? 'brisa-equipe-dia__pessoa--folga' : '',
                   !folga && temIndisp ? 'brisa-equipe-dia__pessoa--indisp' : '',
                 ]
@@ -339,20 +319,13 @@ export function EquipeDiaView({
                                   {turno.horaInicio} – {turno.horaFim} ·{' '}
                                   {turno.localLabel}
                                 </span>
-                                {turno.conflitoCom.length > 0 ? (
-                                  <span className="brisa-equipe-dia__turno-alerta">
-                                    Conflito com {turno.conflitoCom.join(', ')}
-                                  </span>
-                                ) : null}
                               </button>
                             </li>
                           ))}
                         </ul>
                       </span>
                       <span className="brisa-equipe-dia__pessoa-status">
-                        {temConflito ? (
-                          <Badge tone="danger">Conflito</Badge>
-                        ) : temIndisp ? (
+                        {temIndisp ? (
                           <Badge tone={folga ? 'info' : 'warning'}>
                             {pessoa.indisp!.rotulo}
                           </Badge>

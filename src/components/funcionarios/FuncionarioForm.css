@@ -99,9 +99,15 @@
   text-align: center;
 }
 
-.brisa-upload:hover {
+.brisa-upload:hover,
+.brisa-upload--drag {
   border-color: var(--brisa-accent);
   background: var(--brisa-accent-soft);
+  color: var(--brisa-accent);
+}
+
+.brisa-upload:hover .brisa-upload__title,
+.brisa-upload--drag .brisa-upload__title {
   color: var(--brisa-accent);
 }
 
@@ -109,10 +115,6 @@
   font-weight: 600;
   color: var(--brisa-text);
   font-size: 13.5px;
-}
-
-.brisa-upload:hover .brisa-upload__title {
-  color: var(--brisa-accent);
 }
 
 .brisa-upload__hint {

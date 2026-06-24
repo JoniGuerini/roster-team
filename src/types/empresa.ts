@@ -80,7 +80,7 @@ export const RECURSOS_EMPRESA: {
   {
     value: 'notificacoes',
     label: 'Notificações',
-    descricao: 'Alertas de conflitos, coberturas e avisos.',
+    descricao: 'Alertas de cobertura, indisponibilidades e avisos.',
     icon: 'bell',
   },
   {
