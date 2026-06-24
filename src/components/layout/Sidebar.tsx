@@ -107,35 +107,56 @@ export function Sidebar({
     : ITENS_ADMIN.filter(itemVisivel);
   const isMobile = useMediaQuery('(max-width: 880px)');
   const mostrarTooltip = recolhida && !isMobile;
+  const rotaInicio: RotaId = sessao.isPlatformAdmin ? 'empresas' : 'inicio';
+
+  const brand = (
+    <button
+      type="button"
+      className="brisa-sidebar__brand"
+      onClick={() => onNavegar(rotaInicio)}
+      aria-label={
+        sessao.isPlatformAdmin ? 'Ir para empresas' : 'Ir para início'
+      }
+    >
+      <div
+        className={`brisa-logo${logoEmpresa ? ' brisa-logo--imagem' : ''}`}
+        aria-hidden="true"
+        style={
+          !logoEmpresa && empresa?.corPrimaria
+            ? { background: empresa.corPrimaria }
+            : undefined
+        }
+      >
+        {logoEmpresa ? (
+          <img src={logoEmpresa} width={42} height={42} alt="" decoding="async" />
+        ) : (
+          <span className="brisa-logo__iniciais">
+            {iniciaisEmpresa(nomeEmpresa)}
+          </span>
+        )}
+      </div>
+      <div className="brisa-sidebar__brand-text">
+        <span className="brisa-sidebar__title">{nomeEmpresa}</span>
+        <span className="brisa-sidebar__subtitle">{segmentoEmpresa}</span>
+      </div>
+    </button>
+  );
 
   return (
     <aside
       className={`brisa-sidebar ${recolhida ? 'brisa-sidebar--collapsed' : ''}`}
     >
       <div className="brisa-sidebar__inner">
-      <div className="brisa-sidebar__brand">
-        <div
-          className={`brisa-logo${logoEmpresa ? ' brisa-logo--imagem' : ''}`}
-          aria-hidden="true"
-          style={
-            !logoEmpresa && empresa?.corPrimaria
-              ? { background: empresa.corPrimaria }
-              : undefined
-          }
+      {mostrarTooltip ? (
+        <Tooltip
+          content={sessao.isPlatformAdmin ? 'Empresas' : 'Início'}
+          side="right"
         >
-          {logoEmpresa ? (
-            <img src={logoEmpresa} width={42} height={42} alt="" decoding="async" />
-          ) : (
-            <span className="brisa-logo__iniciais">
-              {iniciaisEmpresa(nomeEmpresa)}
-            </span>
-          )}
-        </div>
-        <div className="brisa-sidebar__brand-text">
-          <span className="brisa-sidebar__title">{nomeEmpresa}</span>
-          <span className="brisa-sidebar__subtitle">{segmentoEmpresa}</span>
-        </div>
-      </div>
+          {brand}
+        </Tooltip>
+      ) : (
+        brand
+      )}
 
       <nav className="brisa-sidebar__nav" aria-label="Navegação principal">
         {itensGeral.length > 0 ? (

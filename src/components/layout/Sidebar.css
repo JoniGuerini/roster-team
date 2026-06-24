@@ -24,8 +24,26 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 0 var(--space-3);
+  width: 100%;
   min-height: 3.5rem;
+  padding: var(--space-2) var(--space-3);
+  margin: 0;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-base);
+}
+
+.brisa-sidebar__brand:hover {
+  background: var(--brisa-sidebar-accent);
+}
+
+.brisa-sidebar__brand:focus-visible {
+  outline: none;
+  box-shadow: var(--brisa-focus-ring);
 }
 
 .brisa-logo {
@@ -277,7 +295,7 @@
 
 .brisa-sidebar--collapsed .brisa-sidebar__brand {
   justify-content: center;
-  padding: 0;
+  padding: var(--space-1);
   width: 100%;
 }
 
