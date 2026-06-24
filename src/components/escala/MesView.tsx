@@ -88,6 +88,14 @@ export function MesView({
             : { total: 0, alertas: 0 };
           const dataObj = fromISO(dia);
 
+          const numClass = [
+            'brisa-mes__num',
+            selecionado ? 'brisa-mes__num--selecionado' : '',
+            eHoje && !selecionado ? 'brisa-mes__num--hoje' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+
           return (
             <button
               key={dia}
@@ -95,18 +103,15 @@ export function MesView({
               className={[
                 'brisa-mes__cell',
                 noMes ? '' : 'brisa-mes__cell--fora',
-                selecionado || eHoje ? 'brisa-mes__cell--selecionada' : '',
+                selecionado ? 'brisa-mes__cell--selecionada' : '',
                 resumo.alertas > 0 ? 'brisa-mes__cell--alerta' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
               onClick={() => onSelecionarDia(dia)}
+              aria-current={selecionado ? 'date' : undefined}
             >
-              <span
-                className={`brisa-mes__num ${eHoje ? 'brisa-mes__num--hoje' : ''}`}
-              >
-                {dataObj.getDate()}
-              </span>
+              <span className={numClass}>{dataObj.getDate()}</span>
               {resumo.total > 0 && (
                 <span className="brisa-mes__badge">
                   {resumo.total}

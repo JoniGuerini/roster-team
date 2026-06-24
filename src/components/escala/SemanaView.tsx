@@ -35,6 +35,7 @@ export function SemanaView({
     <div className="brisa-semana">
       <TimeGridEscala
         dias={dias}
+        dataSelecionada={data}
         escalasPorData={escalasPorData}
         turnos={turnos}
         funcionarios={funcionarios}

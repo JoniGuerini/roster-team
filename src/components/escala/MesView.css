@@ -88,10 +88,17 @@
   border-radius: var(--radius-pill);
 }
 
-.brisa-mes__num--hoje {
+.brisa-mes__num--selecionado {
   background: var(--brisa-primary);
   color: var(--brisa-text-on-brand);
   font-weight: 600;
+}
+
+.brisa-mes__num--hoje {
+  border: 2px solid var(--brisa-primary);
+  color: var(--brisa-primary);
+  font-weight: 600;
+  box-sizing: border-box;
 }
 
 .brisa-mes__badge {

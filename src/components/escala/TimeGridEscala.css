@@ -34,11 +34,14 @@
   background: transparent;
   cursor: pointer;
   font: inherit;
-  transition: background var(--transition-fast);
 }
 
-.brisa-timegrid__day-head:hover {
-  background: color-mix(in srgb, var(--accent) 50%, transparent);
+.brisa-timegrid__day-head:hover .brisa-timegrid__day-num:not(
+    .brisa-timegrid__day-num--selecionado
+  ):not(.brisa-timegrid__day-num--hoje) {
+  border-color: var(--brisa-primary);
+  color: var(--brisa-primary);
+  font-weight: 600;
 }
 
 .brisa-timegrid__day-label {
@@ -58,11 +61,23 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--brisa-text);
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.brisa-timegrid__day-num--selecionado {
+  background: var(--brisa-primary);
+  color: var(--brisa-text-on-brand);
+  font-weight: 600;
 }
 
 .brisa-timegrid__day-num--hoje {
-  background: var(--brisa-primary);
-  color: var(--brisa-text-on-brand);
+  border-color: var(--brisa-primary);
+  color: var(--brisa-primary);
   font-weight: 600;
 }
 

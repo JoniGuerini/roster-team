@@ -29,6 +29,7 @@ import './EscalaAddMini.css';
 
 interface TimeGridEscalaProps {
   dias: string[];
+  dataSelecionada: string;
   escalasPorData: Map<string, EscalaDia>;
   turnos: Turno[];
   funcionarios: Funcionario[];
@@ -44,6 +45,7 @@ function classeStatus(key: StatusTurnoEscaladoKey): string {
 
 export function TimeGridEscala({
   dias,
+  dataSelecionada,
   escalasPorData,
   turnos,
   funcionarios,
@@ -70,21 +72,27 @@ export function TimeGridEscala({
           {dias.map((dia) => {
             const dataObj = fromISO(dia);
             const eHoje = ehHoje(dia);
+            const selecionado = dia === dataSelecionada;
+            const numClass = [
+              'brisa-timegrid__day-num',
+              selecionado ? 'brisa-timegrid__day-num--selecionado' : '',
+              eHoje && !selecionado ? 'brisa-timegrid__day-num--hoje' : '',
+            ]
+              .filter(Boolean)
+              .join(' ');
+
             return (
               <button
                 key={dia}
                 type="button"
                 className="brisa-timegrid__day-head"
                 onClick={() => onAbrirDia(dia)}
+                aria-current={selecionado ? 'date' : undefined}
               >
                 <span className="brisa-timegrid__day-label">
                   {NOMES_DIAS_CURTOS[dataObj.getDay()]}
                 </span>
-                <span
-                  className={`brisa-timegrid__day-num ${eHoje ? 'brisa-timegrid__day-num--hoje' : ''}`}
-                >
-                  {dataObj.getDate()}
-                </span>
+                <span className={numClass}>{dataObj.getDate()}</span>
               </button>
             );
           })}
