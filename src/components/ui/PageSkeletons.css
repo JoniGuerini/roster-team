@@ -86,3 +86,79 @@
 .brisa-page-skeleton__dia {
   margin-bottom: var(--space-2);
 }
+
+.brisa-page-skeleton__perfil-pessoa {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  pointer-events: none;
+}
+
+.brisa-page-skeleton__perfil-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--brisa-sidebar);
+  border: 1px solid var(--brisa-sidebar-border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-md);
+}
+
+.brisa-page-skeleton__perfil-hero-text {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.brisa-page-skeleton__perfil-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.brisa-page-skeleton__perfil-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.brisa-page-skeleton__perfil-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-5) var(--space-6);
+}
+
+.brisa-page-skeleton__perfil-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brisa-page-skeleton__perfil-docs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.brisa-page-skeleton__perfil-doc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--brisa-surface-soft);
+  border: 1px solid var(--brisa-border);
+}
+
+.brisa-page-skeleton__perfil-doc-lines {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}

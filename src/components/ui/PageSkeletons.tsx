@@ -3,6 +3,7 @@ import '../turnos/TurnosList.css';
 import '../../pages/ConfiguracoesPage.css';
 import '../../pages/EmpresasPage.css';
 import '../../pages/AtividadesPage.css';
+import '../../pages/PerfilPessoaPage.css';
 import './PageSkeletons.css';
 
 export function TurnosListSkeleton() {
@@ -108,6 +109,66 @@ export function EmpresaDetalheSkeleton() {
         </div>
       </div>
       <Skeleton height={120} width="100%" rounded="xl" />
+    </div>
+  );
+}
+
+export function PerfilPessoaSkeleton() {
+  return (
+    <div
+      className="brisa-page-skeleton__perfil-pessoa"
+      aria-busy="true"
+      aria-label="Carregando perfil"
+    >
+      <div className="brisa-page-skeleton__perfil-hero">
+        <Skeleton rounded="full" width={72} height={72} />
+        <div className="brisa-page-skeleton__perfil-hero-text">
+          <Skeleton height={11} width={88} />
+          <Skeleton height={26} width={220} />
+          <Skeleton height={13} width={168} />
+          <Skeleton height={24} width={84} rounded="pill" />
+        </div>
+        <div className="brisa-page-skeleton__perfil-actions">
+          <Skeleton height={36} width={72} rounded="xl" />
+          <Skeleton height={36} width={80} rounded="xl" />
+        </div>
+      </div>
+
+      <div className="brisa-perfil__body">
+        <div className="brisa-perfil__col brisa-perfil__col--main">
+          <div className="brisa-perfil__card brisa-page-skeleton__perfil-card">
+            <Skeleton height={12} width={100} />
+            <div className="brisa-page-skeleton__perfil-grid">
+              {Array.from({ length: 7 }).map((_, index) => (
+                <div key={index} className="brisa-page-skeleton__perfil-field">
+                  <Skeleton height={11} width={96} />
+                  <Skeleton height={15} width="78%" />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="brisa-perfil__card brisa-page-skeleton__perfil-card">
+            <Skeleton height={12} width={160} />
+            <Skeleton height={120} width="100%" rounded="xl" />
+          </div>
+        </div>
+        <div className="brisa-perfil__col brisa-perfil__col--side">
+          <div className="brisa-perfil__card brisa-page-skeleton__perfil-card">
+            <Skeleton height={12} width={100} />
+            <div className="brisa-page-skeleton__perfil-docs">
+              {Array.from({ length: 2 }).map((_, index) => (
+                <div key={index} className="brisa-page-skeleton__perfil-doc">
+                  <div className="brisa-page-skeleton__perfil-doc-lines">
+                    <Skeleton height={13} width="72%" />
+                    <Skeleton height={12} width="55%" />
+                  </div>
+                  <Skeleton height={32} width={72} rounded="xl" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

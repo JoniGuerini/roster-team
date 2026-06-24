@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { PerfilPessoaSkeleton } from '../components/ui/PageSkeletons';
 import { Icon } from '../components/ui/Icon';
 import { Modal } from '../components/ui/Modal';
 import { FuncionarioForm } from '../components/funcionarios/FuncionarioForm';
@@ -62,23 +63,31 @@ export interface PerfilPessoaPageProps {
 export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) {
   const [funcionario, setFuncionario] = useState<Funcionario | null>(null);
   const [extra, setExtra] = useState<PessoaExtra | null>(null);
+  const [carregando, setCarregando] = useState(true);
   const [modalEdicao, setModalEdicao] = useState(false);
   const [confirmarExcluir, setConfirmarExcluir] = useState(false);
   const [abrindoDocId, setAbrindoDocId] = useState<string | null>(null);
 
   const recarregar = useCallback(async () => {
-    if (tipo === 'funcionario') {
-      const f = await funcionariosStorage.obter(id);
-      setFuncionario(f ?? null);
-      setExtra(null);
-    } else {
-      const e = await extrasStorage.obter(id);
-      setExtra(e ?? null);
-      setFuncionario(null);
+    setCarregando(true);
+    try {
+      if (tipo === 'funcionario') {
+        const f = await funcionariosStorage.obter(id);
+        setFuncionario(f ?? null);
+        setExtra(null);
+      } else {
+        const e = await extrasStorage.obter(id);
+        setExtra(e ?? null);
+        setFuncionario(null);
+      }
+    } finally {
+      setCarregando(false);
     }
   }, [tipo, id]);
 
   useEffect(() => {
+    setFuncionario(null);
+    setExtra(null);
     void recarregar();
   }, [recarregar]);
 
@@ -131,6 +140,20 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
     disparoNotificacoes();
     setConfirmarExcluir(false);
     onVoltar();
+  }
+
+  if (carregando && !registro) {
+    return (
+      <div className="brisa-page brisa-perfil">
+        <div className="brisa-perfil__toolbar">
+          <button type="button" className="brisa-perfil__back" onClick={onVoltar}>
+            <Icon name="arrow-left" size={18} />
+            Voltar para {tipo === 'funcionario' ? 'funcionários' : 'extras'}
+          </button>
+        </div>
+        <PerfilPessoaSkeleton />
+      </div>
+    );
   }
 
   if (!registro) {
