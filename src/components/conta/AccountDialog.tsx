@@ -17,6 +17,7 @@ interface AccountDialogProps {
   sessao: Sessao;
   empresa?: Empresa;
   onSessaoAtualizada?: (sessao: Sessao) => void;
+  onSair: () => void;
 }
 
 type SecaoConta = 'perfil' | 'seguranca';
@@ -32,6 +33,7 @@ export function AccountDialog({
   sessao,
   empresa,
   onSessaoAtualizada,
+  onSair,
 }: AccountDialogProps) {
   const [secao, setSecao] = useState<SecaoConta>('perfil');
   const [nome, setNome] = useState(sessao.nome);
@@ -133,6 +135,11 @@ export function AccountDialog({
     setSucesso(true);
   }
 
+  function handleSair() {
+    onOpenChange(false);
+    onSair();
+  }
+
   if (!open) return null;
 
   return createPortal(
@@ -173,6 +180,17 @@ export function AccountDialog({
               );
             })}
           </nav>
+
+          <div className="brisa-account-dialog__sidebar-footer">
+            <button
+              type="button"
+              className="brisa-account-dialog__nav-item brisa-account-dialog__nav-item--danger"
+              onClick={handleSair}
+            >
+              <Icon name="logout" size={16} />
+              Sair
+            </button>
+          </div>
         </aside>
 
         <div className="brisa-account-dialog__main">

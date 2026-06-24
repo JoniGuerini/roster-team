@@ -13,7 +13,6 @@ interface SidebarProps {
   rotaAtiva: RotaId;
   onNavegar: (rota: RotaId) => void;
   sessao: Sessao;
-  onSair: () => void;
   empresa?: Empresa;
   recolhida?: boolean;
   onAbrirConta: () => void;
@@ -76,7 +75,6 @@ export function Sidebar({
   rotaAtiva,
   onNavegar,
   sessao,
-  onSair,
   empresa,
   recolhida = false,
   onAbrirConta,
@@ -163,7 +161,6 @@ export function Sidebar({
           recolhida={recolhida}
           mostrarTooltip={mostrarTooltip}
           onAbrirConta={onAbrirConta}
-          onSair={onSair}
         />
       </div>
       </div>

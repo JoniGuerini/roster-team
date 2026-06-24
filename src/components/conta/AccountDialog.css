@@ -44,6 +44,7 @@
   .brisa-account-dialog__sidebar {
     width: 16rem;
     padding: var(--space-5);
+    min-height: 100%;
   }
 }
 
@@ -119,6 +120,27 @@
 .brisa-account-dialog__nav-item--active {
   background: var(--brisa-sidebar-active-bg);
   color: var(--brisa-sidebar-active-fg);
+}
+
+.brisa-account-dialog__sidebar-footer {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid color-mix(in srgb, var(--brisa-sidebar-foreground) 12%, transparent);
+}
+
+.brisa-account-dialog__nav-item--danger {
+  color: #f87171;
+}
+
+.brisa-account-dialog__nav-item--danger:hover {
+  background: color-mix(in srgb, #f87171 14%, transparent);
+  color: #fca5a5;
+}
+
+@media (min-width: 768px) {
+  .brisa-account-dialog__nav-item--danger {
+    width: 100%;
+  }
 }
 
 .brisa-account-dialog__main {

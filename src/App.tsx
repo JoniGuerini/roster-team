@@ -197,7 +197,6 @@ export default function App() {
           rotaAtiva={estado.rota}
           onNavegar={navegarParaRota}
           sessao={sessao}
-          onSair={sair}
           empresa={empresa}
           recolhida={sidebarRecolhida}
           onAbrirConta={() => setContaAberta(true)}
@@ -273,6 +272,7 @@ export default function App() {
         sessao={sessao}
         empresa={empresa}
         onSessaoAtualizada={setSessao}
+        onSair={sair}
       />
     </div>
   );
