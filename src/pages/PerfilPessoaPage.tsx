@@ -7,7 +7,13 @@ import { FuncionarioForm } from '../components/funcionarios/FuncionarioForm';
 import { ConfirmDeleteModal } from '../components/funcionarios/ConfirmDeleteModal';
 import { funcionariosStorage } from '../services/funcionariosStorage';
 import { extrasStorage } from '../services/extrasStorage';
-import type { Funcionario, FuncionarioInput } from '../types/funcionario';
+import { urlAssinadaDocumento } from '../services/pessoaDocumentosStorage';
+import type {
+  DocumentoPdf,
+  Funcionario,
+  FuncionarioInput,
+  PayloadSalvarPessoaForm,
+} from '../types/funcionario';
 import {
   MOTIVOS_AUSENCIA,
   OPCOES_DIA_FOLGA_SEMANAL,
@@ -58,6 +64,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
   const [extra, setExtra] = useState<PessoaExtra | null>(null);
   const [modalEdicao, setModalEdicao] = useState(false);
   const [confirmarExcluir, setConfirmarExcluir] = useState(false);
+  const [abrindoDocId, setAbrindoDocId] = useState<string | null>(null);
 
   const recarregar = useCallback(async () => {
     if (tipo === 'funcionario') {
@@ -86,15 +93,30 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
       ? (funcionario?.documentos ?? [])
       : (extra?.documentos ?? []);
 
-  async function salvarFuncionario(input: FuncionarioInput) {
-    await funcionariosStorage.atualizar(id, input);
+  async function abrirDocumento(doc: DocumentoPdf) {
+    if (!doc.storagePath) return;
+    setAbrindoDocId(doc.id);
+    try {
+      const url = await urlAssinadaDocumento(doc.storagePath);
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error('[perfil] abrir documento', error);
+    } finally {
+      setAbrindoDocId(null);
+    }
+  }
+
+  async function salvarFuncionario(
+    payload: PayloadSalvarPessoaForm<FuncionarioInput>,
+  ) {
+    await funcionariosStorage.salvarComDocumentos(funcionario ?? undefined, payload);
     disparoNotificacoes();
     await recarregar();
     setModalEdicao(false);
   }
 
-  async function salvarExtra(input: PessoaExtraInput) {
-    await extrasStorage.atualizar(id, input);
+  async function salvarExtra(payload: PayloadSalvarPessoaForm<PessoaExtraInput>) {
+    await extrasStorage.salvarComDocumentos(extra ?? undefined, payload);
     disparoNotificacoes();
     await recarregar();
     setModalEdicao(false);
@@ -130,15 +152,9 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
     );
   }
 
-  const secundarias =
-    tipo === 'funcionario'
-      ? (funcionario!.funcoesSecundarias ?? [])
-      : (extra!.funcoesSecundarias ?? []);
+  const secundarias = registro.funcoesSecundarias ?? [];
 
-  const statusVal =
-    tipo === 'funcionario'
-      ? funcionario!.status
-      : extra!.status ?? undefined;
+  const statusVal = registro.status ?? undefined;
 
   return (
     <div className="brisa-page brisa-perfil">
@@ -188,11 +204,9 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
           <div className="brisa-perfil__field">
             <span className="brisa-perfil__label">Função principal</span>
             <span className="brisa-perfil__value">
-              {tipo === 'funcionario' && funcionario!.funcaoPrincipal
-                ? labelFuncao(funcionario!.funcaoPrincipal)
-                : extra!.funcaoPrincipal
-                  ? labelFuncao(extra!.funcaoPrincipal)
-                  : '—'}
+              {registro.funcaoPrincipal
+                ? labelFuncao(registro.funcaoPrincipal)
+                : '—'}
             </span>
           </div>
           <div className="brisa-perfil__field">
@@ -212,51 +226,35 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
           <div className="brisa-perfil__field">
             <span className="brisa-perfil__label">CPF</span>
             <span className="brisa-perfil__value">
-              {(() => {
-                const cpf =
-                  tipo === 'funcionario' ? funcionario!.cpf : extra!.cpf;
-                return cpf ? formatarCpf(cpf) : '—';
-              })()}
+              {registro.cpf ? formatarCpf(registro.cpf) : '—'}
             </span>
           </div>
           <div className="brisa-perfil__field">
             <span className="brisa-perfil__label">Local de trabalho</span>
             <span className="brisa-perfil__value">
-              {tipo === 'funcionario'
-                ? funcionario!.localTrabalho
-                  ? labelLocal(funcionario!.localTrabalho)
-                  : '—'
-                : extra!.localTrabalho
-                  ? labelLocal(extra!.localTrabalho)
-                  : '—'}
+              {registro.localTrabalho
+                ? labelLocal(registro.localTrabalho)
+                : '—'}
             </span>
           </div>
           <div className="brisa-perfil__field">
             <span className="brisa-perfil__label">Tipo de contrato</span>
             <span className="brisa-perfil__value">
-              {tipo === 'funcionario'
-                ? funcionario!.tipoContrato
-                  ? labelContrato(funcionario!.tipoContrato)
-                  : '—'
-                : extra!.tipoContrato
-                  ? labelContrato(extra!.tipoContrato)
-                  : '—'}
+              {registro.tipoContrato
+                ? labelContrato(registro.tipoContrato)
+                : '—'}
             </span>
           </div>
           <div className="brisa-perfil__field">
             <span className="brisa-perfil__label">Data de admissão</span>
             <span className="brisa-perfil__value">
-              {tipo === 'funcionario'
-                ? formatarData(funcionario!.dataAdmissao ?? '')
-                : formatarData(extra!.dataAdmissao ?? '')}
+              {formatarData(registro.dataAdmissao ?? '')}
             </span>
           </div>
           <div className="brisa-perfil__field">
             <span className="brisa-perfil__label">Dia de folga fixo</span>
             <span className="brisa-perfil__value">
-              {tipo === 'funcionario'
-                ? labelDiaFolga(funcionario!.diaFolgaSemanal)
-                : labelDiaFolga(extra!.diaFolgaSemanal)}
+              {labelDiaFolga(registro.diaFolgaSemanal)}
             </span>
           </div>
         </div>
@@ -310,11 +308,27 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
           <ul className="brisa-perfil__doc-list">
             {documentos.map((d) => (
               <li key={d.id} className="brisa-perfil__doc-item">
-                <span className="brisa-perfil__doc-name">{d.nome}</span>
-                <span className="brisa-perfil__doc-meta">
-                  {formatarTamanhoArquivo(d.tamanho)} · enviado em{' '}
-                  {formatarData(d.dataUpload.slice(0, 10))}
-                </span>
+                <div className="brisa-perfil__doc-main">
+                  <span className="brisa-perfil__doc-name">{d.nome}</span>
+                  <span className="brisa-perfil__doc-meta">
+                    {formatarTamanhoArquivo(d.tamanho)} · enviado em{' '}
+                    {formatarData(d.dataUpload.slice(0, 10))}
+                  </span>
+                </div>
+                {d.storagePath ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    disabled={abrindoDocId === d.id}
+                    onClick={() => void abrirDocumento(d)}
+                    leftIcon={<Icon name="file-text" size={14} />}
+                  >
+                    {abrindoDocId === d.id ? 'Abrindo…' : 'Abrir'}
+                  </Button>
+                ) : (
+                  <span className="brisa-perfil__doc-indisp">Sem arquivo</span>
+                )}
               </li>
             ))}
           </ul>
@@ -334,7 +348,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
           <FuncionarioForm
             funcionario={funcionario}
             onCancel={() => setModalEdicao(false)}
-            onSubmit={(input) => void salvarFuncionario(input)}
+            onSubmit={(payload) => salvarFuncionario(payload)}
           />
         ) : tipo === 'extra' && extra ? (
           <FuncionarioForm
@@ -342,7 +356,7 @@ export function PerfilPessoaPage({ tipo, id, onVoltar }: PerfilPessoaPageProps) 
             variant="extra"
             extra={extra}
             onCancel={() => setModalEdicao(false)}
-            onSubmit={(input) => void salvarExtra(input)}
+            onSubmit={(payload) => salvarExtra(payload)}
           />
         ) : null}
       </Modal>

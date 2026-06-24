@@ -1,6 +1,5 @@
 import type {
   DiaFolgaSemanal,
-  DocumentoPdf,
   Funcao,
   LocalTrabalho,
   MotivoAusencia,
@@ -10,6 +9,7 @@ import type {
 } from '../types/funcionario';
 import type { PessoaExtra, PessoaExtraInput } from '../types/pessoaExtra';
 import type { Database, Json } from '../types/database';
+import { mapDocumentos } from './documentoMappers';
 
 export type PessoaExtraRow = Database['public']['Tables']['extras']['Row'];
 
@@ -23,27 +23,6 @@ function mapFuncoesSecundarias(valor: unknown): Funcao[] {
     'supervisor',
   ];
   return valor.filter((f): f is Funcao => validas.includes(f as Funcao));
-}
-
-function mapDocumentos(valor: unknown): DocumentoPdf[] {
-  if (!Array.isArray(valor)) return [];
-  return valor
-    .filter(
-      (d): d is DocumentoPdf =>
-        typeof d === 'object' &&
-        d !== null &&
-        typeof (d as DocumentoPdf).id === 'string' &&
-        typeof (d as DocumentoPdf).nome === 'string',
-    )
-    .map((d) => ({
-      id: d.id,
-      nome: d.nome,
-      tamanho: typeof d.tamanho === 'number' ? d.tamanho : 0,
-      dataUpload:
-        typeof d.dataUpload === 'string'
-          ? d.dataUpload
-          : new Date().toISOString(),
-    }));
 }
 
 function mapAusencias(valor: unknown): PeriodoAusencia[] {

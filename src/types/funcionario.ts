@@ -30,6 +30,15 @@ export interface DocumentoPdf {
   nome: string;
   tamanho: number;
   dataUpload: string;
+  /** Caminho no bucket pessoa-documentos (Supabase Storage). */
+  storagePath?: string;
+  mimeType?: string;
+}
+
+export interface PayloadSalvarPessoaForm<TInput> {
+  input: TInput;
+  arquivosPendentes: Map<string, File>;
+  storagePathsRemovidos: string[];
 }
 
 export type MotivoAusencia = 'ferias' | 'afastamento' | 'licenca' | 'outro';

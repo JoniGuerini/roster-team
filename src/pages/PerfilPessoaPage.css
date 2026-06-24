@@ -230,12 +230,26 @@
 
 .brisa-perfil__doc-item {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   padding: var(--space-3);
   border-radius: var(--radius-md);
   background: var(--brisa-surface-soft);
   border: 1px solid var(--brisa-border);
+}
+
+.brisa-perfil__doc-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.brisa-perfil__doc-indisp {
+  font-size: 12px;
+  color: var(--brisa-text-soft);
+  flex-shrink: 0;
 }
 
 .brisa-perfil__doc-name {

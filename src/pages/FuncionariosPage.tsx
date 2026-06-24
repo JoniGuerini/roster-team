@@ -14,7 +14,7 @@ import { TableSkeleton } from '../components/ui/TableSkeleton';
 import { funcionariosStorage } from '../services/funcionariosStorage';
 import type { Sessao } from '../services/authSession';
 import { podeEditarModulo } from '../utils/rotaPermissoes';
-import type { Funcionario, FuncionarioInput } from '../types/funcionario';
+import type { Funcionario, FuncionarioInput, PayloadSalvarPessoaForm } from '../types/funcionario';
 import {
   FUNCOES,
   LOCAIS_TRABALHO,
@@ -137,13 +137,9 @@ export function FuncionariosPage({ sessao, onAbrirPerfil }: FuncionariosPageProp
     setEditando(undefined);
   }
 
-  async function salvar(input: FuncionarioInput) {
+  async function salvar(payload: PayloadSalvarPessoaForm<FuncionarioInput>) {
     try {
-      if (editando) {
-        await funcionariosStorage.atualizar(editando.id, input);
-      } else {
-        await funcionariosStorage.criar(input);
-      }
+      await funcionariosStorage.salvarComDocumentos(editando, payload);
       await carregar();
       disparoNotificacoes();
       fecharModal();
@@ -151,6 +147,7 @@ export function FuncionariosPage({ sessao, onAbrirPerfil }: FuncionariosPageProp
       setErro(
         e instanceof Error ? e.message : 'Não foi possível salvar o funcionário.',
       );
+      throw e;
     }
   }
 
@@ -378,7 +375,7 @@ export function FuncionariosPage({ sessao, onAbrirPerfil }: FuncionariosPageProp
         <FuncionarioForm
           funcionario={editando}
           onCancel={fecharModal}
-          onSubmit={(input) => void salvar(input)}
+          onSubmit={(payload) => salvar(payload)}
         />
       </Modal>
 

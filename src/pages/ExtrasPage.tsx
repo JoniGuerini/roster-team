@@ -14,6 +14,7 @@ import { TableSkeleton } from '../components/ui/TableSkeleton';
 import { extrasStorage } from '../services/extrasStorage';
 import type { Sessao } from '../services/authSession';
 import { podeEditarModulo } from '../utils/rotaPermissoes';
+import type { PayloadSalvarPessoaForm } from '../types/funcionario';
 import type { PessoaExtra, PessoaExtraInput } from '../types/pessoaExtra';
 import {
   FUNCOES,
@@ -143,13 +144,9 @@ export function ExtrasPage({ sessao, onAbrirPerfil }: ExtrasPageProps) {
     setEditando(undefined);
   }
 
-  async function salvar(input: PessoaExtraInput) {
+  async function salvar(payload: PayloadSalvarPessoaForm<PessoaExtraInput>) {
     try {
-      if (editando) {
-        await extrasStorage.atualizar(editando.id, input);
-      } else {
-        await extrasStorage.criar(input);
-      }
+      await extrasStorage.salvarComDocumentos(editando, payload);
       await carregar();
       disparoNotificacoes();
       fecharModal();
@@ -157,6 +154,7 @@ export function ExtrasPage({ sessao, onAbrirPerfil }: ExtrasPageProps) {
       setErro(
         e instanceof Error ? e.message : 'Não foi possível salvar o extra.',
       );
+      throw e;
     }
   }
 
@@ -390,7 +388,7 @@ export function ExtrasPage({ sessao, onAbrirPerfil }: ExtrasPageProps) {
           variant="extra"
           extra={editando}
           onCancel={fecharModal}
-          onSubmit={(input) => void salvar(input)}
+          onSubmit={(payload) => salvar(payload)}
         />
       </Modal>
 

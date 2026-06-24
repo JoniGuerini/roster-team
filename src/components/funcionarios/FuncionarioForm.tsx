@@ -11,6 +11,7 @@ import {
   type Funcionario,
   type FuncionarioInput,
   type LocalTrabalho,
+  type PayloadSalvarPessoaForm,
   type PeriodoAusencia,
   type StatusFuncionario,
   type TipoContrato,
@@ -25,6 +26,11 @@ import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 import { AusenciasEditor } from './AusenciasEditor';
 import { cpfValido, formatarCpf } from '../../utils/cpf';
+import {
+  LIMITE_ARQUIVO_DOCUMENTO_BYTES,
+  LIMITE_DOCUMENTOS_POR_PESSOA,
+  validarArquivoDocumento,
+} from '../../services/pessoaDocumentosStorage';
 import './FuncionarioForm.css';
 
 const TIPOS_DOCUMENTO_ACEITOS = new Set([
@@ -52,13 +58,17 @@ export type FuncionarioFormProps =
       variant?: 'employee';
       funcionario?: Funcionario;
       onCancel: () => void;
-      onSubmit: (input: FuncionarioInput) => void;
+      onSubmit: (
+        payload: PayloadSalvarPessoaForm<FuncionarioInput>,
+      ) => void | Promise<void>;
     }
   | {
       variant: 'extra';
       extra?: PessoaExtra;
       onCancel: () => void;
-      onSubmit: (input: PessoaExtraInput) => void;
+      onSubmit: (
+        payload: PayloadSalvarPessoaForm<PessoaExtraInput>,
+      ) => void | Promise<void>;
     };
 
 interface FormState {
@@ -116,6 +126,12 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
   const [form, setForm] = useState<FormState>(ESTADO_INICIAL);
   const [erros, setErros] = useState<FormErrors>({});
   const [arrastandoDocumentos, setArrastandoDocumentos] = useState(false);
+  const [arquivosPendentes, setArquivosPendentes] = useState<Map<string, File>>(
+    () => new Map(),
+  );
+  const [pathsParaExcluir, setPathsParaExcluir] = useState<string[]>([]);
+  const [erroDocumentos, setErroDocumentos] = useState<string | null>(null);
+  const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
     if (isExtra) {
@@ -164,6 +180,9 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
       }
     }
     setErros({});
+    setArquivosPendentes(new Map());
+    setPathsParaExcluir([]);
+    setErroDocumentos(null);
   }, [isExtra, registroExtra, registroFuncionario]);
 
   function atualizarCampo<K extends keyof FormState>(
@@ -187,15 +206,40 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
   }
 
   function processarArquivosLista(arquivos: FileList | File[]) {
-    const novos: DocumentoPdf[] = Array.from(arquivos)
-      .filter(arquivoDocumentoAceito)
-      .map((arquivo) => ({
-        id: gerarIdDocumento(),
+    const aceitos = Array.from(arquivos).filter(arquivoDocumentoAceito);
+    if (aceitos.length === 0) return;
+
+    const vagas = LIMITE_DOCUMENTOS_POR_PESSOA - form.documentos.length;
+    if (vagas <= 0) {
+      setErroDocumentos(
+        `Limite de ${LIMITE_DOCUMENTOS_POR_PESSOA} documentos por pessoa.`,
+      );
+      return;
+    }
+
+    const novos: DocumentoPdf[] = [];
+    const novosArquivos = new Map(arquivosPendentes);
+
+    for (const arquivo of aceitos.slice(0, vagas)) {
+      const erroTamanho = validarArquivoDocumento(arquivo);
+      if (erroTamanho) {
+        setErroDocumentos(`${arquivo.name}: ${erroTamanho}`);
+        continue;
+      }
+      const id = gerarIdDocumento();
+      novos.push({
+        id,
         nome: arquivo.name,
         tamanho: arquivo.size,
         dataUpload: new Date().toISOString(),
-      }));
+      });
+      novosArquivos.set(id, arquivo);
+    }
+
     if (novos.length === 0) return;
+
+    setErroDocumentos(null);
+    setArquivosPendentes(novosArquivos);
     setForm((prev) => ({
       ...prev,
       documentos: [...prev.documentos, ...novos],
@@ -238,9 +282,18 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
   }
 
   function removerDocumento(id: string) {
+    const doc = form.documentos.find((item) => item.id === id);
+    if (doc?.storagePath) {
+      setPathsParaExcluir((prev) => [...prev, doc.storagePath!]);
+    }
+    setArquivosPendentes((prev) => {
+      const next = new Map(prev);
+      next.delete(id);
+      return next;
+    });
     setForm((prev) => ({
       ...prev,
-      documentos: prev.documentos.filter((doc) => doc.id !== id),
+      documentos: prev.documentos.filter((item) => item.id !== id),
     }));
   }
 
@@ -287,14 +340,29 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
     };
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!validar()) return;
-    if (props.variant === 'extra') {
-      props.onSubmit(montarInputComum());
-      return;
+
+    const payload = {
+      input: montarInputComum(),
+      arquivosPendentes,
+      storagePathsRemovidos: pathsParaExcluir,
+    };
+
+    setSalvando(true);
+    setErroDocumentos(null);
+    try {
+      await props.onSubmit(payload);
+    } catch (error) {
+      setErroDocumentos(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível salvar os documentos.',
+      );
+    } finally {
+      setSalvando(false);
     }
-    props.onSubmit(montarInputComum());
   }
 
   return (
@@ -569,18 +637,33 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
               : 'Clique ou arraste PDF e imagens'}
           </span>
           <span className="brisa-upload__hint">
-            Exames médicos, contratos, fotos de documentos, etc.
+            Exames médicos, contratos, fotos de documentos, etc. Máx.{' '}
+            {LIMITE_DOCUMENTOS_POR_PESSOA} arquivos ·{' '}
+            {Math.round(LIMITE_ARQUIVO_DOCUMENTO_BYTES / (1024 * 1024))} MB cada.
           </span>
         </label>
 
+        {erroDocumentos ? (
+          <p className="brisa-form__doc-erro" role="alert">
+            {erroDocumentos}
+          </p>
+        ) : null}
+
         {form.documentos.length > 0 && (
           <ul className="brisa-form__doc-list">
-            {form.documentos.map((doc) => (
+            {form.documentos.map((doc) => {
+              const pendente = arquivosPendentes.has(doc.id);
+              return (
               <li key={doc.id} className="brisa-form__doc">
                 <div className="brisa-form__doc-info">
                   <span className="brisa-form__doc-name">{doc.nome}</span>
                   <span className="brisa-form__doc-size">
                     {formatarTamanho(doc.tamanho)}
+                    {pendente
+                      ? ' · será enviado ao salvar'
+                      : doc.storagePath
+                        ? ' · armazenado'
+                        : ' · metadado antigo (sem arquivo)'}
                   </span>
                 </div>
                 <button
@@ -592,7 +675,8 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
                   <Icon name="x" size={16} />
                 </button>
               </li>
-            ))}
+            );
+            })}
           </ul>
         )}
       </section>
@@ -601,8 +685,10 @@ export function FuncionarioForm(props: FuncionarioFormProps) {
         <Button type="button" variant="secondary" onClick={props.onCancel}>
           Cancelar
         </Button>
-        <Button type="submit" variant="primary">
-          {isExtra
+        <Button type="submit" variant="primary" disabled={salvando}>
+          {salvando
+            ? 'Salvando…'
+            : isExtra
             ? registroExtra
               ? 'Salvar alterações'
               : 'Registrar extra'

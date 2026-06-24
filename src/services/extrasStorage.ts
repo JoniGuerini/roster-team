@@ -4,8 +4,13 @@ import {
 } from '../lib/pessoaExtraMappers';
 import { supabase } from '../lib/supabase';
 import type { PessoaExtra, PessoaExtraInput } from '../types/pessoaExtra';
+import type { PayloadSalvarPessoaForm } from '../types/funcionario';
 import { authSession } from './authSession';
 import { registrarAtividade } from './atividadesStorage';
+import {
+  excluirDocumentosPessoa,
+  sincronizarDocumentosPessoa,
+} from './pessoaDocumentosStorage';
 
 function erroMensagem(erro: { message: string }, fallback: string): string {
   console.error('[extras]', erro.message);
@@ -142,9 +147,59 @@ export const extrasStorage = {
     return extra;
   },
 
+  async salvarComDocumentos(
+    editando: PessoaExtra | undefined,
+    payload: PayloadSalvarPessoaForm<PessoaExtraInput>,
+  ): Promise<PessoaExtra> {
+    if (editando) {
+      const documentos = await sincronizarDocumentosPessoa({
+        tipo: 'extra',
+        pessoaId: editando.id,
+        documentos: payload.input.documentos ?? [],
+        arquivosPendentes: payload.arquivosPendentes,
+        storagePathsRemovidos: payload.storagePathsRemovidos,
+        documentosAnteriores: editando.documentos ?? [],
+      });
+      const atualizado = await this.atualizar(editando.id, {
+        ...payload.input,
+        documentos,
+      });
+      if (!atualizado) {
+        throw new Error('Não foi possível salvar o extra.');
+      }
+      return atualizado;
+    }
+
+    const criado = await this.criar({
+      ...payload.input,
+      documentos: [],
+    });
+    const documentos = await sincronizarDocumentosPessoa({
+      tipo: 'extra',
+      pessoaId: criado.id,
+      documentos: payload.input.documentos ?? [],
+      arquivosPendentes: payload.arquivosPendentes,
+      storagePathsRemovidos: payload.storagePathsRemovidos,
+      documentosAnteriores: [],
+    });
+
+    if (documentos.length === 0) {
+      return criado;
+    }
+
+    const atualizado = await this.atualizar(criado.id, {
+      ...payload.input,
+      documentos,
+    });
+    return atualizado ?? criado;
+  },
+
   async excluir(id: string): Promise<boolean> {
     const empresaId = empresaIdAtual();
     const existente = await this.obter(id);
+    if (existente) {
+      await excluirDocumentosPessoa(existente.documentos);
+    }
     const { error, count } = await supabase
       .from('extras')
       .delete({ count: 'exact' })
