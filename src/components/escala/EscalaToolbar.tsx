@@ -9,6 +9,7 @@ import {
   rotuloMesAno,
 } from '../../utils/datas';
 import './EscalaToolbar.css';
+import { TurnoStatusLegend } from './TurnoStatusLegend';
 
 export type ModoVisualizacao = 'dia' | 'semana' | 'mes';
 export type FiltroLocal = LocalTrabalho | 'todos';
@@ -87,6 +88,10 @@ export function EscalaToolbar({
         <span className="brisa-escala-toolbar__periodo">
           {rotuloPeriodo(data, modo)}
         </span>
+      </div>
+
+      <div className="brisa-escala-toolbar__centro">
+        <TurnoStatusLegend inline />
       </div>
 
       <div className="brisa-escala-toolbar__right">

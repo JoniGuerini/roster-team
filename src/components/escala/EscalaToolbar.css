@@ -15,11 +15,18 @@
 }
 
 .brisa-escala-toolbar__left,
+.brisa-escala-toolbar__centro,
 .brisa-escala-toolbar__right {
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
   flex-wrap: wrap;
+}
+
+.brisa-escala-toolbar__centro {
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
 }
 
 .brisa-escala-toolbar__periodo {
@@ -76,6 +83,12 @@
 }
 
 @media (max-width: 720px) {
+  .brisa-escala-toolbar__centro {
+    order: 3;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+
   .brisa-escala-toolbar__filtro {
     width: 100%;
   }
