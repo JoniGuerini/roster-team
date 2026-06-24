@@ -1,0 +1,263 @@
+.brisa-equipe-dia {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.brisa-equipe-dia--empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+.brisa-equipe-dia__header {
+  flex-shrink: 0;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--brisa-border);
+}
+
+.brisa-equipe-dia__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--brisa-text);
+}
+
+.brisa-equipe-dia__hint {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--brisa-text-muted);
+}
+
+.brisa-equipe-dia__alert-count {
+  color: var(--brisa-danger);
+  font-weight: 600;
+}
+
+.brisa-equipe-dia__grid {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.brisa-equipe-dia__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--brisa-border);
+  background: var(--brisa-surface-inset);
+}
+
+.brisa-equipe-dia__card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.brisa-equipe-dia__funcao {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brisa-text-soft);
+}
+
+.brisa-equipe-dia__funcao-count {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  color: var(--brisa-text-muted);
+}
+
+.brisa-equipe-dia__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brisa-equipe-dia__pessoa {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  text-align: left;
+  transition: border-color var(--transition-base);
+}
+
+.brisa-equipe-dia__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--brisa-primary-soft);
+  color: var(--brisa-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.brisa-equipe-dia__pessoa-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.brisa-equipe-dia__pessoa-nome {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--brisa-text);
+  line-height: 1.3;
+}
+
+.brisa-equipe-dia__turnos {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brisa-equipe-dia__turno-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  width: 100%;
+  padding: 6px 8px;
+  margin: 0;
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-sm);
+  background: var(--brisa-surface-inset);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition:
+    border-color var(--transition-base),
+    background var(--transition-base);
+}
+
+.brisa-equipe-dia__turno-btn:hover {
+  border-color: var(--brisa-border-strong);
+  background: var(--brisa-surface-soft);
+}
+
+.brisa-equipe-dia__turno-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--brisa-focus-ring);
+}
+
+.brisa-equipe-dia__turno-nome {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--brisa-text);
+  line-height: 1.3;
+}
+
+.brisa-equipe-dia__turno-meta {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--brisa-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.brisa-equipe-dia__turno-alerta {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--brisa-danger);
+  line-height: 1.3;
+}
+
+.brisa-equipe-dia__pessoa-status {
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.brisa-equipe-dia__pessoa--indisp {
+  background: var(--brisa-warning-soft);
+  border-color: rgba(181, 131, 42, 0.2);
+}
+
+.brisa-equipe-dia__pessoa--indisp .brisa-equipe-dia__pessoa-nome {
+  text-decoration: line-through;
+  color: var(--brisa-warning);
+}
+
+.brisa-equipe-dia__pessoa--indisp .brisa-equipe-dia__avatar {
+  background: var(--brisa-warning);
+  color: white;
+}
+
+.brisa-equipe-dia__pessoa--folga {
+  background: var(--brisa-primary-soft);
+  border-color: rgba(47, 107, 168, 0.22);
+}
+
+.brisa-equipe-dia__pessoa--folga .brisa-equipe-dia__pessoa-nome {
+  text-decoration: line-through;
+  color: var(--brisa-primary);
+}
+
+.brisa-equipe-dia__pessoa--folga .brisa-equipe-dia__avatar {
+  background: var(--brisa-primary);
+  color: white;
+}
+
+.brisa-equipe-dia__pessoa--conflito {
+  background: var(--brisa-danger-soft);
+  border-color: rgba(196, 72, 72, 0.25);
+}
+
+.brisa-equipe-dia__pessoa--conflito .brisa-equipe-dia__pessoa-nome {
+  color: var(--brisa-danger);
+}
+
+.brisa-equipe-dia__pessoa--conflito .brisa-equipe-dia__avatar {
+  background: var(--brisa-danger);
+  color: white;
+}
+
+@media (max-width: 560px) {
+  .brisa-equipe-dia__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brisa-equipe-dia__pessoa {
+    flex-wrap: wrap;
+  }
+
+  .brisa-equipe-dia__pessoa-status {
+    width: 100%;
+    padding-left: calc(34px + var(--space-3));
+  }
+}

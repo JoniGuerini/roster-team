@@ -5,6 +5,7 @@ import type {
 } from '../types/escala';
 import type { Funcao } from '../types/funcionario';
 import type { Database, Json } from '../types/database';
+import { totalSlotsAlocados } from '../utils/disponibilidade';
 
 export type EscalaTurnoRow =
   Database['public']['Tables']['escala_turnos']['Row'];
@@ -32,7 +33,7 @@ function mapAlocacoes(valor: unknown): AlocacaoFuncao[] {
         ? (a.funcao as Funcao)
         : 'atendente',
       funcionarioIds: a.funcionarioIds.filter(
-        (id): id is string => typeof id === 'string',
+        (id): id is string => typeof id === 'string' && id.trim().length > 0,
       ),
     }));
 }
@@ -48,21 +49,35 @@ export function rowParaTurnoEscalado(row: EscalaTurnoRow): TurnoEscalado {
   };
 }
 
+/** Prefere a linha com mais alocações; em empate, a mais recente. */
+export function escolherMelhorRow(
+  atual: EscalaTurnoRow,
+  candidata: EscalaTurnoRow,
+): EscalaTurnoRow {
+  const slotsAtual = totalSlotsAlocados(rowParaTurnoEscalado(atual));
+  const slotsCandidata = totalSlotsAlocados(rowParaTurnoEscalado(candidata));
+  if (slotsCandidata !== slotsAtual) {
+    return slotsCandidata > slotsAtual ? candidata : atual;
+  }
+  return candidata.atualizado_em.localeCompare(atual.atualizado_em) >= 0
+    ? candidata
+    : atual;
+}
+
 export function rowsParaEscalas(rows: EscalaTurnoRow[]): EscalaDia[] {
+  const melhorPorDiaTurno = new Map<string, EscalaTurnoRow>();
+
+  for (const row of rows) {
+    const chave = `${row.data}|${row.turno_id}`;
+    const existente = melhorPorDiaTurno.get(chave);
+    melhorPorDiaTurno.set(
+      chave,
+      existente ? escolherMelhorRow(existente, row) : row,
+    );
+  }
+
   const porData = new Map<string, TurnoEscalado[]>();
-  const turnoIdsPorData = new Map<string, Set<string>>();
-  const ordenadas = [...rows].sort((a, b) => {
-    const cmpData = a.data.localeCompare(b.data);
-    if (cmpData !== 0) return cmpData;
-    return a.criado_em.localeCompare(b.criado_em);
-  });
-
-  for (const row of ordenadas) {
-    const jaVistos = turnoIdsPorData.get(row.data) ?? new Set<string>();
-    if (jaVistos.has(row.turno_id)) continue;
-    jaVistos.add(row.turno_id);
-    turnoIdsPorData.set(row.data, jaVistos);
-
+  for (const row of melhorPorDiaTurno.values()) {
     const lista = porData.get(row.data) ?? [];
     lista.push(rowParaTurnoEscalado(row));
     porData.set(row.data, lista);
@@ -70,7 +85,12 @@ export function rowsParaEscalas(rows: EscalaTurnoRow[]): EscalaDia[] {
 
   return [...porData.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([data, turnos]) => ({ data, turnos }));
+    .map(([data, turnos]) => ({
+      data,
+      turnos: [...turnos].sort((a, b) =>
+        a.criadoEm.localeCompare(b.criadoEm),
+      ),
+    }));
 }
 
 export function alocacoesParaJson(alocacoes: AlocacaoFuncao[]): Json {

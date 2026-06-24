@@ -1,7 +1,9 @@
 import {
   alocacoesParaJson,
+  escolherMelhorRow,
   rowParaTurnoEscalado,
   rowsParaEscalas,
+  type EscalaTurnoRow,
 } from '../lib/escalaMappers';
 import { supabase } from '../lib/supabase';
 import type { AlocacaoFuncao, EscalaDia, TurnoEscalado } from '../types/escala';
@@ -345,19 +347,24 @@ export const escalaStorage = {
   async limparDuplicatas(): Promise<number> {
     const empresaId = empresaIdAtual();
     const rows = await carregarRows(empresaId);
-    const manterPorChave = new Map<string, string>();
-    const idsRemover: string[] = [];
+    const porChave = new Map<string, EscalaTurnoRow[]>();
 
-    const ordenadas = [...rows].sort((a, b) =>
-      a.criado_em.localeCompare(b.criado_em),
-    );
-
-    for (const row of ordenadas) {
+    for (const row of rows) {
       const chave = `${row.data}|${row.turno_id}`;
-      if (manterPorChave.has(chave)) {
-        idsRemover.push(row.id);
-      } else {
-        manterPorChave.set(chave, row.id);
+      const grupo = porChave.get(chave) ?? [];
+      grupo.push(row);
+      porChave.set(chave, grupo);
+    }
+
+    const idsRemover: string[] = [];
+    for (const grupo of porChave.values()) {
+      if (grupo.length <= 1) continue;
+      let melhor = grupo[0];
+      for (let i = 1; i < grupo.length; i++) {
+        melhor = escolherMelhorRow(melhor, grupo[i]);
+      }
+      for (const row of grupo) {
+        if (row.id !== melhor.id) idsRemover.push(row.id);
       }
     }
 

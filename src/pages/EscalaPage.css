@@ -1,94 +1,98 @@
-.brisa-page--escala {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  flex: 1;
-  overflow: hidden;
-  gap: var(--space-4);
-}
-
-.brisa-escala-layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  flex: 1;
-  gap: var(--space-4);
-  width: 100%;
-}
-
-.brisa-escala-layout--corpo {
-  flex-direction: row;
-  align-items: stretch;
-}
-
-.brisa-escala-card {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  background: var(--brisa-surface);
-  border: 1px solid var(--brisa-border);
-  border-radius: var(--radius-3xl);
-  box-shadow: var(--shadow-md), var(--shadow-card-ring);
-  overflow: hidden;
-}
-
-.brisa-escala-card--toolbar {
-  flex: 0 0 auto;
-  width: 100%;
-}
-
-.brisa-escala-card--toolbar .brisa-escala-toolbar {
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  background: transparent;
-}
-
-.brisa-escala-card--calendario {
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-}
-
-.brisa-escala-card--calendario .brisa-mes {
-  flex: 1;
-  min-height: 0;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  background: transparent;
-  padding: var(--space-3);
-}
-
-.brisa-escala-card--calendario .brisa-mes__grid {
-  flex: 1;
-  min-height: 0;
-}
-
-.brisa-escala-card--sidebar {
-  width: 100%;
-  max-width: 20rem;
-  flex-shrink: 0;
-}
-
-.brisa-escala-modal__remove-dia {
-  margin-right: auto;
-  color: var(--brisa-danger);
-}
-
-.brisa-escala-modal__remove-dia:hover {
-  background: var(--brisa-danger-soft);
-  color: var(--brisa-danger);
-}
-
-@media (max-width: 920px) {
-  .brisa-escala-layout--corpo {
-    flex-direction: column;
-  }
-
-  .brisa-escala-card--sidebar {
-    max-width: none;
-    max-height: 280px;
-  }
-}
+.brisa-page--escala {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+  gap: var(--space-4);
+}
+
+.brisa-escala-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.brisa-escala-layout--corpo {
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.brisa-escala-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--brisa-surface);
+  border: 1px solid var(--brisa-border);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-md), var(--shadow-card-ring);
+  overflow: hidden;
+}
+
+.brisa-escala-card--toolbar {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.brisa-escala-card--toolbar .brisa-escala-toolbar {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.brisa-escala-card--calendario {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.brisa-escala-card--calendario .brisa-mes {
+  flex: 1;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: var(--space-3);
+}
+
+.brisa-escala-card--calendario .brisa-mes__grid {
+  flex: 1;
+  min-height: 0;
+}
+
+.brisa-escala-card--calendario .brisa-equipe-dia {
+  min-height: 320px;
+}
+
+.brisa-escala-card--sidebar {
+  width: 100%;
+  max-width: 20rem;
+  flex-shrink: 0;
+}
+
+.brisa-escala-modal__remove-dia {
+  margin-right: auto;
+  color: var(--brisa-danger);
+}
+
+.brisa-escala-modal__remove-dia:hover {
+  background: var(--brisa-danger-soft);
+  color: var(--brisa-danger);
+}
+
+@media (max-width: 920px) {
+  .brisa-escala-layout--corpo {
+    flex-direction: column;
+  }
+
+  .brisa-escala-card--sidebar {
+    max-width: none;
+    max-height: 280px;
+  }
+}
 

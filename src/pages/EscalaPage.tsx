@@ -6,9 +6,8 @@ import {
 } from '../components/escala/EscalaToolbar';
 import { SemanaView } from '../components/escala/SemanaView';
 import { MesView } from '../components/escala/MesView';
-import { TimeGridEscala } from '../components/escala/TimeGridEscala';
+import { EquipeDiaView } from '../components/escala/EquipeDiaView';
 import { EscalaDiaPainel } from '../components/escala/EscalaDiaPainel';
-import { AlocacoesTabela } from '../components/escala/AlocacoesTabela';
 import { AdicionarTurnoModal } from '../components/escala/AdicionarTurnoModal';
 import { Modal } from '../components/ui/Modal';
 import { Button } from '../components/ui/Button';
@@ -152,12 +151,6 @@ export function EscalaPage() {
     );
   }, [escalas, turnos, filtroLocal, data]);
 
-  const escalasPorData = useMemo(() => {
-    const map = new Map<string, EscalaDia>();
-    for (const e of escalasFiltradas) map.set(e.data, e);
-    return map;
-  }, [escalasFiltradas]);
-
   function navegar(direcao: -1 | 1) {
     if (modo === 'dia') setData(adicionarDias(data, direcao));
     else if (modo === 'semana') setData(adicionarDias(data, direcao * 7));
@@ -297,20 +290,19 @@ export function EscalaPage() {
           )}
 
           {modo === 'dia' && (
-            <TimeGridEscala
-              dias={[data]}
-              escalasPorData={escalasPorData}
+            <EquipeDiaView
+              data={data}
+              escala={escalaDiaSelecionado}
               turnos={turnos}
               funcionarios={funcionarios}
               extras={extras}
-              onAbrirDia={selecionarDia}
-              onAbrirTurno={
-                podeEditar
-                  ? (d, id) => abrirEdicaoTurnoNaEscala(d, id)
-                  : undefined
-              }
               onAdicionar={
                 podeEditar ? () => abrirAdicionarPara(data) : undefined
+              }
+              onAbrirTurno={
+                podeEditar
+                  ? (id) => abrirEdicaoTurnoNaEscala(data, id)
+                  : undefined
               }
             />
           )}
@@ -332,16 +324,6 @@ export function EscalaPage() {
           }
         />
       </div>
-
-      {modo === 'dia' && escalaDiaSelecionado.turnos.length > 0 ? (
-        <AlocacoesTabela
-          data={data}
-          escala={escalaDiaSelecionado}
-          turnos={turnos}
-          funcionarios={funcionarios}
-          extras={extras}
-        />
-      ) : null}
 
       <AdicionarTurnoModal
         open={Boolean(adicionarPara)}
