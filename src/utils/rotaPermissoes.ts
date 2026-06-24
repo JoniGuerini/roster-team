@@ -20,6 +20,7 @@ const PERMISSOES_VER_ROTA: Partial<Record<RotaId, Permissao[]>> = {
 };
 
 const ROTAS_EMPRESA: RotaId[] = [
+  'inicio',
   'escala',
   'turnos',
   'funcionarios',
@@ -53,7 +54,7 @@ export function permissoesParaRota(rota: RotaId): Permissao[] | null {
 }
 
 export function recursoDaRota(rota: RotaId): RecursoEmpresa | null {
-  if (rota === 'empresas' || rota === 'planos') return null;
+  if (rota === 'inicio' || rota === 'empresas' || rota === 'planos') return null;
   return rota as RecursoEmpresa;
 }
 
@@ -65,7 +66,10 @@ export function podeAcessarRota(
     isPlatformAdmin?: boolean;
   },
 ): boolean {
-  if (rota === 'empresas' || rota === 'planos') {
+  if (rota === 'inicio' || rota === 'empresas' || rota === 'planos') {
+    if (rota === 'inicio') {
+      return opcoes?.isPlatformAdmin !== true;
+    }
     return opcoes?.isPlatformAdmin === true;
   }
 
@@ -90,5 +94,5 @@ export function primeiraRotaDisponivel(
       return rota;
     }
   }
-  return 'escala';
+  return 'inicio';
 }

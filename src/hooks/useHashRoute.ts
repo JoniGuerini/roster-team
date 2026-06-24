@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
 export type RotaId =
+  | 'inicio'
   | 'funcionarios'
   | 'extras'
   | 'turnos'
@@ -13,6 +14,7 @@ export type RotaId =
   | 'planos';
 
 const ROTAS_VALIDAS: RotaId[] = [
+  'inicio',
   'funcionarios',
   'extras',
   'turnos',
@@ -24,7 +26,7 @@ const ROTAS_VALIDAS: RotaId[] = [
   'empresas',
   'planos',
 ];
-const ROTA_PADRAO: RotaId = 'escala';
+const ROTA_PADRAO: RotaId = 'inicio';
 
 export const ROTAS_PLATAFORMA: readonly RotaId[] = ['empresas', 'planos'];
 

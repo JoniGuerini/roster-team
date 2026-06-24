@@ -3,8 +3,19 @@ import {
   ACOES_ATIVIDADE,
   MODULOS_ATIVIDADE,
   type AcaoAtividade,
+  type Atividade,
   type ModuloAtividade,
 } from '../types/atividade';
+
+export function descricaoAtividadeResumo(atividade: Atividade): string {
+  if (atividade.modulo === 'sessao' || atividade.acao === 'entrou') {
+    return 'entrou no sistema';
+  }
+  if (atividade.acao === 'gerou') {
+    return `gerou uma senha para ${atividade.alvo}`;
+  }
+  return `${verboAcao(atividade.acao)} ${substantivoModulo(atividade.modulo)} ${atividade.alvo}`;
+}
 
 export function labelAcao(acao: AcaoAtividade): string {
   return ACOES_ATIVIDADE.find((a) => a.value === acao)?.label ?? acao;

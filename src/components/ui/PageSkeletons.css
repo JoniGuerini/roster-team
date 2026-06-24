@@ -162,3 +162,41 @@
   gap: 6px;
   min-width: 0;
 }
+
+.brisa-page-skeleton__inicio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  pointer-events: none;
+}
+
+.brisa-page-skeleton__inicio-hero {
+  pointer-events: none;
+}
+
+.brisa-page-skeleton__inicio-hero-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.brisa-page-skeleton__inicio-stat {
+  pointer-events: none;
+}
+
+.brisa-page-skeleton__inicio-stat-lines {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.brisa-page-skeleton__inicio-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  pointer-events: none;
+}

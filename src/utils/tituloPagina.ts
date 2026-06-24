@@ -1,6 +1,7 @@
 import type { EstadoHashRota, RotaId } from '../hooks/useHashRoute';
 
 const ROTULOS: Record<RotaId, string> = {
+  inicio: 'Início',
   escala: 'Escala',
   turnos: 'Turnos',
   funcionarios: 'Funcionários',

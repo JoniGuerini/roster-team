@@ -4,6 +4,7 @@ import '../../pages/ConfiguracoesPage.css';
 import '../../pages/EmpresasPage.css';
 import '../../pages/AtividadesPage.css';
 import '../../pages/PerfilPessoaPage.css';
+import '../../pages/InicioPage.css';
 import './PageSkeletons.css';
 
 export function TurnosListSkeleton() {
@@ -167,6 +168,56 @@ export function PerfilPessoaSkeleton() {
               ))}
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function InicioPageSkeleton() {
+  return (
+    <div
+      className="brisa-page-skeleton__inicio"
+      aria-busy="true"
+      aria-label="Carregando início"
+    >
+      <div className="brisa-inicio__hero brisa-page-skeleton__inicio-hero">
+        <div className="brisa-page-skeleton__inicio-hero-text">
+          <Skeleton height={11} width={88} />
+          <Skeleton height={30} width={280} />
+          <Skeleton height={14} width={220} />
+        </div>
+        <div className="brisa-inicio__hero-actions">
+          <Skeleton height={36} width={168} rounded="xl" />
+          <Skeleton height={36} width={132} rounded="xl" />
+          <Skeleton height={36} width={132} rounded="xl" />
+        </div>
+      </div>
+
+      <div className="brisa-inicio__stats">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="brisa-inicio__stat brisa-page-skeleton__inicio-stat">
+            <Skeleton rounded="lg" width={40} height={40} />
+            <div className="brisa-page-skeleton__inicio-stat-lines">
+              <Skeleton height={11} width={88} />
+              <Skeleton height={28} width={48} />
+              <Skeleton height={12} width={120} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="brisa-inicio__grid">
+        <div className="brisa-inicio__card brisa-page-skeleton__inicio-card">
+          <Skeleton height={12} width={120} />
+          <Skeleton height={13} width={200} />
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton key={index} height={68} width="100%" rounded="xl" />
+          ))}
+        </div>
+        <div className="brisa-inicio__card brisa-page-skeleton__inicio-card">
+          <Skeleton height={12} width={140} />
+          <Skeleton height={88} width="100%" rounded="xl" />
         </div>
       </div>
     </div>

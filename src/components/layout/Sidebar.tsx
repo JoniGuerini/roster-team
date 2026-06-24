@@ -26,6 +26,7 @@ interface ItemMenu {
 }
 
 const ITENS: ItemMenu[] = [
+  { id: 'inicio', label: 'Início', icon: 'home' },
   { id: 'escala', label: 'Escala', icon: 'calendar-event' },
   { id: 'turnos', label: 'Turnos', icon: 'clock' },
   { id: 'funcionarios', label: 'Funcionários', icon: 'users' },

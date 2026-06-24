@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { Topbar } from './components/layout/Topbar';
+import { InicioPage } from './pages/InicioPage';
 import { FuncionariosPage } from './pages/FuncionariosPage';
 import { ExtrasPage } from './pages/ExtrasPage';
 import { TurnosPage } from './pages/TurnosPage';
@@ -148,7 +149,7 @@ export default function App() {
     if (!sessao || sessao.isPlatformAdmin) return;
 
     if (estado.rota === 'empresas') {
-      navegarParaRota('escala');
+      navegarParaRota('inicio');
       return;
     }
 
@@ -210,6 +211,13 @@ export default function App() {
             onNavegar={navegarParaRota}
           />
           <div className="brisa-app__page" key={pageKey}>
+          {!somentePlataforma && estado.rota === 'inicio' && (
+            <InicioPage
+              sessao={sessao}
+              empresa={empresa}
+              onNavegar={navegarParaRota}
+            />
+          )}
           {!somentePlataforma && estado.rota === 'escala' && <EscalaPage />}
           {!somentePlataforma && estado.rota === 'funcionarios' && !estado.perfilFuncionarioId && (
             <FuncionariosPage
